@@ -1,0 +1,6 @@
+framework module Pods_BusStopTests {
+  umbrella header "Pods-BusStopTests-umbrella.h"
+
+  export *
+  module * { export * }
+}
