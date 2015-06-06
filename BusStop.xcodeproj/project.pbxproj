@@ -8,11 +8,14 @@
 
 /* Begin PBXBuildFile section */
 		4A0EA35F1B21C0B000F747D0 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A0EA35E1B21C0B000F747D0 /* AppDelegate.swift */; };
-		4A0EA3611B21C0B000F747D0 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A0EA3601B21C0B000F747D0 /* ViewController.swift */; };
-		4A0EA3641B21C0B000F747D0 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 4A0EA3621B21C0B000F747D0 /* Main.storyboard */; };
 		4A0EA3661B21C0B000F747D0 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 4A0EA3651B21C0B000F747D0 /* Images.xcassets */; };
 		4A0EA3691B21C0B000F747D0 /* LaunchScreen.xib in Resources */ = {isa = PBXBuildFile; fileRef = 4A0EA3671B21C0B000F747D0 /* LaunchScreen.xib */; };
 		4A0EA3751B21C0B000F747D0 /* BusStopTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A0EA3741B21C0B000F747D0 /* BusStopTests.swift */; };
+		4A0EA37F1B23234100F747D0 /* SearchResultsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A0EA37E1B23234100F747D0 /* SearchResultsViewController.swift */; };
+		4A0EA3811B23235800F747D0 /* APIController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A0EA3801B23235800F747D0 /* APIController.swift */; };
+		4AAFBABB1B236791008F488D /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 4AAFBABA1B236791008F488D /* Main.storyboard */; };
+		64A12E5854F293C1C1F594F3 /* Pods_BusStop.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = EAB3E59295EC798745861F0F /* Pods_BusStop.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
+		CF471BB10972F3F919CA0F3E /* Pods_BusStopTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A27665056396F0B6312A24B3 /* Pods_BusStopTests.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -26,16 +29,23 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		21E9CFEBB044447E7E089058 /* Pods-BusStopTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-BusStopTests.debug.xcconfig"; path = "Pods/Target Support Files/Pods-BusStopTests/Pods-BusStopTests.debug.xcconfig"; sourceTree = "<group>"; };
 		4A0EA3591B21C0B000F747D0 /* BusStop.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = BusStop.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		4A0EA35D1B21C0B000F747D0 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		4A0EA35E1B21C0B000F747D0 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
-		4A0EA3601B21C0B000F747D0 /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
-		4A0EA3631B21C0B000F747D0 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		4A0EA3651B21C0B000F747D0 /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Images.xcassets; sourceTree = "<group>"; };
 		4A0EA3681B21C0B000F747D0 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/LaunchScreen.xib; sourceTree = "<group>"; };
 		4A0EA36E1B21C0B000F747D0 /* BusStopTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = BusStopTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		4A0EA3731B21C0B000F747D0 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		4A0EA3741B21C0B000F747D0 /* BusStopTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BusStopTests.swift; sourceTree = "<group>"; };
+		4A0EA37E1B23234100F747D0 /* SearchResultsViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SearchResultsViewController.swift; sourceTree = "<group>"; };
+		4A0EA3801B23235800F747D0 /* APIController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = APIController.swift; sourceTree = "<group>"; };
+		4A75298AA8FC50C4F94424EA /* Pods-BusStop.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-BusStop.release.xcconfig"; path = "Pods/Target Support Files/Pods-BusStop/Pods-BusStop.release.xcconfig"; sourceTree = "<group>"; };
+		4AAFBABA1B236791008F488D /* Main.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = Main.storyboard; sourceTree = "<group>"; };
+		943E961222DF8A313F9D305B /* Pods-BusStopTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-BusStopTests.release.xcconfig"; path = "Pods/Target Support Files/Pods-BusStopTests/Pods-BusStopTests.release.xcconfig"; sourceTree = "<group>"; };
+		A27665056396F0B6312A24B3 /* Pods_BusStopTests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_BusStopTests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		AB0C6C690533FAB9B7CD8A0B /* Pods-BusStop.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-BusStop.debug.xcconfig"; path = "Pods/Target Support Files/Pods-BusStop/Pods-BusStop.debug.xcconfig"; sourceTree = "<group>"; };
+		EAB3E59295EC798745861F0F /* Pods_BusStop.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_BusStop.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -43,6 +53,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				64A12E5854F293C1C1F594F3 /* Pods_BusStop.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -50,18 +61,41 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				CF471BB10972F3F919CA0F3E /* Pods_BusStopTests.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		3D46AF4CBA289C7B981D62FC /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				EAB3E59295EC798745861F0F /* Pods_BusStop.framework */,
+				A27665056396F0B6312A24B3 /* Pods_BusStopTests.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		48E646FB0E105059211C2A8C /* Pods */ = {
+			isa = PBXGroup;
+			children = (
+				AB0C6C690533FAB9B7CD8A0B /* Pods-BusStop.debug.xcconfig */,
+				4A75298AA8FC50C4F94424EA /* Pods-BusStop.release.xcconfig */,
+				21E9CFEBB044447E7E089058 /* Pods-BusStopTests.debug.xcconfig */,
+				943E961222DF8A313F9D305B /* Pods-BusStopTests.release.xcconfig */,
+			);
+			name = Pods;
+			sourceTree = "<group>";
+		};
 		4A0EA3501B21C0B000F747D0 = {
 			isa = PBXGroup;
 			children = (
 				4A0EA35B1B21C0B000F747D0 /* BusStop */,
 				4A0EA3711B21C0B000F747D0 /* BusStopTests */,
 				4A0EA35A1B21C0B000F747D0 /* Products */,
+				48E646FB0E105059211C2A8C /* Pods */,
+				3D46AF4CBA289C7B981D62FC /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -78,8 +112,9 @@
 			isa = PBXGroup;
 			children = (
 				4A0EA35E1B21C0B000F747D0 /* AppDelegate.swift */,
-				4A0EA3601B21C0B000F747D0 /* ViewController.swift */,
-				4A0EA3621B21C0B000F747D0 /* Main.storyboard */,
+				4A0EA37E1B23234100F747D0 /* SearchResultsViewController.swift */,
+				4A0EA3801B23235800F747D0 /* APIController.swift */,
+				4AAFBABA1B236791008F488D /* Main.storyboard */,
 				4A0EA3651B21C0B000F747D0 /* Images.xcassets */,
 				4A0EA3671B21C0B000F747D0 /* LaunchScreen.xib */,
 				4A0EA35C1B21C0B000F747D0 /* Supporting Files */,
@@ -119,9 +154,12 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 4A0EA3781B21C0B000F747D0 /* Build configuration list for PBXNativeTarget "BusStop" */;
 			buildPhases = (
+				AB933D9FDF9032AAB2238CA6 /* Check Pods Manifest.lock */,
 				4A0EA3551B21C0B000F747D0 /* Sources */,
 				4A0EA3561B21C0B000F747D0 /* Frameworks */,
 				4A0EA3571B21C0B000F747D0 /* Resources */,
+				97AB2CBA6BAF3F845FC3849C /* Embed Pods Frameworks */,
+				B222CECFCBC776CC7DCD8518 /* Copy Pods Resources */,
 			);
 			buildRules = (
 			);
@@ -136,9 +174,12 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 4A0EA37B1B21C0B000F747D0 /* Build configuration list for PBXNativeTarget "BusStopTests" */;
 			buildPhases = (
+				A789412CBD3DDCE6463CBF11 /* Check Pods Manifest.lock */,
 				4A0EA36A1B21C0B000F747D0 /* Sources */,
 				4A0EA36B1B21C0B000F747D0 /* Frameworks */,
 				4A0EA36C1B21C0B000F747D0 /* Resources */,
+				A626318715A555526558974F /* Embed Pods Frameworks */,
+				C5F377C469C5C4420AE009FB /* Copy Pods Resources */,
 			);
 			buildRules = (
 			);
@@ -192,7 +233,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				4A0EA3641B21C0B000F747D0 /* Main.storyboard in Resources */,
+				4AAFBABB1B236791008F488D /* Main.storyboard in Resources */,
 				4A0EA3691B21C0B000F747D0 /* LaunchScreen.xib in Resources */,
 				4A0EA3661B21C0B000F747D0 /* Images.xcassets in Resources */,
 			);
@@ -207,12 +248,106 @@
 		};
 /* End PBXResourcesBuildPhase section */
 
+/* Begin PBXShellScriptBuildPhase section */
+		97AB2CBA6BAF3F845FC3849C /* Embed Pods Frameworks */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "Embed Pods Frameworks";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-BusStop/Pods-BusStop-frameworks.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+		A626318715A555526558974F /* Embed Pods Frameworks */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "Embed Pods Frameworks";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-BusStopTests/Pods-BusStopTests-frameworks.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+		A789412CBD3DDCE6463CBF11 /* Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "Check Pods Manifest.lock";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_ROOT}/../Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [[ $? != 0 ]] ; then\n    cat << EOM\nerror: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\nEOM\n    exit 1\nfi\n";
+			showEnvVarsInLog = 0;
+		};
+		AB933D9FDF9032AAB2238CA6 /* Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "Check Pods Manifest.lock";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_ROOT}/../Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [[ $? != 0 ]] ; then\n    cat << EOM\nerror: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\nEOM\n    exit 1\nfi\n";
+			showEnvVarsInLog = 0;
+		};
+		B222CECFCBC776CC7DCD8518 /* Copy Pods Resources */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "Copy Pods Resources";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-BusStop/Pods-BusStop-resources.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+		C5F377C469C5C4420AE009FB /* Copy Pods Resources */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "Copy Pods Resources";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-BusStopTests/Pods-BusStopTests-resources.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+/* End PBXShellScriptBuildPhase section */
+
 /* Begin PBXSourcesBuildPhase section */
 		4A0EA3551B21C0B000F747D0 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				4A0EA3611B21C0B000F747D0 /* ViewController.swift in Sources */,
+				4A0EA3811B23235800F747D0 /* APIController.swift in Sources */,
+				4A0EA37F1B23234100F747D0 /* SearchResultsViewController.swift in Sources */,
 				4A0EA35F1B21C0B000F747D0 /* AppDelegate.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -236,14 +371,6 @@
 /* End PBXTargetDependency section */
 
 /* Begin PBXVariantGroup section */
-		4A0EA3621B21C0B000F747D0 /* Main.storyboard */ = {
-			isa = PBXVariantGroup;
-			children = (
-				4A0EA3631B21C0B000F747D0 /* Base */,
-			);
-			name = Main.storyboard;
-			sourceTree = "<group>";
-		};
 		4A0EA3671B21C0B000F747D0 /* LaunchScreen.xib */ = {
 			isa = PBXVariantGroup;
 			children = (
@@ -338,6 +465,7 @@
 		};
 		4A0EA3791B21C0B000F747D0 /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = AB0C6C690533FAB9B7CD8A0B /* Pods-BusStop.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				INFOPLIST_FILE = BusStop/Info.plist;
@@ -348,6 +476,7 @@
 		};
 		4A0EA37A1B21C0B000F747D0 /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 4A75298AA8FC50C4F94424EA /* Pods-BusStop.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				INFOPLIST_FILE = BusStop/Info.plist;
@@ -358,6 +487,7 @@
 		};
 		4A0EA37C1B21C0B000F747D0 /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 21E9CFEBB044447E7E089058 /* Pods-BusStopTests.debug.xcconfig */;
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				FRAMEWORK_SEARCH_PATHS = (
@@ -377,6 +507,7 @@
 		};
 		4A0EA37D1B21C0B000F747D0 /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 943E961222DF8A313F9D305B /* Pods-BusStopTests.release.xcconfig */;
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				FRAMEWORK_SEARCH_PATHS = (
@@ -409,6 +540,7 @@
 				4A0EA37A1B21C0B000F747D0 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		4A0EA37B1B21C0B000F747D0 /* Build configuration list for PBXNativeTarget "BusStopTests" */ = {
 			isa = XCConfigurationList;
@@ -417,6 +549,7 @@
 				4A0EA37D1B21C0B000F747D0 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};
