@@ -11,8 +11,10 @@ import SwiftyJSON
 
 class SearchResultsViewController: UIViewController {
   
-  @IBOutlet var searchField : UITextField!
+  @IBOutlet weak var lineField: UITextField!
+  @IBOutlet var vehicleField : UITextField!
   @IBOutlet var appsTableView : UITableView!
+  
   private var vehicleData : JSON?
   var imageCache = [String:UIImage]()
   let kCellIdentifier: String = "SearchResultCell"
@@ -23,7 +25,8 @@ class SearchResultsViewController: UIViewController {
   
   override func viewDidLoad() {
     super.viewDidLoad()
-    searchField.text = "Paunu*"
+    lineField.text = "1"
+    vehicleField.text = "Paunu*"
     doLoadData()
   }
   
@@ -32,16 +35,25 @@ class SearchResultsViewController: UIViewController {
     // Dispose of any resources that can be recreated.
   }
   
-  @IBAction func searchFieldChanged(sender: AnyObject) {
+  @IBAction func lineFieldChanged(sender: AnyObject) {
+    doLoadData()
+  }
+  
+  @IBAction func vehicleFieldChanged(sender: AnyObject) {
     doLoadData()
   }
   
   @IBAction func viewTapped(sender: AnyObject) {
-    searchField.resignFirstResponder()
+    vehicleField.resignFirstResponder()
+    lineField.resignFirstResponder()
   }
   
   func doLoadData() {
-    api.getVehicleActivitiesForLine(1, vehicleId: searchField.text)
+    var lineId = 1
+    if let userLineId = lineField.text.toInt() {
+      lineId = userLineId
+    }
+    api.getVehicleActivitiesForLine(lineId, vehicleId: vehicleField.text)
   }
 }
 
@@ -60,14 +72,12 @@ extension SearchResultsViewController: UITableViewDataSource {
     
     let rowData = self.vehicleData?[indexPath.row]["monitoredVehicleJourney"]
       // Grab the artworkUrl60 key to get an image URL for the app's thumbnail
-    let vehRef = rowData?["vehicleRef"]
-//    ,
-//      stopList = rowData["OnwardCalls"] as? NSArray,
-//      firstStop = stopList[0] as? NSDictionary,
-//      firstStopRef = firstStop["stopPointRef"] as? String
-    cell.textLabel?.text = vehRef?.string
+    if let vehRef = rowData?["vehicleRef"].string,
+      firstStopRef = rowData?["onwardCalls"][0]["stopPointRef"].string {
+      cell.textLabel?.text = vehRef
         // Update the textLabel text to use the trackName from the API
-//        cell.detailTextLabel?.text = firstStopRef
+      cell.detailTextLabel?.text = firstStopRef
+    }
     return cell
   }
   
@@ -76,7 +86,7 @@ extension SearchResultsViewController: UITableViewDataSource {
 // MARK: - UITableViewDelegate
 extension SearchResultsViewController: UITableViewDelegate {
   func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
-    searchField.resignFirstResponder()
+    vehicleField.resignFirstResponder()
 //    // Get the row data for the selected row
 //    if let rowData = self.vehicleData[indexPath.row] as? NSDictionary,
 //      // Get the name of the track for this row
