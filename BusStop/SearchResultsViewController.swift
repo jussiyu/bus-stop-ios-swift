@@ -76,7 +76,8 @@ extension SearchResultsViewController: UITableViewDataSource {
       firstStopRef = rowData?["onwardCalls"][0]["stopPointRef"].string {
       cell.textLabel?.text = vehRef
         // Update the textLabel text to use the trackName from the API
-      cell.detailTextLabel?.text = firstStopRef
+      let firstStopURL = NSURL(fileURLWithPath: firstStopRef)
+      cell.detailTextLabel?.text = firstStopURL?.lastPathComponent
     }
     return cell
   }
@@ -109,6 +110,3 @@ extension SearchResultsViewController: APIControllerProtocol {
     })
   }
 }
-
-
-
