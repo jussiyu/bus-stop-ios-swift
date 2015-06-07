@@ -13,7 +13,8 @@ class SearchResultsViewController: UIViewController {
   
   @IBOutlet weak var lineField: UITextField!
   @IBOutlet var vehicleField : UITextField!
-  @IBOutlet var appsTableView : UITableView!
+  @IBOutlet weak var stopField: UITextField!
+  @IBOutlet var vehicleTableView: UITableView!
   
   private var vehicleData : JSON?
   var imageCache = [String:UIImage]()
@@ -78,6 +79,9 @@ extension SearchResultsViewController: UITableViewDataSource {
         // Update the textLabel text to use the trackName from the API
       let firstStopURL = NSURL(fileURLWithPath: firstStopRef)
       cell.detailTextLabel?.text = firstStopURL?.lastPathComponent
+      if stopField.text == firstStopURL?.lastPathComponent {
+        cell.backgroundColor = UIColor.yellowColor()
+      }
     }
     return cell
   }
@@ -106,7 +110,7 @@ extension SearchResultsViewController: APIControllerProtocol {
   func didReceiveAPIResults(results: JSON) {
     dispatch_async(dispatch_get_main_queue(), {
       self.vehicleData = results["body"]
-      self.appsTableView!.reloadData()
+      self.vehicleTableView!.reloadData()
     })
   }
 }

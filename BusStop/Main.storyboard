@@ -21,12 +21,17 @@
                                 <rect key="frame" x="0.0" y="-30" width="97" height="30"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="14"/>
                                 <textInputTraits key="textInputTraits" keyboardType="numberPad"/>
-                                <variation key="widthClass=compact" fixedFrame="YES">
-                                    <rect key="frame" x="0.0" y="28" width="400" height="30"/>
-                                </variation>
                                 <connections>
                                     <action selector="lineFieldChanged:" destination="vXZ-lx-hvc" eventType="editingChanged" id="gxE-kV-16d"/>
                                     <outlet property="delegate" destination="vXZ-lx-hvc" id="g65-FG-ANR"/>
+                                </connections>
+                            </textField>
+                            <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="FK3-9f-HsG" userLabel="VehicleId">
+                                <rect key="frame" x="0.0" y="-30" width="97" height="30"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                                <textInputTraits key="textInputTraits"/>
+                                <connections>
+                                    <action selector="vehicleFieldChanged:" destination="vXZ-lx-hvc" eventType="editingChanged" id="vbi-aZ-r3A"/>
                                 </connections>
                             </textField>
                             <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="44" sectionHeaderHeight="22" sectionFooterHeight="22" translatesAutoresizingMaskIntoConstraints="NO" id="gZm-hb-9Zh">
@@ -65,58 +70,95 @@
                                     <outlet property="delegate" destination="vXZ-lx-hvc" id="qIK-Jt-Jcq"/>
                                 </connections>
                             </tableView>
-                            <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="FK3-9f-HsG" userLabel="VehicleId">
+                            <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="cuV-o8-sHS" userLabel="StopId">
                                 <rect key="frame" x="0.0" y="-30" width="97" height="30"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="14"/>
                                 <textInputTraits key="textInputTraits"/>
                                 <connections>
-                                    <action selector="vehicleFieldChanged:" destination="vXZ-lx-hvc" eventType="editingChanged" id="vbi-aZ-r3A"/>
+                                    <outlet property="delegate" destination="vXZ-lx-hvc" id="3LL-yX-SDP"/>
                                 </connections>
                             </textField>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
                         <constraints>
+                            <constraint firstItem="gZm-hb-9Zh" firstAttribute="bottom" secondItem="2fi-mo-0CV" secondAttribute="top" id="Snf-IP-gPg"/>
                             <constraint firstItem="gZm-hb-9Zh" firstAttribute="bottom" secondItem="2fi-mo-0CV" secondAttribute="top" id="UNC-kN-7wM">
                                 <variation key="widthClass=compact" constant="0.0"/>
                             </constraint>
+                            <constraint firstItem="cuV-o8-sHS" firstAttribute="top" secondItem="FK3-9f-HsG" secondAttribute="bottom" constant="8" symbolic="YES" id="ZuP-k7-nJu"/>
                             <constraint firstAttribute="trailingMargin" secondItem="gZm-hb-9Zh" secondAttribute="trailing" constant="-30" id="a2U-Ny-VlC"/>
+                            <constraint firstItem="gZm-hb-9Zh" firstAttribute="top" secondItem="cuV-o8-sHS" secondAttribute="bottom" constant="8" symbolic="YES" id="cY8-80-yxU"/>
                             <constraint firstItem="FK3-9f-HsG" firstAttribute="top" secondItem="jyV-Pf-zRb" secondAttribute="bottom" constant="8" symbolic="YES" id="eUR-4r-Vmi">
                                 <variation key="widthClass=compact" constant="40"/>
                             </constraint>
+                            <constraint firstItem="FK3-9f-HsG" firstAttribute="leading" secondItem="6dZ-g3-DDb" secondAttribute="leading" id="gaL-Hh-UKp"/>
+                            <constraint firstItem="cuV-o8-sHS" firstAttribute="leading" secondItem="kh9-bI-dsS" secondAttribute="leading" id="gu8-HR-Qxv"/>
                             <constraint firstAttribute="trailing" secondItem="FK3-9f-HsG" secondAttribute="trailing" id="hp3-zC-GeJ"/>
                             <constraint firstItem="gZm-hb-9Zh" firstAttribute="leading" secondItem="kh9-bI-dsS" secondAttribute="leading" id="i6P-Yf-4Mb"/>
+                            <constraint firstItem="6dZ-g3-DDb" firstAttribute="top" secondItem="jyV-Pf-zRb" secondAttribute="bottom" constant="8" symbolic="YES" id="ij0-ii-UzB"/>
+                            <constraint firstAttribute="trailingMargin" secondItem="gZm-hb-9Zh" secondAttribute="trailing" constant="-30" id="jHu-hk-Dgb"/>
                             <constraint firstItem="gZm-hb-9Zh" firstAttribute="top" secondItem="jyV-Pf-zRb" secondAttribute="bottom" constant="8" symbolic="YES" id="jnX-o3-fpu">
                                 <variation key="widthClass=compact" constant="78"/>
                             </constraint>
-                            <constraint firstItem="FK3-9f-HsG" firstAttribute="leading" secondItem="gZm-hb-9Zh" secondAttribute="leading" id="kGF-Sj-kqq"/>
+                            <constraint firstItem="FK3-9f-HsG" firstAttribute="trailing" secondItem="6dZ-g3-DDb" secondAttribute="trailing" id="mDp-xX-4AI"/>
+                            <constraint firstItem="cuV-o8-sHS" firstAttribute="leading" secondItem="gZm-hb-9Zh" secondAttribute="leading" id="mjr-tv-5lL"/>
+                            <constraint firstItem="FK3-9f-HsG" firstAttribute="trailing" secondItem="cuV-o8-sHS" secondAttribute="trailing" id="rv3-6D-Q5x"/>
+                            <constraint firstItem="cuV-o8-sHS" firstAttribute="leading" secondItem="FK3-9f-HsG" secondAttribute="leading" id="v5E-Z5-WVD"/>
                         </constraints>
                         <variation key="default">
                             <mask key="subviews">
                                 <exclude reference="6dZ-g3-DDb"/>
                                 <exclude reference="FK3-9f-HsG"/>
+                                <exclude reference="cuV-o8-sHS"/>
                             </mask>
                             <mask key="constraints">
+                                <exclude reference="ij0-ii-UzB"/>
                                 <exclude reference="eUR-4r-Vmi"/>
+                                <exclude reference="gaL-Hh-UKp"/>
                                 <exclude reference="hp3-zC-GeJ"/>
-                                <exclude reference="kGF-Sj-kqq"/>
+                                <exclude reference="mDp-xX-4AI"/>
+                                <exclude reference="rv3-6D-Q5x"/>
+                                <exclude reference="ZuP-k7-nJu"/>
+                                <exclude reference="gu8-HR-Qxv"/>
+                                <exclude reference="mjr-tv-5lL"/>
+                                <exclude reference="v5E-Z5-WVD"/>
+                                <exclude reference="Snf-IP-gPg"/>
+                                <exclude reference="cY8-80-yxU"/>
+                                <exclude reference="jHu-hk-Dgb"/>
                             </mask>
                         </variation>
                         <variation key="widthClass=compact">
                             <mask key="subviews">
                                 <include reference="6dZ-g3-DDb"/>
                                 <include reference="FK3-9f-HsG"/>
+                                <include reference="cuV-o8-sHS"/>
                             </mask>
                             <mask key="constraints">
+                                <include reference="ij0-ii-UzB"/>
                                 <include reference="eUR-4r-Vmi"/>
+                                <include reference="gaL-Hh-UKp"/>
                                 <include reference="hp3-zC-GeJ"/>
-                                <include reference="kGF-Sj-kqq"/>
+                                <include reference="mDp-xX-4AI"/>
+                                <include reference="rv3-6D-Q5x"/>
+                                <include reference="ZuP-k7-nJu"/>
+                                <include reference="gu8-HR-Qxv"/>
+                                <include reference="mjr-tv-5lL"/>
+                                <include reference="v5E-Z5-WVD"/>
+                                <include reference="Snf-IP-gPg"/>
+                                <exclude reference="UNC-kN-7wM"/>
+                                <exclude reference="a2U-Ny-VlC"/>
+                                <include reference="cY8-80-yxU"/>
+                                <exclude reference="i6P-Yf-4Mb"/>
+                                <include reference="jHu-hk-Dgb"/>
+                                <exclude reference="jnX-o3-fpu"/>
                             </mask>
                         </variation>
                     </view>
                     <connections>
-                        <outlet property="appsTableView" destination="gZm-hb-9Zh" id="cjA-Bx-typ"/>
                         <outlet property="lineField" destination="6dZ-g3-DDb" id="H8s-Wu-S8C"/>
+                        <outlet property="stopField" destination="cuV-o8-sHS" id="euA-S8-nJP"/>
                         <outlet property="vehicleField" destination="FK3-9f-HsG" id="CbQ-74-4Cf"/>
+                        <outlet property="vehicleTableView" destination="gZm-hb-9Zh" id="JPg-L2-cwg"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="x5A-6p-PRh" sceneMemberID="firstResponder"/>

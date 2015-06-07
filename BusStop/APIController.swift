@@ -16,18 +16,10 @@ class APIController {
   let delegate: APIControllerProtocol
   
   init(delegate: APIControllerProtocol) {
-    self.delegate = delegate
-  }
+
+    self.delegate = delegate  }
   
   func getVehicleActivitiesForLine(lineId: Int, vehicleId: String) {
-//    Uri.Builder uriB = Uri.parse("http://data.itsfactory.fi/journeys/api/1/vehicle-activity")
-//      .buildUpon();
-//    if (lineId > 0) {
-//      uriB.appendQueryParameter("lineRef", lineId.toString());
-//    }
-//    if (vehId.length() > 0 && !vehId.equals("*")) {
-//      uriB.appendQueryParameter("vehicleRef", vehId);
-//    }
     var urlPath = "http://data.itsfactory.fi/journeys/api/1/vehicle-activity?lineRef=\(lineId)"
 
     if(!vehicleId.isBlank) {
