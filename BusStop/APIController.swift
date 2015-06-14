@@ -13,34 +13,41 @@ protocol APIControllerProtocol {
 }
 
 class APIController {
-  let delegate: APIControllerProtocol
+  let vehDelegate, stopsDelegate: APIControllerProtocol
   
-  init(delegate: APIControllerProtocol) {
-
-    self.delegate = delegate  }
+  init(vehDelegate: APIControllerProtocol, stopsDelegate: APIControllerProtocol) {
+    self.vehDelegate = vehDelegate
+    self.stopsDelegate = stopsDelegate
+  }
   
-  func getVehicleActivitiesForLine(lineId: Int, vehicleId: String) {
-    var urlPath = "http://data.itsfactory.fi/journeys/api/1/vehicle-activity?lineRef=\(lineId)"
+  func getVehicleActivitiesForLine(lineId: Int) {
+    doGetOnPath("http://data.itsfactory.fi/journeys/api/1/vehicle-activity?lineRef=\(lineId)", delegate: vehDelegate)
+  }
 
-    if(!vehicleId.isBlank) {
-      if let escapedVehicleRef = vehicleId.stringByAddingPercentEscapesUsingEncoding(NSUTF8StringEncoding) {
-        urlPath += "&vehicleRef=\(escapedVehicleRef)"
-      }
-    }
-    
+  func getStops() {
+    doGetOnPath("http://data.itsfactory.fi/journeys/api/1/stop-points", delegate: stopsDelegate)
+  }
+
+  //    if(!vehicleId.isBlank) {
+//      if let escapedVehicleRef = vehicleId.stringByAddingPercentEscapesUsingEncoding(NSUTF8StringEncoding) {
+//        urlPath += "&vehicleRef=\(escapedVehicleRef)"
+//      }
+//    }
+
+  private func doGetOnPath(urlPath: String, delegate: APIControllerProtocol) {
     let url = NSURL(string: urlPath)
     let session = NSURLSession.sharedSession()
     let task = session.dataTaskWithURL(url!, completionHandler: {data, response, urlError -> Void in
       if(urlError != nil) {
         // If there is an error in the web request, print it to the console
-        println("Task completed unsuccessfully")
+        println("Task completed unsuccessfully: " + urlPath)
         println(urlError.localizedDescription)
         return
       } else {
-        println("Task completed successfully")
+        println("Task completed successfully: " + urlPath)
       }
       let json = JSON(data: data)
-      self.delegate.didReceiveAPIResults(json)
+      delegate.didReceiveAPIResults(json)
     })
     
     // The task is just an object with all these properties set

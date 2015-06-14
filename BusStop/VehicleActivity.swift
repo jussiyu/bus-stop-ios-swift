@@ -1,0 +1,53 @@
+//
+//  VehicleActivity.swift
+//  BusStop
+//
+//  Created by Jussi Yli-Urpo on 12.6.15.
+//  Copyright (c) 2015 Solipaste. All rights reserved.
+//
+
+import Foundation
+import SwiftyJSON
+
+class VehicleActivity {
+  
+  var vehRef: String
+  var stops = [NSURL]()
+  
+  static func VehicleActivitiesFromJSON(result: JSON) -> [VehicleActivity]{
+    var activities = [VehicleActivity]()
+    
+    for (index: String, subJson: JSON) in result {
+      let monVeh = subJson["monitoredVehicleJourney"]
+      if let vehRef = monVeh["vehicleRef"].string where !vehRef.isEmpty{
+        var v = VehicleActivity(vehicleRef: vehRef)
+        if let firstStopRef = monVeh["onwardCalls"][0]["stopPointRef"].string {
+          let firstStopURL = NSURL(fileURLWithPath: firstStopRef)
+          v.addStop(firstStopRef)
+        }
+        activities.append(v)
+      }
+    }
+    return activities
+  }
+  
+  init(vehicleRef vehRef: String) {
+    self.vehRef = vehRef
+  }
+    
+  func getNextStop() -> NSURL? {
+    if stops.count > 0 {
+      return stops[0]
+    } else {
+      return nil
+    }
+    
+  }
+
+  func addStop(stopRef: String) {
+    if let url = NSURL(fileURLWithPath: stopRef) {
+      stops.append(url)
+    }
+  }
+}
+
