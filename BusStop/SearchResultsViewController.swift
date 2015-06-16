@@ -8,11 +8,12 @@
 
 import UIKit
 import SwiftyJSON
+import CoreLocation
 
 class SearchResultsViewController: UIViewController {
   
   @IBOutlet weak var lineField: UITextField!
-  @IBOutlet var vehicleField : UITextField!
+  @IBOutlet var vehicleField: UITextField!
   @IBOutlet weak var stopField: UITextField!
   @IBOutlet var vehicleTableView: UITableView!
   @IBOutlet weak var pickerView: UIPickerView!
@@ -21,7 +22,7 @@ class SearchResultsViewController: UIViewController {
   private var matchingVehicles = [VehicleActivity]()
   
   private var stops = [String: Stop]()
-
+  private var userLoc: CLLocation?
   
   var imageCache = [String:UIImage]()
   let kCellIdentifier: String = "SearchResultCell"
@@ -35,11 +36,20 @@ class SearchResultsViewController: UIViewController {
       }
       func didReceiveAPIResults(results: JSON) {
         dispatch_async(dispatch_get_main_queue(), {
-          self.ref.vehicleActivities = VehicleActivity.VehicleActivitiesFromJSON(results["body"])
-          self.ref.vehicleTableView!.reloadData()
-          self.ref.pickerView.selectRow(0, inComponent: 1, animated: true)
-          self.ref.pickerView(self.ref.pickerView, didSelectRow: 0, inComponent: 1)
-          self.ref.pickerView.reloadAllComponents()
+          if results["status"] == "success" {
+            self.ref.vehicleActivities = VehicleActivity.VehicleActivitiesFromJSON(results["body"])
+            self.ref.vehicleTableView!.reloadData()
+            self.ref.pickerView.selectRow(0, inComponent: 1, animated: true)
+            self.ref.pickerView(self.ref.pickerView, didSelectRow: 0, inComponent: 1)
+            self.ref.pickerView.reloadAllComponents()
+          } else {
+            let errorTitle = results["data"]["title"] ?? "unknown error"
+            let errorMessage = results["data"]["message"] ?? "unknown details"
+            let alertController = UIAlertController(title: "Network error", message:
+              "Failed to read data from network. The detailed error was:\n \"\(errorTitle): \(errorMessage)\"", preferredStyle: UIAlertControllerStyle.Alert)
+            alertController.addAction(UIAlertAction(title: "Dismiss", style: UIAlertActionStyle.Default, handler: nil))
+            self.ref.presentViewController(alertController, animated: true, completion: nil)
+          }
         })
       }
     }
@@ -51,7 +61,16 @@ class SearchResultsViewController: UIViewController {
       }
       func didReceiveAPIResults(results: JSON) {
         dispatch_async(dispatch_get_main_queue(), {
-          self.ref.stops = Stop.StopsFromJSON(results["body"])
+          if results["status"] == "success" {
+            self.ref.stops = Stop.StopsFromJSON(results["body"])
+          } else {
+            let errorTitle = results["data"]["title"] ?? "unknown error"
+            let errorMessage = results["data"]["message"] ?? "unknown details"
+            let alertController = UIAlertController(title: "Network error", message:
+              "Failed to read data from network. The detailed error was:\n \"\(errorTitle): \(errorMessage)\"", preferredStyle: UIAlertControllerStyle.Alert)
+            alertController.addAction(UIAlertAction(title: "Dismiss", style: UIAlertActionStyle.Default, handler: nil))
+            self.ref.presentViewController(alertController, animated: true, completion: nil)
+          }
         })
       }
     }
@@ -61,12 +80,15 @@ class SearchResultsViewController: UIViewController {
   
   override func viewDidLoad() {
     super.viewDidLoad()
+    
+    NSNotificationCenter.defaultCenter().addObserver(self, selector: "locationUpdated:", name: "newLocationNotif", object: nil)
+    
     lineField.text = "1"
     vehicleField.text = ""
     doLoadVehicleData()
     api.getStops()
+       
   }
-  
   override func didReceiveMemoryWarning() {
     super.didReceiveMemoryWarning()
     // Dispose of any resources that can be recreated.
@@ -89,6 +111,7 @@ class SearchResultsViewController: UIViewController {
     
     api.getVehicleActivitiesForLine(lineId)
   }
+  
 }
 
 extension SearchResultsViewController: UITableViewDataSource {
@@ -115,23 +138,38 @@ extension SearchResultsViewController: UITableViewDataSource {
 
     if vehicleActivities.count > indexPath.row {
       let veh = matchingVehicles[indexPath.row]
-      cell.textLabel?.text = veh.vehRef
-      if let nextStopURL = veh.getNextStop() {
-        if let nextStopId = nextStopURL.lastPathComponent {
-          if let stop = stops[nextStopId] {
-            cell.detailTextLabel?.text = stop.name
+      cell.textLabel?.text = "Bus id: \(veh.vehRef)"
+      if userLoc != nil && veh.loc != nil {
+        let dist = userLoc!.distanceFromLocation(veh.loc!)
+        let distkm = NSString(format: "%0.2f", dist/1000)
+//        cell.textLabel?.text?.extend(" \(dist.toString(fractionDigits: 2))km")
+      }
+//      cell.detailTextLabel?.text = join(", ", map(veh.stops, {stops[$0.lastPathComponent!] ?? $0.lastPathComponent ?? "??"})) as? String
+      let joined = veh.stops.reduce("Stops: ", combine: {
+        if let stopId = $1.lastPathComponent {
+          if let stop = stops[stopId] {
+            return "\($0), \(stop.name)"
           } else {
-            cell.detailTextLabel?.text = nextStopId
+            return "\($0), \(stopId)"
           }
         } else {
-          cell.detailTextLabel?.text = "?? no stop id in ref ??"
+          return "\($0) ??"
         }
-        if stopField.text != "" && stopField.text == nextStopURL.lastPathComponent {
-          cell.backgroundColor = UIColor.yellowColor()
-        }
-      } else {
-        cell.detailTextLabel?.text = "<no stops>"
-      }
+        })
+      cell.detailTextLabel?.text = joined
+      
+//      cell.detailTextLabel?.text = ""
+      //      for stopUrl in veh.stops {
+//        if let stopId = stopUrl.lastPathComponent {
+//          if let stop = stops[stopId] {
+//            cell.detailTextLabel?.text?.extend("\(stop.name), ")
+//          } else {
+//            cell.detailTextLabel?.text?.extend("\(stopId), ")
+//          }
+//        } else {
+//          cell.detailTextLabel?.text = "?? no stop id in ref ??"
+//        }
+//      }
     } else {
       cell.textLabel?.text = "??????"
     }
@@ -233,5 +271,17 @@ extension SearchResultsViewController: APIControllerProtocol {
       self.pickerView(self.pickerView, didSelectRow: 0, inComponent: 1)
       self.pickerView.reloadAllComponents()
     })
+  }
+}
+
+
+extension SearchResultsViewController {
+  @objc func locationUpdated(notification: NSNotification){
+    println("locationUpdate \(notification.name)")
+    if let loc = notification.userInfo as? [String:CLLocation] {
+      userLoc = loc["newLocationResult"]
+      println("new user loc:  \(userLoc?.description)")
+      vehicleTableView.reloadData()
+    }
   }
 }

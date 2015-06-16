@@ -7,15 +7,29 @@
 //
 
 import UIKit
+import CoreLocation
 
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {
 
   var window: UIWindow?
+  var lm: CLLocationManager?
 
 
   func application(application: UIApplication, didFinishLaunchingWithOptions launchOptions: [NSObject: AnyObject]?) -> Bool {
     // Override point for customization after application launch.
+    let locStatus = CLLocationManager.authorizationStatus()
+    println("location auth status: \(locStatus.hashValue)")
+    switch locStatus {
+    case CLAuthorizationStatus.AuthorizedAlways:
+      initLocation(locStatus)
+    case CLAuthorizationStatus.AuthorizedWhenInUse:
+      initLocation(locStatus)
+    case CLAuthorizationStatus.NotDetermined:
+      initLocation(locStatus)
+    default:
+      println("location auth failed: \(locStatus.hashValue)")
+    }
     return true
   }
 
@@ -27,10 +41,18 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
   func applicationDidEnterBackground(application: UIApplication) {
     // Use this method to release shared resources, save user data, invalidate timers, and store enough application state information to restore your application to its current state in case it is terminated later.
     // If your application supports background execution, this method is called instead of applicationWillTerminate: when the user quits.
+    lm?.stopMonitoringSignificantLocationChanges()
   }
 
   func applicationWillEnterForeground(application: UIApplication) {
     // Called as part of the transition from the background to the inactive state; here you can undo many of the changes made on entering the background.
+    lm?.requestWhenInUseAuthorization()
+    if CLLocationManager.locationServicesEnabled() {
+      lm?.startMonitoringSignificantLocationChanges()
+      println("start location monitoring")
+    } else {
+      println("location monitoring disabled")
+    }
   }
 
   func applicationDidBecomeActive(application: UIApplication) {
@@ -41,6 +63,49 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     // Called when the application is about to terminate. Save data if appropriate. See also applicationDidEnterBackground:.
   }
 
+  func initLocation(status: CLAuthorizationStatus) {
+    lm = CLLocationManager()
+    lm?.delegate = self
+    lm?.desiredAccuracy = kCLLocationAccuracyBest
+    lm?.activityType = CLActivityType.Other
+    lm?.distanceFilter = 100
+    switch status {
+    case CLAuthorizationStatus.AuthorizedAlways:
+      lm?.startUpdatingLocation()
+    case CLAuthorizationStatus.AuthorizedWhenInUse:
+      lm?.startUpdatingLocation()
+    case CLAuthorizationStatus.NotDetermined:
+      lm?.requestWhenInUseAuthorization()
+    default:
+      println("Location service not allowed")
+    }
+
+  }
 
 }
 
+extension AppDelegate: CLLocationManagerDelegate {
+  func locationManager(manager: CLLocationManager!, didUpdateLocations locations: [AnyObject]!) {
+    println("didUpdateLocations: \(locations[0].description)")
+    NSNotificationCenter.defaultCenter().postNotificationName("newLocationNotif", object: self, userInfo: ["newLocationResult": locations[0]])
+  }
+  
+  func locationManager(manager: CLLocationManager!, didFailWithError error: NSError!) {
+    println("didFailWithError: \(error)")
+    if error == CLError.Denied.rawValue || error == CLError.LocationUnknown.rawValue {
+      lm?.stopUpdatingLocation()
+    }
+  }
+  
+  func locationManager(manager: CLLocationManager!, didChangeAuthorizationStatus status: CLAuthorizationStatus) {
+    println("didChangeAuthorizationStatus: \(status.hashValue)")
+    switch status {
+    case CLAuthorizationStatus.AuthorizedAlways:
+      lm?.startUpdatingLocation()
+    case CLAuthorizationStatus.AuthorizedWhenInUse:
+      lm?.startUpdatingLocation()
+    default:
+      println("Location service not allowed")
+    }
+  }
+}

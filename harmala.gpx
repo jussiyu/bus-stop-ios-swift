@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<gpx version="1.0" creator="GPSBabel - http://www.gpsbabel.org" xmlns="http://www.topografix.com/GPX/1/0">
+  <time>2015-06-16T09:33:39.911Z</time>
+  <bounds minlat="61.470106356" minlon="23.741191398" maxlat="61.470106356" maxlon="23.741191398"/>
+  <wpt lat="61.470106356" lon="23.741191398">
+    <ele>0.000000</ele>
+    <name>Harmala</name>
+    <cmt>Harmala</cmt>
+    <desc>Harmala</desc>
+  </wpt>
+</gpx>

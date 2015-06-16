@@ -13,6 +13,8 @@
 		4A0EA3751B21C0B000F747D0 /* BusStopTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A0EA3741B21C0B000F747D0 /* BusStopTests.swift */; };
 		4A0EA37F1B23234100F747D0 /* SearchResultsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A0EA37E1B23234100F747D0 /* SearchResultsViewController.swift */; };
 		4A0EA3811B23235800F747D0 /* APIController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A0EA3801B23235800F747D0 /* APIController.swift */; };
+		4A10E1EE1B2F03B900231417 /* CoreLocation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4A10E1ED1B2F03B900231417 /* CoreLocation.framework */; };
+		4A10E1F21B30214100231417 /* Common.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A10E1F11B30214100231417 /* Common.swift */; };
 		4A141BA01B2B15890009DED9 /* Stop.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A141B9F1B2B15890009DED9 /* Stop.swift */; };
 		4A4D12B91B2AC01900B6B757 /* VehicleActivity.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A4D12B81B2AC01900B6B757 /* VehicleActivity.swift */; };
 		4AAFBABB1B236791008F488D /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 4AAFBABA1B236791008F488D /* Main.storyboard */; };
@@ -42,6 +44,8 @@
 		4A0EA3741B21C0B000F747D0 /* BusStopTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BusStopTests.swift; sourceTree = "<group>"; };
 		4A0EA37E1B23234100F747D0 /* SearchResultsViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SearchResultsViewController.swift; sourceTree = "<group>"; };
 		4A0EA3801B23235800F747D0 /* APIController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = APIController.swift; sourceTree = "<group>"; };
+		4A10E1ED1B2F03B900231417 /* CoreLocation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreLocation.framework; path = System/Library/Frameworks/CoreLocation.framework; sourceTree = SDKROOT; };
+		4A10E1F11B30214100231417 /* Common.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Common.swift; sourceTree = "<group>"; };
 		4A141B9F1B2B15890009DED9 /* Stop.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Stop.swift; sourceTree = "<group>"; };
 		4A4D12B81B2AC01900B6B757 /* VehicleActivity.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = VehicleActivity.swift; sourceTree = "<group>"; };
 		4A75298AA8FC50C4F94424EA /* Pods-BusStop.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-BusStop.release.xcconfig"; path = "Pods/Target Support Files/Pods-BusStop/Pods-BusStop.release.xcconfig"; sourceTree = "<group>"; };
@@ -57,6 +61,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				4A10E1EE1B2F03B900231417 /* CoreLocation.framework in Frameworks */,
 				64A12E5854F293C1C1F594F3 /* Pods_BusStop.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -75,6 +80,7 @@
 		3D46AF4CBA289C7B981D62FC /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				4A10E1ED1B2F03B900231417 /* CoreLocation.framework */,
 				EAB3E59295EC798745861F0F /* Pods_BusStop.framework */,
 				A27665056396F0B6312A24B3 /* Pods_BusStopTests.framework */,
 			);
@@ -117,6 +123,7 @@
 			children = (
 				4A0EA35E1B21C0B000F747D0 /* AppDelegate.swift */,
 				4A0EA37E1B23234100F747D0 /* SearchResultsViewController.swift */,
+				4A10E1F11B30214100231417 /* Common.swift */,
 				4A0EA3801B23235800F747D0 /* APIController.swift */,
 				4A141B9F1B2B15890009DED9 /* Stop.swift */,
 				4A4D12B81B2AC01900B6B757 /* VehicleActivity.swift */,
@@ -209,6 +216,11 @@
 				TargetAttributes = {
 					4A0EA3581B21C0B000F747D0 = {
 						CreatedOnToolsVersion = 6.3.2;
+						SystemCapabilities = {
+							com.apple.Maps.iOS = {
+								enabled = 0;
+							};
+						};
 					};
 					4A0EA36D1B21C0B000F747D0 = {
 						CreatedOnToolsVersion = 6.3.2;
@@ -354,6 +366,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				4A0EA3811B23235800F747D0 /* APIController.swift in Sources */,
+				4A10E1F21B30214100231417 /* Common.swift in Sources */,
 				4A4D12B91B2AC01900B6B757 /* VehicleActivity.swift in Sources */,
 				4A0EA37F1B23234100F747D0 /* SearchResultsViewController.swift in Sources */,
 				4A0EA35F1B21C0B000F747D0 /* AppDelegate.swift in Sources */,
