@@ -118,16 +118,20 @@
                         </constraints>
                     </view>
                     <navigationItem key="navigationItem" title="Bus Stop" id="0w6-WA-eo3">
-                        <barButtonItem key="rightBarButtonItem" title="refresh" id="Vh4-rV-uc8">
-                            <connections>
-                                <action selector="refreshRequested:" destination="vXZ-lx-hvc" id="r0D-KN-xzv"/>
-                            </connections>
+                        <barButtonItem key="rightBarButtonItem" id="xuj-HQ-FG6">
+                            <switch key="customView" opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" contentHorizontalAlignment="center" contentVerticalAlignment="center" on="YES" id="CeP-SP-SJ7" userLabel="refreshToggle">
+                                <rect key="frame" x="-25" y="-15" width="51" height="31"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <connections>
+                                    <action selector="refreshToggled:" destination="vXZ-lx-hvc" eventType="valueChanged" id="uql-ka-x86"/>
+                                </connections>
+                            </switch>
                         </barButtonItem>
                     </navigationItem>
                     <connections>
                         <outlet property="lineField" destination="6dZ-g3-DDb" id="H8s-Wu-S8C"/>
                         <outlet property="pickerView" destination="bUy-q3-stR" id="D2B-39-YQI"/>
-                        <outlet property="refreshButton" destination="Vh4-rV-uc8" id="jNI-m1-VQP"/>
+                        <outlet property="refreshToggle" destination="xuj-HQ-FG6" id="T4Q-tL-uid"/>
                         <outlet property="stopField" destination="cuV-o8-sHS" id="euA-S8-nJP"/>
                         <outlet property="vehicleField" destination="FK3-9f-HsG" id="CbQ-74-4Cf"/>
                         <outlet property="vehicleTableView" destination="gZm-hb-9Zh" id="JPg-L2-cwg"/>

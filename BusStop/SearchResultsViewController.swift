@@ -17,7 +17,7 @@ class SearchResultsViewController: UIViewController {
   @IBOutlet weak var stopField: UITextField!
   @IBOutlet var vehicleTableView: UITableView!
   @IBOutlet weak var pickerView: UIPickerView!
-  @IBOutlet weak var refreshButton: UIBarButtonItem!
+  @IBOutlet weak var refreshToggle: UIBarButtonItem!
   
   private var vehicleActivities = [VehicleActivity]()
   private var matchingVehicles = [VehicleActivity]()
@@ -27,6 +27,10 @@ class SearchResultsViewController: UIViewController {
   
   var imageCache = [String:UIImage]()
   let kCellIdentifier: String = "SearchResultCell"
+  
+  var autoRefresh:Bool = false
+  
+  var autoRefreshTimer: NSTimer?
   
   lazy private var api: APIController = {
 
@@ -81,17 +85,31 @@ class SearchResultsViewController: UIViewController {
     
     return APIController(vehDelegate: VehicleDelegate(ref: self), stopsDelegate: StopsDelegate(ref: self))
   }()
-  
+
+  func initAutoRefreshTimer() {
+    autoRefreshTimer?.invalidate()
+    if autoRefresh {
+      autoRefreshTimer = NSTimer.scheduledTimerWithTimeInterval(10, target: self, selector: "timedRefreshRequested:", userInfo: nil, repeats: true)
+      //      autoRefreshTimer?.tolerance =
+      autoRefreshTimer?.fire()
+    }
+
+  }
   override func viewDidLoad() {
     super.viewDidLoad()
     
     NSNotificationCenter.defaultCenter().addObserver(self, selector: "locationUpdated:", name: "newLocationNotif", object: nil)
     
+    if let toggle = refreshToggle.customView as? UISwitch {
+      autoRefresh = toggle.on
+    }
+    
     lineField.text = "1"
     vehicleField.text = ""
-    api.getStops()
-       
+    
+    initAutoRefreshTimer()
   }
+
   override func didReceiveMemoryWarning() {
     super.didReceiveMemoryWarning()
     // Dispose of any resources that can be recreated.
@@ -115,11 +133,23 @@ class SearchResultsViewController: UIViewController {
     api.getVehicleActivitiesForLine(lineId)
   }
   
-  
-  @IBAction func refreshRequested(sender: AnyObject) {
+  func timedRefreshRequested(timer: NSTimer) {
+    println("Refresh requested1")
     api.getStops()
   }
   
+  @IBAction func refreshToggled(sender: AnyObject) {
+    if let toggle = refreshToggle.customView as? UISwitch {
+      autoRefresh = toggle.on
+      if autoRefresh {
+        initAutoRefreshTimer()
+        println("Refresh enabled")
+      } else {
+        println("Refresh disabled")
+        autoRefreshTimer?.invalidate()
+      }
+    }
+}
 }
 
 extension SearchResultsViewController: UITableViewDataSource {
