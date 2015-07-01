@@ -17,6 +17,7 @@ class SearchResultsViewController: UIViewController {
   @IBOutlet weak var stopField: UITextField!
   @IBOutlet var vehicleTableView: UITableView!
   @IBOutlet weak var pickerView: UIPickerView!
+  @IBOutlet weak var refreshButton: UIBarButtonItem!
   
   private var vehicleActivities = [VehicleActivity]()
   private var matchingVehicles = [VehicleActivity]()
@@ -71,6 +72,9 @@ class SearchResultsViewController: UIViewController {
             alertController.addAction(UIAlertAction(title: "Dismiss", style: UIAlertActionStyle.Default, handler: nil))
             self.ref.presentViewController(alertController, animated: true, completion: nil)
           }
+          
+          // Load initial vehicle data after stops have been read
+          self.ref.doLoadVehicleData()
         })
       }
     }
@@ -85,7 +89,6 @@ class SearchResultsViewController: UIViewController {
     
     lineField.text = "1"
     vehicleField.text = ""
-    doLoadVehicleData()
     api.getStops()
        
   }
@@ -110,6 +113,11 @@ class SearchResultsViewController: UIViewController {
     }
     
     api.getVehicleActivitiesForLine(lineId)
+  }
+  
+  
+  @IBAction func refreshRequested(sender: AnyObject) {
+    api.getStops()
   }
   
 }
@@ -140,18 +148,16 @@ extension SearchResultsViewController: UITableViewDataSource {
       let veh = matchingVehicles[indexPath.row]
       cell.textLabel?.text = "Bus id: \(veh.vehRef)"
       if userLoc != nil && veh.loc != nil {
-        let dist = userLoc!.distanceFromLocation(veh.loc!)
-        let distkm = NSString(format: "%0.2f", dist/1000)
-//        cell.textLabel?.text?.extend(" \(dist.toString(fractionDigits: 2))km")
+        let dist = userLoc!.distanceFromLocation(veh.loc!) / 1000
+        let distString = dist.toString(fractionDigits: 2) ?? "distance error"
+        cell.textLabel?.text?.extend(" (\(distString)km)")
       }
 //      cell.detailTextLabel?.text = join(", ", map(veh.stops, {stops[$0.lastPathComponent!] ?? $0.lastPathComponent ?? "??"})) as? String
       let joined = veh.stops.reduce("Stops: ", combine: {
         if let stopId = $1.lastPathComponent {
-          if let stop = stops[stopId] {
-            return "\($0), \(stop.name)"
-          } else {
-            return "\($0), \(stopId)"
-          }
+          let maybeAddComma = veh.stops.last != $1 ? ", " : ""
+          let stopName = stops[stopId]?.name ?? stopId
+          return "\($0) \(stopName)\(maybeAddComma)"
         } else {
           return "\($0) ??"
         }

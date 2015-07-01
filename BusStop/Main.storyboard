@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="7706" systemVersion="14D136" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" initialViewController="vXZ-lx-hvc">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="7706" systemVersion="14E46" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" initialViewController="Faf-Pa-phc">
     <dependencies>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="7703"/>
     </dependencies>
@@ -17,7 +17,7 @@
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                         <subviews>
                             <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" borderStyle="roundedRect" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="FK3-9f-HsG" userLabel="VehicleId">
-                                <rect key="frame" x="484" y="20" width="100" height="30"/>
+                                <rect key="frame" x="484" y="72" width="100" height="30"/>
                                 <constraints>
                                     <constraint firstAttribute="width" relation="greaterThanOrEqual" constant="100" id="PkM-nZ-ecy"/>
                                 </constraints>
@@ -28,10 +28,22 @@
                                     <outlet property="delegate" destination="vXZ-lx-hvc" id="E35-M2-9GL"/>
                                 </connections>
                             </textField>
-                            <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" borderStyle="roundedRect" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="cuV-o8-sHS" userLabel="StopId">
-                                <rect key="frame" x="257" y="20" width="100" height="30"/>
+                            <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" borderStyle="roundedRect" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="6dZ-g3-DDb" userLabel="LineId">
+                                <rect key="frame" x="16" y="72" width="100" height="30"/>
                                 <constraints>
-                                    <constraint firstAttribute="width" relation="greaterThanOrEqual" constant="100" id="MQQ-N8-egT"/>
+                                    <constraint firstAttribute="width" relation="greaterThanOrEqual" constant="100" id="EQb-HR-dTB"/>
+                                </constraints>
+                                <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                                <textInputTraits key="textInputTraits" keyboardType="numberPad"/>
+                                <connections>
+                                    <action selector="inputFieldChanged:" destination="vXZ-lx-hvc" eventType="editingChanged" id="T2g-Kr-KfF"/>
+                                    <outlet property="delegate" destination="vXZ-lx-hvc" id="g65-FG-ANR"/>
+                                </connections>
+                            </textField>
+                            <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" borderStyle="roundedRect" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="cuV-o8-sHS" userLabel="StopId">
+                                <rect key="frame" x="282" y="72" width="50" height="30"/>
+                                <constraints>
+                                    <constraint firstAttribute="width" relation="greaterThanOrEqual" constant="50" id="MQQ-N8-egT"/>
                                 </constraints>
                                 <fontDescription key="fontDescription" type="system" pointSize="14"/>
                                 <textInputTraits key="textInputTraits"/>
@@ -41,10 +53,10 @@
                                 </connections>
                             </textField>
                             <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="44" sectionHeaderHeight="22" sectionFooterHeight="22" translatesAutoresizingMaskIntoConstraints="NO" id="gZm-hb-9Zh">
-                                <rect key="frame" x="16" y="234" width="568" height="366"/>
+                                <rect key="frame" x="16" y="280" width="568" height="320"/>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                 <constraints>
-                                    <constraint firstAttribute="height" constant="366" id="hBk-jA-l7s"/>
+                                    <constraint firstAttribute="height" constant="320" id="hBk-jA-l7s"/>
                                 </constraints>
                                 <prototypes>
                                     <tableViewCell contentMode="scaleToFill" selectionStyle="blue" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="SearchResultCell" textLabel="kkc-YY-XNN" detailTextLabel="yxb-yV-dMV" style="IBUITableViewCellStyleSubtitle" id="WMJ-Qj-ukO">
@@ -80,48 +92,42 @@
                                 </connections>
                             </tableView>
                             <pickerView contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="bUy-q3-stR">
-                                <rect key="frame" x="140" y="71" width="320" height="162"/>
+                                <rect key="frame" x="140" y="110" width="320" height="162"/>
                                 <connections>
                                     <outlet property="dataSource" destination="vXZ-lx-hvc" id="Hca-1t-r8A"/>
                                     <outlet property="delegate" destination="vXZ-lx-hvc" id="eOg-oC-BzZ"/>
                                 </connections>
                             </pickerView>
-                            <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" borderStyle="roundedRect" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="6dZ-g3-DDb" userLabel="LineId">
-                                <rect key="frame" x="16" y="20" width="100" height="30"/>
-                                <constraints>
-                                    <constraint firstAttribute="width" relation="greaterThanOrEqual" constant="100" id="EQb-HR-dTB"/>
-                                </constraints>
-                                <fontDescription key="fontDescription" type="system" pointSize="14"/>
-                                <textInputTraits key="textInputTraits" keyboardType="numberPad"/>
-                                <connections>
-                                    <action selector="inputFieldChanged:" destination="vXZ-lx-hvc" eventType="editingChanged" id="T2g-Kr-KfF"/>
-                                    <outlet property="delegate" destination="vXZ-lx-hvc" id="g65-FG-ANR"/>
-                                </connections>
-                            </textField>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
                         <constraints>
                             <constraint firstItem="gZm-hb-9Zh" firstAttribute="leading" secondItem="kh9-bI-dsS" secondAttribute="leading" constant="16" id="ACn-IB-Q01"/>
-                            <constraint firstItem="gZm-hb-9Zh" firstAttribute="top" secondItem="bUy-q3-stR" secondAttribute="bottom" constant="1" id="G0m-wF-I2p"/>
+                            <constraint firstItem="gZm-hb-9Zh" firstAttribute="top" secondItem="bUy-q3-stR" secondAttribute="bottom" constant="8" id="G0m-wF-I2p"/>
                             <constraint firstAttribute="centerX" secondItem="cuV-o8-sHS" secondAttribute="centerX" constant="-7" id="H1O-bF-oR8"/>
                             <constraint firstItem="gZm-hb-9Zh" firstAttribute="centerX" secondItem="bUy-q3-stR" secondAttribute="centerX" id="Hyi-so-yGW"/>
-                            <constraint firstItem="bUy-q3-stR" firstAttribute="top" secondItem="cuV-o8-sHS" secondAttribute="bottom" constant="21" id="KMO-tY-Izt"/>
+                            <constraint firstItem="bUy-q3-stR" firstAttribute="top" secondItem="cuV-o8-sHS" secondAttribute="bottom" constant="8" id="KMO-tY-Izt"/>
                             <constraint firstItem="6dZ-g3-DDb" firstAttribute="leading" secondItem="kh9-bI-dsS" secondAttribute="leading" constant="16" id="L2n-Cr-mjO"/>
-                            <constraint firstItem="6dZ-g3-DDb" firstAttribute="top" secondItem="kh9-bI-dsS" secondAttribute="top" constant="20" id="OXf-NX-fK0"/>
+                            <constraint firstItem="6dZ-g3-DDb" firstAttribute="top" secondItem="kh9-bI-dsS" secondAttribute="top" constant="72" id="OXf-NX-fK0"/>
                             <constraint firstItem="gZm-hb-9Zh" firstAttribute="trailing" secondItem="FK3-9f-HsG" secondAttribute="trailing" id="U8j-Rb-SLh"/>
-                            <constraint firstItem="cuV-o8-sHS" firstAttribute="height" secondItem="6dZ-g3-DDb" secondAttribute="height" id="c0q-Uf-Oz6"/>
                             <constraint firstAttribute="trailing" secondItem="FK3-9f-HsG" secondAttribute="trailing" constant="16" id="dEw-UL-AEd"/>
                             <constraint firstItem="gZm-hb-9Zh" firstAttribute="bottom" secondItem="2fi-mo-0CV" secondAttribute="top" id="ouA-xD-sBW"/>
                             <constraint firstItem="FK3-9f-HsG" firstAttribute="leading" relation="greaterThanOrEqual" secondItem="cuV-o8-sHS" secondAttribute="trailing" constant="10" id="plK-HD-P3z"/>
                             <constraint firstItem="cuV-o8-sHS" firstAttribute="leading" relation="greaterThanOrEqual" secondItem="6dZ-g3-DDb" secondAttribute="trailing" constant="10" id="qbd-5N-tkC"/>
-                            <constraint firstItem="cuV-o8-sHS" firstAttribute="top" secondItem="kh9-bI-dsS" secondAttribute="top" constant="20" id="tmg-6X-po7"/>
-                            <constraint firstItem="FK3-9f-HsG" firstAttribute="top" secondItem="kh9-bI-dsS" secondAttribute="top" constant="20" id="wlc-xq-quB"/>
-                            <constraint firstItem="FK3-9f-HsG" firstAttribute="height" secondItem="6dZ-g3-DDb" secondAttribute="height" id="xNG-QO-FDF"/>
+                            <constraint firstItem="cuV-o8-sHS" firstAttribute="top" secondItem="kh9-bI-dsS" secondAttribute="top" constant="72" id="tmg-6X-po7"/>
+                            <constraint firstItem="FK3-9f-HsG" firstAttribute="top" secondItem="kh9-bI-dsS" secondAttribute="top" constant="72" id="wlc-xq-quB"/>
                         </constraints>
                     </view>
+                    <navigationItem key="navigationItem" title="Bus Stop" id="0w6-WA-eo3">
+                        <barButtonItem key="rightBarButtonItem" title="refresh" id="Vh4-rV-uc8">
+                            <connections>
+                                <action selector="refreshRequested:" destination="vXZ-lx-hvc" id="r0D-KN-xzv"/>
+                            </connections>
+                        </barButtonItem>
+                    </navigationItem>
                     <connections>
                         <outlet property="lineField" destination="6dZ-g3-DDb" id="H8s-Wu-S8C"/>
                         <outlet property="pickerView" destination="bUy-q3-stR" id="D2B-39-YQI"/>
+                        <outlet property="refreshButton" destination="Vh4-rV-uc8" id="jNI-m1-VQP"/>
                         <outlet property="stopField" destination="cuV-o8-sHS" id="euA-S8-nJP"/>
                         <outlet property="vehicleField" destination="FK3-9f-HsG" id="CbQ-74-4Cf"/>
                         <outlet property="vehicleTableView" destination="gZm-hb-9Zh" id="JPg-L2-cwg"/>
@@ -134,7 +140,23 @@
                     </connections>
                 </tapGestureRecognizer>
             </objects>
-            <point key="canvasLocation" x="241" y="721"/>
+            <point key="canvasLocation" x="-305" y="1417"/>
+        </scene>
+        <!--Bus Stop-->
+        <scene sceneID="7IC-U7-BZf">
+            <objects>
+                <navigationController title="Bus Stop" id="Faf-Pa-phc" sceneMemberID="viewController">
+                    <navigationBar key="navigationBar" contentMode="scaleToFill" id="Sla-3t-736">
+                        <rect key="frame" x="0.0" y="0.0" width="320" height="44"/>
+                        <autoresizingMask key="autoresizingMask"/>
+                    </navigationBar>
+                    <connections>
+                        <segue destination="vXZ-lx-hvc" kind="relationship" relationship="rootViewController" id="FwD-kb-O4Y"/>
+                    </connections>
+                </navigationController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="VH7-kM-8IE" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="-305" y="719"/>
         </scene>
     </scenes>
 </document>

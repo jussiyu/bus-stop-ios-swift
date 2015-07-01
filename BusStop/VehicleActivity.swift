@@ -25,7 +25,7 @@ class VehicleActivity {
         var v = VehicleActivity(vehicleRef: vehRef)
 
         let locJson = monVeh["vehicleLocation"]
-        if let lat = locJson["latitude"].string?.toDouble(), lon = locJson["longitude"].string?.toDouble() {
+        if let lat = locJson["latitude"].string?.fromPOSIXStringtoDouble(), lon = locJson["longitude"].string?.fromPOSIXStringtoDouble() {
           let locTest = CLLocationCoordinate2DMake(lat, lon)
           if CLLocationCoordinate2DIsValid(locTest) {
             v.loc = CLLocation(latitude: lat, longitude: lon)

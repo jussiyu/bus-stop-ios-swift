@@ -11,6 +11,11 @@ extension String {
   func toDouble() -> Double? {
     return NSNumberFormatter().numberFromString(self)?.doubleValue
   }
+  func fromPOSIXStringtoDouble() -> Double? {
+    let formatter = NSNumberFormatter()
+    formatter.locale = NSLocale(localeIdentifier: "en_US_POSIX")
+    return formatter.numberFromString(self)?.doubleValue
+  }
 }
 
 extension Double {
