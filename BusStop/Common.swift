@@ -8,23 +8,34 @@
 
 import Foundation
 extension String {
+  static var f: NSNumberFormatter {
+    let f = NSNumberFormatter()
+    f.numberStyle = NSNumberFormatterStyle.DecimalStyle
+    return f
+  }
+
   func toDouble() -> Double? {
-    return NSNumberFormatter().numberFromString(self)?.doubleValue
+    String.f.locale = NSLocale.currentLocale()
+    return String.f.numberFromString(self)?.doubleValue
   }
   func fromPOSIXStringtoDouble() -> Double? {
-    let formatter = NSNumberFormatter()
-    formatter.locale = NSLocale(localeIdentifier: "en_US_POSIX")
-    return formatter.numberFromString(self)?.doubleValue
+    String.f.locale = NSLocale(localeIdentifier: "en_US_POSIX")
+    return String.f.numberFromString(self)?.doubleValue
   }
 }
 
 extension Double {
-  func toString(#fractionDigits: Int) -> String? {
+  static var f: NSNumberFormatter {
     let f = NSNumberFormatter()
-    f.maximumFractionDigits = fractionDigits
-    f.minimumFractionDigits = fractionDigits
+    f.numberStyle = NSNumberFormatterStyle.DecimalStyle
+    return f
+  }
+  
+  func toString(#fractionDigits: Int) -> String? {
+    Double.f.maximumFractionDigits = fractionDigits
+    Double.f.minimumFractionDigits = fractionDigits
     
-    return f.stringFromNumber(self)
+    return Double.f.stringFromNumber(self)
   }
 
 }

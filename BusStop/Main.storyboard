@@ -2,6 +2,7 @@
 <document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="7706" systemVersion="14E46" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" initialViewController="Faf-Pa-phc">
     <dependencies>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="7703"/>
+        <capability name="Constraints to layout margins" minToolsVersion="6.0"/>
     </dependencies>
     <scenes>
         <!--Search Results View Controller-->
@@ -53,7 +54,7 @@
                                 </connections>
                             </textField>
                             <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="44" sectionHeaderHeight="22" sectionFooterHeight="22" translatesAutoresizingMaskIntoConstraints="NO" id="gZm-hb-9Zh">
-                                <rect key="frame" x="16" y="280" width="568" height="320"/>
+                                <rect key="frame" x="6" y="280" width="586" height="320"/>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="320" id="hBk-jA-l7s"/>
@@ -73,7 +74,7 @@
                                                         <fontDescription key="fontDescription" type="system" pointSize="16"/>
                                                     </variation>
                                                 </label>
-                                                <label opaque="NO" multipleTouchEnabled="YES" contentMode="left" text="Subtitle" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="yxb-yV-dMV">
+                                                <label opaque="NO" multipleTouchEnabled="YES" contentMode="left" text="Subtitle" lineBreakMode="tailTruncation" numberOfLines="2" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="yxb-yV-dMV">
                                                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                                     <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                                     <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
@@ -92,7 +93,7 @@
                                 </connections>
                             </tableView>
                             <pickerView contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="bUy-q3-stR">
-                                <rect key="frame" x="140" y="110" width="320" height="162"/>
+                                <rect key="frame" x="139" y="110" width="320" height="162"/>
                                 <connections>
                                     <outlet property="dataSource" destination="vXZ-lx-hvc" id="Hca-1t-r8A"/>
                                     <outlet property="delegate" destination="vXZ-lx-hvc" id="eOg-oC-BzZ"/>
@@ -101,7 +102,8 @@
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
                         <constraints>
-                            <constraint firstItem="gZm-hb-9Zh" firstAttribute="leading" secondItem="kh9-bI-dsS" secondAttribute="leading" constant="16" id="ACn-IB-Q01"/>
+                            <constraint firstItem="gZm-hb-9Zh" firstAttribute="trailing" secondItem="kh9-bI-dsS" secondAttribute="trailingMargin" constant="8" id="9ia-zL-epB"/>
+                            <constraint firstItem="gZm-hb-9Zh" firstAttribute="leading" secondItem="kh9-bI-dsS" secondAttribute="leading" constant="6" id="ACn-IB-Q01"/>
                             <constraint firstItem="gZm-hb-9Zh" firstAttribute="top" secondItem="bUy-q3-stR" secondAttribute="bottom" constant="8" id="G0m-wF-I2p"/>
                             <constraint firstAttribute="centerX" secondItem="cuV-o8-sHS" secondAttribute="centerX" constant="-7" id="H1O-bF-oR8"/>
                             <constraint firstItem="gZm-hb-9Zh" firstAttribute="centerX" secondItem="bUy-q3-stR" secondAttribute="centerX" id="Hyi-so-yGW"/>
@@ -116,6 +118,11 @@
                             <constraint firstItem="cuV-o8-sHS" firstAttribute="top" secondItem="kh9-bI-dsS" secondAttribute="top" constant="72" id="tmg-6X-po7"/>
                             <constraint firstItem="FK3-9f-HsG" firstAttribute="top" secondItem="kh9-bI-dsS" secondAttribute="top" constant="72" id="wlc-xq-quB"/>
                         </constraints>
+                        <variation key="default">
+                            <mask key="constraints">
+                                <exclude reference="U8j-Rb-SLh"/>
+                            </mask>
+                        </variation>
                     </view>
                     <navigationItem key="navigationItem" title="Bus Stop" id="0w6-WA-eo3">
                         <barButtonItem key="rightBarButtonItem" id="xuj-HQ-FG6">

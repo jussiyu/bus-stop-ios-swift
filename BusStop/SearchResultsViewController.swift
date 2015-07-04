@@ -93,8 +93,8 @@ class SearchResultsViewController: UIViewController {
       //      autoRefreshTimer?.tolerance =
       autoRefreshTimer?.fire()
     }
-
   }
+  
   override func viewDidLoad() {
     super.viewDidLoad()
     
@@ -173,14 +173,16 @@ extension SearchResultsViewController: UITableViewDataSource {
   
   func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
     let cell = tableView.dequeueReusableCellWithIdentifier(kCellIdentifier, forIndexPath:indexPath) as! UITableViewCell
+    
+    var sortedMatchingVehicles = sorted(matchingVehicles) {self.userLoc!.distanceFromLocation($0.loc!) < self.userLoc!.distanceFromLocation($1.loc!)}
 
-    if vehicleActivities.count > indexPath.row {
-      let veh = matchingVehicles[indexPath.row]
-      cell.textLabel?.text = "Bus id: \(veh.vehRef)"
+    if sortedMatchingVehicles.count > indexPath.row {
+      let veh = sortedMatchingVehicles[indexPath.row]
+      cell.textLabel?.text = "\(veh.vehRef)"
       if userLoc != nil && veh.loc != nil {
         let dist = userLoc!.distanceFromLocation(veh.loc!) / 1000
         let distString = dist.toString(fractionDigits: 2) ?? "distance error"
-        cell.textLabel?.text?.extend(" (\(distString)km)")
+        cell.textLabel?.text?.extend(" (\(distString) km)")
       }
 //      cell.detailTextLabel?.text = join(", ", map(veh.stops, {stops[$0.lastPathComponent!] ?? $0.lastPathComponent ?? "??"})) as? String
       let joined = veh.stops.reduce("Stops: ", combine: {
