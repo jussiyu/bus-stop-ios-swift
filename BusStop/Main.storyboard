@@ -17,42 +17,6 @@
                         <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                         <subviews>
-                            <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" borderStyle="roundedRect" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="FK3-9f-HsG" userLabel="VehicleId">
-                                <rect key="frame" x="484" y="72" width="100" height="30"/>
-                                <constraints>
-                                    <constraint firstAttribute="width" relation="greaterThanOrEqual" constant="100" id="PkM-nZ-ecy"/>
-                                </constraints>
-                                <fontDescription key="fontDescription" type="system" pointSize="14"/>
-                                <textInputTraits key="textInputTraits"/>
-                                <connections>
-                                    <action selector="inputFieldChanged:" destination="vXZ-lx-hvc" eventType="editingDidEnd" id="0K2-Zs-XFg"/>
-                                    <outlet property="delegate" destination="vXZ-lx-hvc" id="E35-M2-9GL"/>
-                                </connections>
-                            </textField>
-                            <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" borderStyle="roundedRect" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="6dZ-g3-DDb" userLabel="LineId">
-                                <rect key="frame" x="16" y="72" width="100" height="30"/>
-                                <constraints>
-                                    <constraint firstAttribute="width" relation="greaterThanOrEqual" constant="100" id="EQb-HR-dTB"/>
-                                </constraints>
-                                <fontDescription key="fontDescription" type="system" pointSize="14"/>
-                                <textInputTraits key="textInputTraits" keyboardType="numberPad"/>
-                                <connections>
-                                    <action selector="inputFieldChanged:" destination="vXZ-lx-hvc" eventType="editingChanged" id="T2g-Kr-KfF"/>
-                                    <outlet property="delegate" destination="vXZ-lx-hvc" id="g65-FG-ANR"/>
-                                </connections>
-                            </textField>
-                            <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" borderStyle="roundedRect" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="cuV-o8-sHS" userLabel="StopId">
-                                <rect key="frame" x="282" y="72" width="50" height="30"/>
-                                <constraints>
-                                    <constraint firstAttribute="width" relation="greaterThanOrEqual" constant="50" id="MQQ-N8-egT"/>
-                                </constraints>
-                                <fontDescription key="fontDescription" type="system" pointSize="14"/>
-                                <textInputTraits key="textInputTraits"/>
-                                <connections>
-                                    <action selector="inputFieldChanged:" destination="vXZ-lx-hvc" eventType="editingChanged" id="mTv-rd-qHv"/>
-                                    <outlet property="delegate" destination="vXZ-lx-hvc" id="3LL-yX-SDP"/>
-                                </connections>
-                            </textField>
                             <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="44" sectionHeaderHeight="22" sectionFooterHeight="22" translatesAutoresizingMaskIntoConstraints="NO" id="gZm-hb-9Zh">
                                 <rect key="frame" x="6" y="280" width="586" height="320"/>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
@@ -92,37 +56,48 @@
                                     <outlet property="delegate" destination="vXZ-lx-hvc" id="qIK-Jt-Jcq"/>
                                 </connections>
                             </tableView>
-                            <pickerView contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="bUy-q3-stR">
-                                <rect key="frame" x="139" y="110" width="320" height="162"/>
-                                <connections>
-                                    <outlet property="dataSource" destination="vXZ-lx-hvc" id="Hca-1t-r8A"/>
-                                    <outlet property="delegate" destination="vXZ-lx-hvc" id="eOg-oC-BzZ"/>
-                                </connections>
-                            </pickerView>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="center" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Line 1" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="KYc-66-N5F" userLabel="lineLabel">
+                                <rect key="frame" x="150" y="114" width="300" height="20"/>
+                                <constraints>
+                                    <constraint firstAttribute="width" constant="300" id="ydd-Gy-Abn"/>
+                                </constraints>
+                                <fontDescription key="fontDescription" style="UICTFontTextStyleHeadline"/>
+                                <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="center" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="TKL 123" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="KtV-DO-Apc" userLabel="vehicleLabel">
+                                <rect key="frame" x="150" y="142" width="300" height="17"/>
+                                <constraints>
+                                    <constraint firstAttribute="width" constant="300" id="4EJ-3V-tJn"/>
+                                </constraints>
+                                <fontDescription key="fontDescription" style="UICTFontTextStyleSubhead"/>
+                                <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="center" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="5 meters" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="cPD-3g-MiA" userLabel="vehicleDistanceLabel">
+                                <rect key="frame" x="150" y="167" width="300" height="17"/>
+                                <constraints>
+                                    <constraint firstAttribute="width" constant="300" id="Yb9-NE-B1a"/>
+                                </constraints>
+                                <fontDescription key="fontDescription" style="UICTFontTextStyleSubhead"/>
+                                <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
+                                <nil key="highlightedColor"/>
+                            </label>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
                         <constraints>
+                            <constraint firstItem="cPD-3g-MiA" firstAttribute="top" secondItem="KtV-DO-Apc" secondAttribute="bottom" constant="8" id="6Nv-ST-tmL"/>
                             <constraint firstItem="gZm-hb-9Zh" firstAttribute="trailing" secondItem="kh9-bI-dsS" secondAttribute="trailingMargin" constant="8" id="9ia-zL-epB"/>
                             <constraint firstItem="gZm-hb-9Zh" firstAttribute="leading" secondItem="kh9-bI-dsS" secondAttribute="leading" constant="6" id="ACn-IB-Q01"/>
-                            <constraint firstItem="gZm-hb-9Zh" firstAttribute="top" secondItem="bUy-q3-stR" secondAttribute="bottom" constant="8" id="G0m-wF-I2p"/>
-                            <constraint firstAttribute="centerX" secondItem="cuV-o8-sHS" secondAttribute="centerX" constant="-7" id="H1O-bF-oR8"/>
-                            <constraint firstItem="gZm-hb-9Zh" firstAttribute="centerX" secondItem="bUy-q3-stR" secondAttribute="centerX" id="Hyi-so-yGW"/>
-                            <constraint firstItem="bUy-q3-stR" firstAttribute="top" secondItem="cuV-o8-sHS" secondAttribute="bottom" constant="8" id="KMO-tY-Izt"/>
-                            <constraint firstItem="6dZ-g3-DDb" firstAttribute="leading" secondItem="kh9-bI-dsS" secondAttribute="leading" constant="16" id="L2n-Cr-mjO"/>
-                            <constraint firstItem="6dZ-g3-DDb" firstAttribute="top" secondItem="kh9-bI-dsS" secondAttribute="top" constant="72" id="OXf-NX-fK0"/>
-                            <constraint firstItem="gZm-hb-9Zh" firstAttribute="trailing" secondItem="FK3-9f-HsG" secondAttribute="trailing" id="U8j-Rb-SLh"/>
-                            <constraint firstAttribute="trailing" secondItem="FK3-9f-HsG" secondAttribute="trailing" constant="16" id="dEw-UL-AEd"/>
+                            <constraint firstAttribute="centerX" secondItem="KtV-DO-Apc" secondAttribute="centerX" id="CHH-mI-ma5"/>
+                            <constraint firstItem="KYc-66-N5F" firstAttribute="top" secondItem="jyV-Pf-zRb" secondAttribute="bottom" constant="50" id="VsV-Mp-W8X"/>
+                            <constraint firstItem="KtV-DO-Apc" firstAttribute="top" secondItem="KYc-66-N5F" secondAttribute="bottom" constant="8" id="a4O-4D-xla"/>
+                            <constraint firstItem="KYc-66-N5F" firstAttribute="centerX" secondItem="cPD-3g-MiA" secondAttribute="centerX" id="e4b-fa-Y7R"/>
+                            <constraint firstAttribute="centerX" secondItem="KYc-66-N5F" secondAttribute="centerX" id="ii7-La-RLY"/>
+                            <constraint firstAttribute="centerX" secondItem="cPD-3g-MiA" secondAttribute="centerX" id="kRT-uW-yEr"/>
                             <constraint firstItem="gZm-hb-9Zh" firstAttribute="bottom" secondItem="2fi-mo-0CV" secondAttribute="top" id="ouA-xD-sBW"/>
-                            <constraint firstItem="FK3-9f-HsG" firstAttribute="leading" relation="greaterThanOrEqual" secondItem="cuV-o8-sHS" secondAttribute="trailing" constant="10" id="plK-HD-P3z"/>
-                            <constraint firstItem="cuV-o8-sHS" firstAttribute="leading" relation="greaterThanOrEqual" secondItem="6dZ-g3-DDb" secondAttribute="trailing" constant="10" id="qbd-5N-tkC"/>
-                            <constraint firstItem="cuV-o8-sHS" firstAttribute="top" secondItem="kh9-bI-dsS" secondAttribute="top" constant="72" id="tmg-6X-po7"/>
-                            <constraint firstItem="FK3-9f-HsG" firstAttribute="top" secondItem="kh9-bI-dsS" secondAttribute="top" constant="72" id="wlc-xq-quB"/>
+                            <constraint firstItem="KYc-66-N5F" firstAttribute="centerX" secondItem="KtV-DO-Apc" secondAttribute="centerX" id="tdz-V0-OMA"/>
                         </constraints>
-                        <variation key="default">
-                            <mask key="constraints">
-                                <exclude reference="U8j-Rb-SLh"/>
-                            </mask>
-                        </variation>
                     </view>
                     <navigationItem key="navigationItem" title="Bus Stop" id="0w6-WA-eo3">
                         <barButtonItem key="rightBarButtonItem" id="xuj-HQ-FG6">
@@ -136,20 +111,15 @@
                         </barButtonItem>
                     </navigationItem>
                     <connections>
-                        <outlet property="lineField" destination="6dZ-g3-DDb" id="H8s-Wu-S8C"/>
-                        <outlet property="pickerView" destination="bUy-q3-stR" id="D2B-39-YQI"/>
+                        <outlet property="lineLabel" destination="KYc-66-N5F" id="BHn-PI-6ct"/>
                         <outlet property="refreshToggle" destination="xuj-HQ-FG6" id="T4Q-tL-uid"/>
-                        <outlet property="stopField" destination="cuV-o8-sHS" id="euA-S8-nJP"/>
-                        <outlet property="vehicleField" destination="FK3-9f-HsG" id="CbQ-74-4Cf"/>
+                        <outlet property="vehicleDistanceLabel" destination="cPD-3g-MiA" id="OC9-Ak-ET2"/>
+                        <outlet property="vehicleLabel" destination="KtV-DO-Apc" id="Pkp-6E-rBS"/>
                         <outlet property="vehicleTableView" destination="gZm-hb-9Zh" id="JPg-L2-cwg"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="x5A-6p-PRh" sceneMemberID="firstResponder"/>
-                <tapGestureRecognizer id="sPg-dl-AQz">
-                    <connections>
-                        <action selector="viewTapped:" destination="vXZ-lx-hvc" id="9L9-NZ-0dO"/>
-                    </connections>
-                </tapGestureRecognizer>
+                <tapGestureRecognizer id="sPg-dl-AQz"/>
             </objects>
             <point key="canvasLocation" x="-305" y="1417"/>
         </scene>

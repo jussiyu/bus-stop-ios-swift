@@ -18,6 +18,7 @@
 		4A141BA01B2B15890009DED9 /* Stop.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A141B9F1B2B15890009DED9 /* Stop.swift */; };
 		4A4D12B91B2AC01900B6B757 /* VehicleActivity.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A4D12B81B2AC01900B6B757 /* VehicleActivity.swift */; };
 		4AAFBABB1B236791008F488D /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 4AAFBABA1B236791008F488D /* Main.storyboard */; };
+		4AC2E47A1B483DB600D8F20E /* LineVehicles.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4AC2E4791B483DB600D8F20E /* LineVehicles.swift */; };
 		64A12E5854F293C1C1F594F3 /* Pods_BusStop.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = EAB3E59295EC798745861F0F /* Pods_BusStop.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
 		CF471BB10972F3F919CA0F3E /* Pods_BusStopTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A27665056396F0B6312A24B3 /* Pods_BusStopTests.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
 /* End PBXBuildFile section */
@@ -50,6 +51,7 @@
 		4A4D12B81B2AC01900B6B757 /* VehicleActivity.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = VehicleActivity.swift; sourceTree = "<group>"; };
 		4A75298AA8FC50C4F94424EA /* Pods-BusStop.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-BusStop.release.xcconfig"; path = "Pods/Target Support Files/Pods-BusStop/Pods-BusStop.release.xcconfig"; sourceTree = "<group>"; };
 		4AAFBABA1B236791008F488D /* Main.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = Main.storyboard; sourceTree = "<group>"; };
+		4AC2E4791B483DB600D8F20E /* LineVehicles.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LineVehicles.swift; sourceTree = "<group>"; };
 		943E961222DF8A313F9D305B /* Pods-BusStopTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-BusStopTests.release.xcconfig"; path = "Pods/Target Support Files/Pods-BusStopTests/Pods-BusStopTests.release.xcconfig"; sourceTree = "<group>"; };
 		A27665056396F0B6312A24B3 /* Pods_BusStopTests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_BusStopTests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		AB0C6C690533FAB9B7CD8A0B /* Pods-BusStop.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-BusStop.debug.xcconfig"; path = "Pods/Target Support Files/Pods-BusStop/Pods-BusStop.debug.xcconfig"; sourceTree = "<group>"; };
@@ -127,6 +129,7 @@
 				4A0EA3801B23235800F747D0 /* APIController.swift */,
 				4A141B9F1B2B15890009DED9 /* Stop.swift */,
 				4A4D12B81B2AC01900B6B757 /* VehicleActivity.swift */,
+				4AC2E4791B483DB600D8F20E /* LineVehicles.swift */,
 				4AAFBABA1B236791008F488D /* Main.storyboard */,
 				4A0EA3651B21C0B000F747D0 /* Images.xcassets */,
 				4A0EA3671B21C0B000F747D0 /* LaunchScreen.xib */,
@@ -372,6 +375,7 @@
 				4A0EA37F1B23234100F747D0 /* SearchResultsViewController.swift in Sources */,
 				4A0EA35F1B21C0B000F747D0 /* AppDelegate.swift in Sources */,
 				4A141BA01B2B15890009DED9 /* Stop.swift in Sources */,
+				4AC2E47A1B483DB600D8F20E /* LineVehicles.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -495,6 +499,7 @@
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				INFOPLIST_FILE = BusStop/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 8.4;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE = "";
@@ -509,6 +514,7 @@
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				INFOPLIST_FILE = BusStop/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 8.4;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE = "";

@@ -12,18 +12,26 @@ import CoreLocation
 
 class SearchResultsViewController: UIViewController {
   
-  @IBOutlet weak var lineField: UITextField!
-  @IBOutlet var vehicleField: UITextField!
-  @IBOutlet weak var stopField: UITextField!
+  @IBOutlet weak var lineLabel: UILabel!
+  @IBOutlet weak var vehicleLabel: UILabel!
+  @IBOutlet weak var vehicleDistanceLabel: UILabel!
   @IBOutlet var vehicleTableView: UITableView!
-  @IBOutlet weak var pickerView: UIPickerView!
   @IBOutlet weak var refreshToggle: UIBarButtonItem!
   
-  private var vehicleActivities = [VehicleActivity]()
-  private var matchingVehicles = [VehicleActivity]()
+  var lineVehicles = LineVehicles()
   
   private var stops = [String: Stop]()
   private var userLoc: CLLocation?
+  var closestVehicle: VehicleActivity? {
+    if userLoc != nil {
+      println("Getting closest vehicle")
+      return lineVehicles.getClosestVehicle(userLoc!)
+    } else {
+      println("Getting first vehicle")
+      return lineVehicles.getFirstVehicle()
+    }
+    
+  }
   
   var imageCache = [String:UIImage]()
   let kCellIdentifier: String = "SearchResultCell"
@@ -42,11 +50,10 @@ class SearchResultsViewController: UIViewController {
       func didReceiveAPIResults(results: JSON) {
         dispatch_async(dispatch_get_main_queue(), {
           if results["status"] == "success" {
-            self.ref.vehicleActivities = VehicleActivity.VehicleActivitiesFromJSON(results["body"])
+            self.ref.lineVehicles = LineVehicles(fromJSON: results["body"])
+            self.ref.vehicleLabel.text = self.ref.closestVehicle?.vehRef
+            self.ref.vehicleDistanceLabel.text = "5.5 meters"
             self.ref.vehicleTableView!.reloadData()
-            self.ref.pickerView.selectRow(0, inComponent: 1, animated: true)
-            self.ref.pickerView(self.ref.pickerView, didSelectRow: 0, inComponent: 1)
-            self.ref.pickerView.reloadAllComponents()
           } else {
             let errorTitle = results["data"]["title"] ?? "unknown error"
             let errorMessage = results["data"]["message"] ?? "unknown details"
@@ -104,8 +111,8 @@ class SearchResultsViewController: UIViewController {
       autoRefresh = toggle.on
     }
     
-    lineField.text = "1"
-    vehicleField.text = ""
+    lineLabel.text = "1"
+    vehicleLabel.text = ""
     
     initAutoRefreshTimer()
   }
@@ -119,14 +126,9 @@ class SearchResultsViewController: UIViewController {
     doLoadVehicleData()
   }
   
-  @IBAction func viewTapped(sender: AnyObject) {
-    vehicleField.resignFirstResponder()
-    lineField.resignFirstResponder()
-  }
-  
   func doLoadVehicleData() {
     var lineId = 1
-    if let userLineId = lineField.text.toInt() {
+    if let userLineId = lineLabel.text?.toInt() {
       lineId = userLineId
     }
     
@@ -155,62 +157,27 @@ class SearchResultsViewController: UIViewController {
 extension SearchResultsViewController: UITableViewDataSource {
 
   func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-    var searchString = vehicleField.text.stringByReplacingOccurrencesOfString("*", withString: "")
-    matchingVehicles = [VehicleActivity]()
-    if searchString.isBlank {
-      for veh in vehicleActivities {
-        matchingVehicles.append(veh)
-      }
+    if closestVehicle != nil {
+      return closestVehicle!.stops.count
     } else {
-      for veh in vehicleActivities {
-        if veh.vehRef == searchString {
-          matchingVehicles.append(veh)
-        }
-      }
+      return 0
     }
-    return matchingVehicles.count
   }
   
   func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
     let cell = tableView.dequeueReusableCellWithIdentifier(kCellIdentifier, forIndexPath:indexPath) as! UITableViewCell
     
-    var sortedMatchingVehicles = sorted(matchingVehicles) {self.userLoc!.distanceFromLocation($0.loc!) < self.userLoc!.distanceFromLocation($1.loc!)}
-
-    if sortedMatchingVehicles.count > indexPath.row {
-      let veh = sortedMatchingVehicles[indexPath.row]
-      cell.textLabel?.text = "\(veh.vehRef)"
-      if userLoc != nil && veh.loc != nil {
-        let dist = userLoc!.distanceFromLocation(veh.loc!) / 1000
-        let distString = dist.toString(fractionDigits: 2) ?? "distance error"
-        cell.textLabel?.text?.extend(" (\(distString) km)")
+    if closestVehicle != nil {
+      if let lastPath = closestVehicle!.stops[indexPath.item].lastPathComponent, stop = stops[lastPath] {
+        cell.textLabel?.text = stop.name
+        cell.detailTextLabel?.text = stop.id
+      } else {
+        cell.textLabel?.text = closestVehicle!.stops[indexPath.item].lastPathComponent
+        cell.detailTextLabel?.text = "unknown stop"
       }
-//      cell.detailTextLabel?.text = join(", ", map(veh.stops, {stops[$0.lastPathComponent!] ?? $0.lastPathComponent ?? "??"})) as? String
-      let joined = veh.stops.reduce("Stops: ", combine: {
-        if let stopId = $1.lastPathComponent {
-          let maybeAddComma = veh.stops.last != $1 ? ", " : ""
-          let stopName = stops[stopId]?.name ?? stopId
-          return "\($0) \(stopName)\(maybeAddComma)"
-        } else {
-          return "\($0) ??"
-        }
-        })
-      cell.detailTextLabel?.text = joined
-      
-//      cell.detailTextLabel?.text = ""
-      //      for stopUrl in veh.stops {
-//        if let stopId = stopUrl.lastPathComponent {
-//          if let stop = stops[stopId] {
-//            cell.detailTextLabel?.text?.extend("\(stop.name), ")
-//          } else {
-//            cell.detailTextLabel?.text?.extend("\(stopId), ")
-//          }
-//        } else {
-//          cell.detailTextLabel?.text = "?? no stop id in ref ??"
-//        }
-//      }
     } else {
-      cell.textLabel?.text = "??????"
     }
+    
     return cell
   }
   
@@ -219,7 +186,6 @@ extension SearchResultsViewController: UITableViewDataSource {
 // MARK: - UITableViewDelegate
 extension SearchResultsViewController: UITableViewDelegate {
   func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
-    vehicleField.resignFirstResponder()
 //    // Get the row data for the selected row
 //    if let rowData = self.vehicleData[indexPath.row] as? NSDictionary,
 //      // Get the name of the track for this row
@@ -249,7 +215,7 @@ extension SearchResultsViewController: UIPickerViewDataSource {
     case 0:
       return 20
     case 1:
-      return vehicleActivities.count + 1
+      return lineVehicles.count + 1
     default:
       return 0
     }
@@ -260,58 +226,17 @@ extension SearchResultsViewController: UIPickerViewDataSource {
   }
 }
 
-// MARK: - UIPickerViewDelegate
-extension SearchResultsViewController: UIPickerViewDelegate {
-  
-  func pickerView(pickerView: UIPickerView, didSelectRow row: Int, inComponent component: Int) {
-    switch component {
-    case 0:
-      lineField.text = self.pickerView(pickerView, titleForRow: row, forComponent: 0)
-      doLoadVehicleData()
-    case 1:
-      if row == 0 {
-        vehicleField.text = ""
-      } else {
-        vehicleField.text = self.pickerView(pickerView, titleForRow: row, forComponent: 1)
-      }
-      vehicleTableView.reloadData()
-    default:
-      println("Invalid component \(component) selected")
-    }
-  }
-  
-  
-  func pickerView(pickerView: UIPickerView, titleForRow row: Int, forComponent component: Int) -> String! {
-    switch component {
-    case 0:
-      return "\(row + 1)"
-    case 1:
-      if row == 0 {
-        return "All busses"
-      } else if vehicleActivities.count + 1 > row {
-        return vehicleActivities[row - 1].vehRef
-      } else {
-        return "?? unknown row \(row) ??"
-      }
-    default:
-      return "?? unknown component \(row) ??"
-    }
-  }
-}
-
-//MARK: - APIControllerProtocol
-extension SearchResultsViewController: APIControllerProtocol {
-  func didReceiveAPIResults(results: JSON) {
-    dispatch_async(dispatch_get_main_queue(), {
-      self.vehicleActivities = VehicleActivity.VehicleActivitiesFromJSON(results["body"])
-      self.vehicleTableView!.reloadData()
-      self.pickerView.selectRow(0, inComponent: 1, animated: true)
-      self.pickerView(self.pickerView, didSelectRow: 0, inComponent: 1)
-      self.pickerView.reloadAllComponents()
-    })
-  }
-}
-
+//
+////MARK: - APIControllerProtocol
+//extension SearchResultsViewController: APIControllerProtocol {
+//  func didReceiveAPIResults(results: JSON) {
+//    dispatch_async(dispatch_get_main_queue(), {
+//      self.lineVehicles = LineVehicles(fromJSON: results["body"])
+//      self.vehicleTableView!.reloadData()
+//    })
+//  }
+//}
+//
 
 extension SearchResultsViewController {
   @objc func locationUpdated(notification: NSNotification){
