@@ -17,12 +17,9 @@
                         <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                         <subviews>
-                            <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="44" sectionHeaderHeight="22" sectionFooterHeight="22" translatesAutoresizingMaskIntoConstraints="NO" id="gZm-hb-9Zh">
-                                <rect key="frame" x="6" y="280" width="586" height="320"/>
+                            <tableView clipsSubviews="YES" contentMode="scaleToFill" verticalCompressionResistancePriority="749" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="44" sectionHeaderHeight="22" sectionFooterHeight="22" translatesAutoresizingMaskIntoConstraints="NO" id="gZm-hb-9Zh">
+                                <rect key="frame" x="6" y="192" width="586" height="408"/>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
-                                <constraints>
-                                    <constraint firstAttribute="height" constant="320" id="hBk-jA-l7s"/>
-                                </constraints>
                                 <prototypes>
                                     <tableViewCell contentMode="scaleToFill" selectionStyle="blue" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="SearchResultCell" textLabel="kkc-YY-XNN" detailTextLabel="yxb-yV-dMV" style="IBUITableViewCellStyleSubtitle" id="WMJ-Qj-ukO">
                                         <autoresizingMask key="autoresizingMask"/>
@@ -93,6 +90,7 @@
                             <constraint firstItem="KYc-66-N5F" firstAttribute="top" secondItem="jyV-Pf-zRb" secondAttribute="bottom" constant="50" id="VsV-Mp-W8X"/>
                             <constraint firstItem="KtV-DO-Apc" firstAttribute="top" secondItem="KYc-66-N5F" secondAttribute="bottom" constant="8" id="a4O-4D-xla"/>
                             <constraint firstItem="KYc-66-N5F" firstAttribute="centerX" secondItem="cPD-3g-MiA" secondAttribute="centerX" id="e4b-fa-Y7R"/>
+                            <constraint firstItem="gZm-hb-9Zh" firstAttribute="top" secondItem="cPD-3g-MiA" secondAttribute="bottom" constant="8" id="gws-bD-J61"/>
                             <constraint firstAttribute="centerX" secondItem="KYc-66-N5F" secondAttribute="centerX" id="ii7-La-RLY"/>
                             <constraint firstAttribute="centerX" secondItem="cPD-3g-MiA" secondAttribute="centerX" id="kRT-uW-yEr"/>
                             <constraint firstItem="gZm-hb-9Zh" firstAttribute="bottom" secondItem="2fi-mo-0CV" secondAttribute="top" id="ouA-xD-sBW"/>

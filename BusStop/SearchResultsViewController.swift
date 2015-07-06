@@ -24,13 +24,12 @@ class SearchResultsViewController: UIViewController {
   private var userLoc: CLLocation?
   var closestVehicle: VehicleActivity? {
     if userLoc != nil {
-      println("Getting closest vehicle")
+//      println("Getting closest vehicle")
       return lineVehicles.getClosestVehicle(userLoc!)
     } else {
-      println("Getting first vehicle")
+//      println("Getting first vehicle")
       return lineVehicles.getFirstVehicle()
     }
-    
   }
   
   var imageCache = [String:UIImage]()
@@ -51,8 +50,13 @@ class SearchResultsViewController: UIViewController {
         dispatch_async(dispatch_get_main_queue(), {
           if results["status"] == "success" {
             self.ref.lineVehicles = LineVehicles(fromJSON: results["body"])
-            self.ref.vehicleLabel.text = self.ref.closestVehicle?.vehRef
-            self.ref.vehicleDistanceLabel.text = "5.5 meters"
+            if let closestVehicle = self.ref.closestVehicle, userLoc = self.ref.userLoc {
+              self.ref.vehicleLabel.text = closestVehicle.vehRef
+              self.ref.vehicleDistanceLabel.text = closestVehicle.getDistanceFromUserLocation(userLoc)
+            } else {
+              self.ref.vehicleLabel.text = "no busses near you".localizedWithComment("show as vehicle label when no busses near or no user location known")
+              self.ref.vehicleDistanceLabel.text = ""
+            }
             self.ref.vehicleTableView!.reloadData()
           } else {
             let errorTitle = results["data"]["title"] ?? "unknown error"
@@ -65,7 +69,7 @@ class SearchResultsViewController: UIViewController {
         })
       }
     }
-
+    
     class StopsDelegate: APIControllerProtocol {
       let ref: SearchResultsViewController
       init(ref: SearchResultsViewController) {

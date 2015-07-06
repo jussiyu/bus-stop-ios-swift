@@ -21,9 +21,8 @@ class LineVehicles {
   }
   
   init (fromJSON result: JSON) {
-  
+
     for (index: String, subJson: JSON) in result {
-      vehicles.removeAll(keepCapacity: false)
       
       let monVeh = subJson["monitoredVehicleJourney"]
       if let vehRef = monVeh["vehicleRef"].string where !vehRef.isEmpty{
@@ -45,6 +44,8 @@ class LineVehicles {
         vehicles.append(v)
       }
     }
+    
+    println("Vehicles read: \(vehicles.count)")
   }
  
   func getFirstVehicle() -> VehicleActivity? {
@@ -52,8 +53,14 @@ class LineVehicles {
   }
 
   func getClosestVehicle(userLocation: CLLocation) -> VehicleActivity? {
-    var sortedMatchingVehicles = sorted(vehicles) {userLocation.distanceFromLocation($0.loc!) < userLocation.distanceFromLocation($1.loc!)}
+    let sortedMatchingVehicles = sorted(vehicles) {userLocation.distanceFromLocation($0.loc!) < userLocation.distanceFromLocation($1.loc!)}
+    let closest = sortedMatchingVehicles.reduce("") { "\($0), \($1.description), "}
+    println("Closest matching vehicles: \(closest)")
     return sortedMatchingVehicles.first
+  }
+
+  func getClosestVehicles(userLocation: CLLocation) -> [VehicleActivity] {
+    return sorted(vehicles) {userLocation.distanceFromLocation($0.loc!) < userLocation.distanceFromLocation($1.loc!)}
   }
 }
 

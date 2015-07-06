@@ -13,7 +13,7 @@ extension String {
     f.numberStyle = NSNumberFormatterStyle.DecimalStyle
     return f
   }
-
+  
   func toDouble() -> Double? {
     String.f.locale = NSLocale.currentLocale()
     return String.f.numberFromString(self)?.doubleValue
@@ -22,20 +22,32 @@ extension String {
     String.f.locale = NSLocale(localeIdentifier: "en_US_POSIX")
     return String.f.numberFromString(self)?.doubleValue
   }
+  
+  func localizedWithComment(comment:String) -> String {
+    return NSLocalizedString(self, tableName: nil, bundle: NSBundle.mainBundle(), value: "", comment: comment)
+  }
+
+  func localized() -> String {
+    return NSLocalizedString(self, tableName: nil, bundle: NSBundle.mainBundle(), value: "", comment: self)
+  }
 }
 
 extension Double {
-  static var f: NSNumberFormatter {
+  static var f: NSNumberFormatter = {
     let f = NSNumberFormatter()
     f.numberStyle = NSNumberFormatterStyle.DecimalStyle
     return f
-  }
+  }()
   
-  func toString(#fractionDigits: Int) -> String? {
+  func toString(#fractionDigits: Int) -> String {
     Double.f.maximumFractionDigits = fractionDigits
     Double.f.minimumFractionDigits = fractionDigits
+    if let s = Double.f.stringFromNumber(self) {
+      return s
+    } else {
+      return "***".localizedWithComment("double to string is unknown")
+    }
     
-    return Double.f.stringFromNumber(self)
   }
-
+  
 }

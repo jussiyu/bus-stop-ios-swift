@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>%d km(s) from your location/key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@kilometers@</string>
+		<key>kilometers</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+      <key>NSStringFormatValueTypeKey</key>
+      <string>d</string>
+			<key>one</key>
+			<string>yksi kilometri sinusta</string>
+			<key>other</key>
+			<string>%d kilometriä sinusta</string>
+		</dict>
+	</dict>
+	<key>%d meter(s) from your location</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@meters@</string>
+		<key>meters</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>f</string>
+			<key>one</key>
+			<string>1 metri sinusta</string>
+			<key>other</key>
+			<string>%d metriä sinusta</string>
+		</dict>
+	</dict>
+</dict>
+</plist>

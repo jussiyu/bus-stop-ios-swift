@@ -1,0 +1,11 @@
+/* 
+  Localizable.strings
+  BusStop
+
+  Created by Jussi Yli-Urpo on 6.7.15.
+  Copyright (c) 2015 Solipaste. All rights reserved.
+*/
+
+"%d meter(s) from your location" = "%d meter(s) from your location";
+"%d km(s) from your location" = "%d km(s) from your location";
+"no busses near you" = "no busses near you"
