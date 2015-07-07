@@ -8,11 +8,11 @@
 
 import Foundation
 extension String {
-  static var f: NSNumberFormatter {
+  static var f: NSNumberFormatter = {
     let f = NSNumberFormatter()
     f.numberStyle = NSNumberFormatterStyle.DecimalStyle
     return f
-  }
+  }()
   
   func toDouble() -> Double? {
     String.f.locale = NSLocale.currentLocale()
