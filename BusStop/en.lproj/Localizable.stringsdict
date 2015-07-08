@@ -15,7 +15,7 @@
 			<key>one</key>
 			<string>one kilometer from your location</string>
 			<key>other</key>
-			<string>%d km from your location</string>
+			<string>%.1f km\n from your location</string>
 		</dict>
 	</dict>
 	<key>%d meter(s) from your location</key>
@@ -31,7 +31,7 @@
 			<key>one</key>
 			<string>one meter from your location</string>
 			<key>other</key>
-			<string>%d meters from your location</string>
+			<string>%d meters\n from your location</string>
 		</dict>
 	</dict>
 </dict>

@@ -10,13 +10,31 @@ import UIKit
 import SwiftyJSON
 import CoreLocation
 
+struct WeakContainer<T where T: AnyObject> {
+  weak var value : T?
+  
+  init (_ value: T) {
+    self.value = value
+  }
+  
+  func get() -> T? {
+    return value
+  }
+}
+
+// MARK: - UIViewController
 class SearchResultsViewController: UIViewController {
   
-  @IBOutlet weak var lineLabel: UILabel!
-  @IBOutlet weak var vehicleLabel: UILabel!
-  @IBOutlet weak var vehicleDistanceLabel: UILabel!
+  // MARK: - properties
+//  @IBOutlet weak var lineLabel: UILabel!
+//  @IBOutlet weak var vehicleLabel: UILabel!
+//  @IBOutlet weak var vehicleDistanceLabel: UILabel!
   @IBOutlet var vehicleTableView: UITableView!
   @IBOutlet weak var refreshToggle: UIBarButtonItem!
+  
+  @IBOutlet weak var scrollView: UIScrollView!
+  @IBOutlet weak var vehicleHeaderView: UIView!
+  var vehicleHeaderViews = Array<WeakContainer<UIView>>()
   
   var lineVehicles = LineVehicles()
   
@@ -24,11 +42,24 @@ class SearchResultsViewController: UIViewController {
   private var userLoc: CLLocation?
   var closestVehicle: VehicleActivity? {
     if userLoc != nil {
-//      println("Getting closest vehicle")
+      //      println("Getting closest vehicle")
       return lineVehicles.getClosestVehicle(userLoc!)
     } else {
-//      println("Getting first vehicle")
+      //      println("Getting first vehicle")
       return lineVehicles.getFirstVehicle()
+    }
+  }
+  
+  var closestVehicles: [VehicleActivity] {
+    if userLoc != nil {
+      //      println("Getting closest vehicle")
+//      return lineVehicles.getClosestVehicles(userLoc!)
+      return lineVehicles.getClosestVehicles(userLoc!)
+    } else if let firstVeh = lineVehicles.getFirstVehicle() {
+      //      println("Getting first vehicle")
+      return [firstVeh]
+    } else {
+      return []
     }
   }
   
@@ -40,7 +71,7 @@ class SearchResultsViewController: UIViewController {
   var autoRefreshTimer: NSTimer?
   
   lazy private var api: APIController = {
-
+    
     class VehicleDelegate: APIControllerProtocol {
       let ref: SearchResultsViewController
       init(ref: SearchResultsViewController) {
@@ -50,12 +81,21 @@ class SearchResultsViewController: UIViewController {
         dispatch_async(dispatch_get_main_queue(), {
           if results["status"] == "success" {
             self.ref.lineVehicles = LineVehicles(fromJSON: results["body"])
-            if let closestVehicle = self.ref.closestVehicle, userLoc = self.ref.userLoc {
-              self.ref.vehicleLabel.text = closestVehicle.vehRef
-              self.ref.vehicleDistanceLabel.text = closestVehicle.getDistanceFromUserLocation(userLoc)
+            if let userLoc = self.ref.userLoc where self.ref.closestVehicles.count > 0 {
+              for var i = 0; i < 10 && i < self.ref.closestVehicles.count; ++i {
+                let veh = self.ref.closestVehicles[i]
+//                self.ref.lineLabel.text = String(format: NSLocalizedString("Line %@", comment: "Line name header"), closestVehicle.lineRef)
+//                self.ref.vehicleLabel.text = closestVehicle.getFormattedVehicleRef()
+//                self.ref.vehicleDistanceLabel.text = closestVehicle.getDistanceFromUserLocation(userLoc)
+                self.ref.setVehicleLabelsForIndex(i,
+                  lineRef: String(format: NSLocalizedString("Line %@", comment: "Line name header"), veh.lineRef),
+                  vehicleRef: veh.getFormattedVehicleRef(),
+                  distance: veh.getDistanceFromUserLocation(userLoc))
+              }
             } else {
-              self.ref.vehicleLabel.text = "no busses near you".localizedWithComment("show as vehicle label when no busses near or no user location known")
-              self.ref.vehicleDistanceLabel.text = ""
+              self.ref.setVehicleLabelsForIndex(0, lineRef: NSLocalizedString("no busses near you", comment: "show as vehicle label when no busses near or no user location known"),
+                  vehicleRef: "",
+                  distance: "")
             }
             self.ref.vehicleTableView!.reloadData()
           } else {
@@ -95,55 +135,61 @@ class SearchResultsViewController: UIViewController {
     }
     
     return APIController(vehDelegate: VehicleDelegate(ref: self), stopsDelegate: StopsDelegate(ref: self))
-  }()
-
-  func initAutoRefreshTimer() {
-    autoRefreshTimer?.invalidate()
-    if autoRefresh {
-      autoRefreshTimer = NSTimer.scheduledTimerWithTimeInterval(10, target: self, selector: "timedRefreshRequested:", userInfo: nil, repeats: true)
-      //      autoRefreshTimer?.tolerance =
-      autoRefreshTimer?.fire()
-    }
+    }()
+  
+  // MARK: - lifecycle
+  override func viewDidLayoutSubviews() {
+//    let nextVehicleHeaderView = vehicleHeaderView.snapshotViewAfterScreenUpdates(true)
+//    if let label = nextVehicleHeaderView.subviews[0] as? UIView {
+//      println("tag: \(label.tag)")
+////      label.text = "Hello"
+//    }
+//    nextVehicleHeaderView.center.x += 200
+//    scrollView.addSubview(nextVehicleHeaderView)
   }
   
   override func viewDidLoad() {
     super.viewDidLoad()
     
+    scrollView.decelerationRate = UIScrollViewDecelerationRateFast
+//    scrollView.setTranslatesAutoresizingMaskIntoConstraints(false)
+    
+    vehicleHeaderViews.append(WeakContainer(vehicleHeaderView))
+    let tempArchive = NSKeyedArchiver.archivedDataWithRootObject(vehicleHeaderView)
+    for i in 1...9 {
+      let nextVehicleHeaderView = NSKeyedUnarchiver.unarchiveObjectWithData(tempArchive) as! UIView
+      vehicleHeaderViews.append(WeakContainer(nextVehicleHeaderView))
+      
+      scrollView.addSubview(nextVehicleHeaderView)
+//      nextVehicleHeaderView.setTranslatesAutoresizingMaskIntoConstraints(false);
+      
+      let offsetConstraint = NSLayoutConstraint(item: nextVehicleHeaderView, attribute: .Leading, relatedBy: .Equal,
+        toItem: vehicleHeaderViews[i - 1].value, attribute: NSLayoutAttribute.Right, multiplier: 1, constant: 10)
+      offsetConstraint.active = true
+      let topConstraint = NSLayoutConstraint(item: nextVehicleHeaderView, attribute: .Top, relatedBy: .Equal, toItem: nextVehicleHeaderView.superview, attribute: NSLayoutAttribute.Top, multiplier: 1, constant: 0)
+      topConstraint.active = true
+      
+//      println("vehicleHeader frame1: \(vehicleHeaderView.frame), frame2: \(nextVehicleHeaderView.frame)")
+//      println("vehicleHeader bounds1: \(vehicleHeaderView.bounds), bounds2: \(nextVehicleHeaderView.bounds)")
+    }
+//    scrollView.bounds.size.width = 10000
+    println("scrollView bounds: \(scrollView.bounds), frame: \(scrollView.frame), contentsize: \(scrollView.contentSize)")
+
     NSNotificationCenter.defaultCenter().addObserver(self, selector: "locationUpdated:", name: "newLocationNotif", object: nil)
     
     if let toggle = refreshToggle.customView as? UISwitch {
       autoRefresh = toggle.on
     }
     
-    lineLabel.text = "1"
-    vehicleLabel.text = ""
-    
     initAutoRefreshTimer()
   }
-
+  
   override func didReceiveMemoryWarning() {
     super.didReceiveMemoryWarning()
     // Dispose of any resources that can be recreated.
   }
   
-  @IBAction func inputFieldChanged(sender: AnyObject) {
-    doLoadVehicleData()
-  }
-  
-  func doLoadVehicleData() {
-    var lineId = 1
-    if let userLineId = lineLabel.text?.toInt() {
-      lineId = userLineId
-    }
-    
-    api.getVehicleActivitiesForLine(lineId)
-  }
-  
-  func timedRefreshRequested(timer: NSTimer) {
-    println("Refresh requested1")
-    api.getStops()
-  }
-  
+  // MARK: - actions
   @IBAction func refreshToggled(sender: AnyObject) {
     if let toggle = refreshToggle.customView as? UISwitch {
       autoRefresh = toggle.on
@@ -155,11 +201,57 @@ class SearchResultsViewController: UIViewController {
         autoRefreshTimer?.invalidate()
       }
     }
-}
+  }
+
+  @IBAction func inputFieldChanged(sender: AnyObject) {
+    doLoadVehicleData()
+  }
+  
+  // MARK: - utility functions
+  private func initAutoRefreshTimer() {
+    autoRefreshTimer?.invalidate()
+    if autoRefresh {
+      autoRefreshTimer = NSTimer.scheduledTimerWithTimeInterval(10, target: self, selector: "timedRefreshRequested:", userInfo: nil, repeats: true)
+      //      autoRefreshTimer?.tolerance =
+      autoRefreshTimer?.fire()
+    } else {
+      println("Intial reload")
+      api.getStops()
+    }
+  }
+  
+  private func setVehicleLabelsForIndex(index: Int, lineRef: String, vehicleRef: String, distance: String) {
+    if index < vehicleHeaderViews.count {
+      if let vehView = vehicleHeaderViews[index].value {
+        if let label = vehView.viewWithTag(1) as? UILabel {
+          label.text = lineRef
+        }
+        if let label = vehView.viewWithTag(2) as? UILabel {
+          label.text = vehicleRef
+        }
+        if let label = vehView.viewWithTag(3) as? UILabel {
+          label.text = distance.stringByReplacingOccurrencesOfString("\\n", withString: "\n", options: nil)
+        }
+      }
+    }
+  }
+  
+  
+  func doLoadVehicleData() {
+    var lineId = 1
+    api.getVehicleActivitiesForLine(lineId)
+  }
+  
+  func timedRefreshRequested(timer: NSTimer) {
+    println("Refresh requested1")
+    api.getStops()
+  }
+  
 }
 
+// MARK: - UITableViewDataSource
 extension SearchResultsViewController: UITableViewDataSource {
-
+  
   func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
     if closestVehicle != nil {
       return closestVehicle!.stops.count
@@ -190,16 +282,16 @@ extension SearchResultsViewController: UITableViewDataSource {
 // MARK: - UITableViewDelegate
 extension SearchResultsViewController: UITableViewDelegate {
   func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
-//    // Get the row data for the selected row
-//    if let rowData = self.vehicleData[indexPath.row] as? NSDictionary,
-//      // Get the name of the track for this row
-//      name = rowData["trackName"] as? String,
-//      // Get the price of the track on this row
-//      formattedPrice = rowData["formattedPrice"] as? String {
-//        let alert = UIAlertController(title: name, message: formattedPrice, preferredStyle: .Alert)
-//        alert.addAction(UIAlertAction(title: "Ok", style: .Default, handler: nil))
-//        self.presentViewController(alert, animated: true, completion: nil)
-//    }
+    //    // Get the row data for the selected row
+    //    if let rowData = self.vehicleData[indexPath.row] as? NSDictionary,
+    //      // Get the name of the track for this row
+    //      name = rowData["trackName"] as? String,
+    //      // Get the price of the track on this row
+    //      formattedPrice = rowData["formattedPrice"] as? String {
+    //        let alert = UIAlertController(title: name, message: formattedPrice, preferredStyle: .Alert)
+    //        alert.addAction(UIAlertAction(title: "Ok", style: .Default, handler: nil))
+    //        self.presentViewController(alert, animated: true, completion: nil)
+    //    }
   }
 }
 
@@ -242,6 +334,7 @@ extension SearchResultsViewController: UIPickerViewDataSource {
 //}
 //
 
+// MARK: - locationUpdate notification handler
 extension SearchResultsViewController {
   @objc func locationUpdated(notification: NSNotification){
     println("locationUpdate \(notification.name)")
@@ -250,5 +343,48 @@ extension SearchResultsViewController {
       println("new user loc:  \(userLoc?.description)")
       vehicleTableView.reloadData()
     }
+  }
+}
+
+// MARK: - UIScrollViewDelegate
+extension SearchResultsViewController: UIScrollViewDelegate {
+  
+  func scrollViewWillEndDragging(scrollView: UIScrollView, withVelocity velocity: CGPoint, targetContentOffset: UnsafeMutablePointer<CGPoint>) {
+    
+    var pageWidth = Float(200 + 10)
+    var currentOffset = Float(scrollView.contentOffset.x)
+    var targetOffset = Float(targetContentOffset.memory.x)
+    var newTargetOffset = Float(0)
+    var scrollViewWidth = Float(scrollView.contentSize.width)
+    
+    if targetOffset > currentOffset {
+      newTargetOffset = ceilf(currentOffset / pageWidth) * pageWidth
+    } else {
+      newTargetOffset = floorf(currentOffset / pageWidth) * pageWidth
+    }
+    
+    if newTargetOffset < 0 {
+      newTargetOffset = 0
+    } else if newTargetOffset > currentOffset {
+      newTargetOffset = currentOffset
+    }
+    
+    Float(targetContentOffset.memory.x) == currentOffset
+    
+    scrollView.setContentOffset(CGPointMake(CGFloat(newTargetOffset), 0), animated: true)
+  
+//    let currentOffset = scrollView.contentOffset
+//    var newOffset = CGPointZero
+//    
+//    if let lastScrollOffset = lastScrollOffset {
+//      println("scrollView offsets: last: \(lastScrollOffset.x), current: \(currentOffset.x)")
+//      if lastScrollOffset.x < currentOffset.x {
+//        newOffset.x = lastScrollOffset.x + 298
+//      } else {
+//        newOffset.x = lastScrollOffset.x - 298
+//      }
+//    }
+//
+//    UIView.animateWithDuration(0.4) { targetContentOffset.memory = newOffset}
   }
 }

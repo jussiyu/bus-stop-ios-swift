@@ -23,29 +23,12 @@ class LineVehicles {
   init (fromJSON result: JSON) {
 
     for (index: String, subJson: JSON) in result {
-      
       let monVeh = subJson["monitoredVehicleJourney"]
-      if let vehRef = monVeh["vehicleRef"].string where !vehRef.isEmpty{
-        var v = VehicleActivity(vehicleRef: vehRef)
-        
-        let locJson = monVeh["vehicleLocation"]
-        if let lat = locJson["latitude"].string?.fromPOSIXStringtoDouble(), lon = locJson["longitude"].string?.fromPOSIXStringtoDouble() {
-          let locTest = CLLocationCoordinate2DMake(lat, lon)
-          if CLLocationCoordinate2DIsValid(locTest) {
-            v.loc = CLLocation(latitude: lat, longitude: lon)
-          }
-        }
-        let stops = monVeh["onwardCalls"]
-        for (index: String, subJson: JSON) in stops {
-          if let stopRef = subJson["stopPointRef"].string {
-            v.addStopAsString(stopRef)
-          }
-        }
+      if var v = VehicleActivity(fromJSON: monVeh) {
         vehicles.append(v)
       }
     }
-    
-    println("Vehicles read: \(vehicles.count)")
+    //    println("Vehicles read: \(vehicles.count)")
   }
  
   func getFirstVehicle() -> VehicleActivity? {
@@ -53,9 +36,9 @@ class LineVehicles {
   }
 
   func getClosestVehicle(userLocation: CLLocation) -> VehicleActivity? {
-    let sortedMatchingVehicles = sorted(vehicles) {userLocation.distanceFromLocation($0.loc!) < userLocation.distanceFromLocation($1.loc!)}
+    let sortedMatchingVehicles = sorted(vehicles) {$0.loc != nil && $1 != nil ? (userLocation.distanceFromLocation($0.loc!) < userLocation.distanceFromLocation($1.loc!)) : false}
     let closest = sortedMatchingVehicles.reduce("") { "\($0), \($1.description), "}
-    println("Closest matching vehicles: \(closest)")
+//    println("Closest matching vehicles: \(closest)")
     return sortedMatchingVehicles.first
   }
 

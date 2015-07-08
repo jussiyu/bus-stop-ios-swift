@@ -15,7 +15,7 @@
 			<key>one</key>
 			<string>yksi kilometri sinusta</string>
 			<key>other</key>
-			<string>%d kilometriä sinusta</string>
+			<string>%.1f kilometriä sinusta</string>
 		</dict>
 	</dict>
 	<key>%d meter(s) from your location</key>

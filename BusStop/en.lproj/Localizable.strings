@@ -8,4 +8,5 @@
 
 "%d meter(s) from your location" = "%d meter(s) from your location";
 "%d km(s) from your location" = "%d km(s) from your location";
-"no busses near you" = "no busses near you"
+"no busses near you" = "no busses near you";
+"Line %@" = "Line %@";

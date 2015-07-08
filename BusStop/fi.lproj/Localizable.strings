@@ -8,4 +8,5 @@
 
 "%d meter(s) from your location" = "%d metriä sinusta";
 "%d km(s) from your location" = "%d kilsaa sinusta";
-"no busses near you" = "ei bussejä lähellä"
+"no busses near you" = "ei bussejä lähellä";
+"Line %@" = "Line %@";
