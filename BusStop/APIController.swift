@@ -24,15 +24,13 @@ class APIController {
     doGetOnPath("http://data.itsfactory.fi/journeys/api/1/vehicle-activity?lineRef=\(lineId)", delegate: vehDelegate)
   }
 
+  func getVehicleActivities() {
+    doGetOnPath("http://data.itsfactory.fi/journeys/api/1/vehicle-activity", delegate: vehDelegate)
+  }
+
   func getStops() {
     doGetOnPath("http://data.itsfactory.fi/journeys/api/1/stop-points", delegate: stopsDelegate)
   }
-
-  //    if(!vehicleId.isBlank) {
-//      if let escapedVehicleRef = vehicleId.stringByAddingPercentEscapesUsingEncoding(NSUTF8StringEncoding) {
-//        urlPath += "&vehicleRef=\(escapedVehicleRef)"
-//      }
-//    }
 
   private func doGetOnPath(urlPath: String, delegate: APIControllerProtocol) {
     let url = NSURL(string: urlPath)

@@ -25,38 +25,38 @@ struct WeakContainer<T where T: AnyObject> {
 // MARK: - UIViewController
 class SearchResultsViewController: UIViewController {
   
-  // MARK: - properties
-//  @IBOutlet weak var lineLabel: UILabel!
-//  @IBOutlet weak var vehicleLabel: UILabel!
-//  @IBOutlet weak var vehicleDistanceLabel: UILabel!
+  // MARK: - outlets
   @IBOutlet var vehicleTableView: UITableView!
   @IBOutlet weak var refreshToggle: UIBarButtonItem!
   
   @IBOutlet weak var scrollView: UIScrollView!
   @IBOutlet weak var vehicleHeaderView: UIView!
+
+  // MARK: - properties
   var vehicleHeaderViews = Array<WeakContainer<UIView>>()
   var scrollViewPageWidth: CGFloat = 200 + 20
   let scrollVIewContentMargin: CGFloat = 10
-  var lineVehicles = LineVehicles()
+  var vehicles = Vehicles()
+  let maxVehicleCount = 10
   
   private var stops = [String: Stop]()
   private var userLoc: CLLocation?
   var closestVehicle: VehicleActivity? {
     if userLoc != nil {
       //      println("Getting closest vehicle")
-      return lineVehicles.getClosestVehicle(userLoc!)
+      return vehicles.getClosestVehicle(userLoc!)
     } else {
       //      println("Getting first vehicle")
-      return lineVehicles.getFirstVehicle()
+      return vehicles.getFirstVehicle()
     }
   }
   
   var closestVehicles: [VehicleActivity] {
     if userLoc != nil {
       //      println("Getting closest vehicle")
-//      return lineVehicles.getClosestVehicles(userLoc!)
-      return lineVehicles.getClosestVehicles(userLoc!)
-    } else if let firstVeh = lineVehicles.getFirstVehicle() {
+      //      return lineVehicles.getClosestVehicles(userLoc!)
+      return vehicles.getClosestVehicles(userLoc!)
+    } else if let firstVeh = vehicles.getFirstVehicle() {
       //      println("Getting first vehicle")
       return [firstVeh]
     } else {
@@ -81,9 +81,9 @@ class SearchResultsViewController: UIViewController {
       func didReceiveAPIResults(results: JSON) {
         dispatch_async(dispatch_get_main_queue(), {
           if results["status"] == "success" {
-            self.ref.lineVehicles = LineVehicles(fromJSON: results["body"])
+            self.ref.vehicles = Vehicles(fromJSON: results["body"])
             if let userLoc = self.ref.userLoc where self.ref.closestVehicles.count > 0 {
-              for var i = 0; i < 10; ++i {
+              for var i = 0; i < self.ref.maxVehicleCount; ++i {
                 if i < self.ref.closestVehicles.count {
                   self.ref.vehicleHeaderViews[i].value?.hidden = false
                   let veh = self.ref.closestVehicles[i]
@@ -184,7 +184,7 @@ class SearchResultsViewController: UIViewController {
     
     vehicleHeaderViews.append(WeakContainer(vehicleHeaderView))
     let tempArchive = NSKeyedArchiver.archivedDataWithRootObject(vehicleHeaderView)
-    for i in 1...9 {
+    for i in 1..<maxVehicleCount {
       let nextVehicleHeaderView = NSKeyedUnarchiver.unarchiveObjectWithData(tempArchive) as! UIView
       vehicleHeaderViews.append(WeakContainer(nextVehicleHeaderView))
       
@@ -264,7 +264,7 @@ class SearchResultsViewController: UIViewController {
   
   func doLoadVehicleData() {
     var lineId = 1
-    api.getVehicleActivitiesForLine(lineId)
+    api.getVehicleActivities()
   }
   
   func timedRefreshRequested(timer: NSTimer) {
@@ -336,7 +336,7 @@ extension SearchResultsViewController: UIPickerViewDataSource {
     case 0:
       return 20
     case 1:
-      return lineVehicles.count + 1
+      return vehicles.count + 1
     default:
       return 0
     }

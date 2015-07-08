@@ -10,7 +10,7 @@ import Foundation
 import CoreLocation
 import SwiftyJSON
 
-class LineVehicles {
+class Vehicles {
   var vehicles = [VehicleActivity]()
 
   var count: Int {
@@ -22,10 +22,15 @@ class LineVehicles {
   
   init (fromJSON result: JSON) {
 
+    var vehicleCount = 0
     for (index: String, subJson: JSON) in result {
       let monVeh = subJson["monitoredVehicleJourney"]
       if var v = VehicleActivity(fromJSON: monVeh) {
         vehicles.append(v)
+        ++vehicleCount
+        if vehicleCount >= 100 {
+          break
+        }
       }
     }
     //    println("Vehicles read: \(vehicles.count)")
@@ -42,8 +47,10 @@ class LineVehicles {
     return sortedMatchingVehicles.first
   }
 
-  func getClosestVehicles(userLocation: CLLocation) -> [VehicleActivity] {
-    return sorted(vehicles) {userLocation.distanceFromLocation($0.loc!) < userLocation.distanceFromLocation($1.loc!)}
+  func getClosestVehicles(userLocation: CLLocation, maxCount: Int = 10) -> [VehicleActivity] {
+    var sortedVehicles = sorted(vehicles) {userLocation.distanceFromLocation($0.loc!) < userLocation.distanceFromLocation($1.loc!)}
+    sortedVehicles.removeRange(min(maxCount,sortedVehicles.count)..<sortedVehicles.endIndex)
+    return sortedVehicles
   }
 }
 
