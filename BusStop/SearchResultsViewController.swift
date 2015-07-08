@@ -35,7 +35,8 @@ class SearchResultsViewController: UIViewController {
   @IBOutlet weak var scrollView: UIScrollView!
   @IBOutlet weak var vehicleHeaderView: UIView!
   var vehicleHeaderViews = Array<WeakContainer<UIView>>()
-  
+  var scrollViewPageWidth: CGFloat = 200 + 20
+  let scrollVIewContentMargin: CGFloat = 10
   var lineVehicles = LineVehicles()
   
   private var stops = [String: Stop]()
@@ -82,20 +83,23 @@ class SearchResultsViewController: UIViewController {
           if results["status"] == "success" {
             self.ref.lineVehicles = LineVehicles(fromJSON: results["body"])
             if let userLoc = self.ref.userLoc where self.ref.closestVehicles.count > 0 {
-              for var i = 0; i < 10 && i < self.ref.closestVehicles.count; ++i {
-                let veh = self.ref.closestVehicles[i]
-//                self.ref.lineLabel.text = String(format: NSLocalizedString("Line %@", comment: "Line name header"), closestVehicle.lineRef)
-//                self.ref.vehicleLabel.text = closestVehicle.getFormattedVehicleRef()
-//                self.ref.vehicleDistanceLabel.text = closestVehicle.getDistanceFromUserLocation(userLoc)
-                self.ref.setVehicleLabelsForIndex(i,
-                  lineRef: String(format: NSLocalizedString("Line %@", comment: "Line name header"), veh.lineRef),
-                  vehicleRef: veh.getFormattedVehicleRef(),
-                  distance: veh.getDistanceFromUserLocation(userLoc))
+              for var i = 0; i < 10; ++i {
+                if i < self.ref.closestVehicles.count {
+                  self.ref.vehicleHeaderViews[i].value?.hidden = false
+                  let veh = self.ref.closestVehicles[i]
+                  self.ref.setVehicleLabelsForIndex(i,
+                    lineRef: String(format: NSLocalizedString("Line %@", comment: "Line name header"), veh.lineRef),
+                    vehicleRef: veh.formattedVehicleRef,
+                    distance: veh.distanceFromUserLocation(userLoc))
+                } else {
+                  self.ref.vehicleHeaderViews[i].value?.hidden = true
+                }
               }
             } else {
               self.ref.setVehicleLabelsForIndex(0, lineRef: NSLocalizedString("no busses near you", comment: "show as vehicle label when no busses near or no user location known"),
                   vehicleRef: "",
                   distance: "")
+              self.ref.vehicleHeaderViews[0].value?.hidden = false
             }
             self.ref.vehicleTableView!.reloadData()
           } else {
@@ -135,24 +139,48 @@ class SearchResultsViewController: UIViewController {
     }
     
     return APIController(vehDelegate: VehicleDelegate(ref: self), stopsDelegate: StopsDelegate(ref: self))
-    }()
+  }()
   
   // MARK: - lifecycle
   override func viewDidLayoutSubviews() {
-//    let nextVehicleHeaderView = vehicleHeaderView.snapshotViewAfterScreenUpdates(true)
-//    if let label = nextVehicleHeaderView.subviews[0] as? UIView {
-//      println("tag: \(label.tag)")
-////      label.text = "Hello"
-//    }
-//    nextVehicleHeaderView.center.x += 200
-//    scrollView.addSubview(nextVehicleHeaderView)
+    
+    // debugging
+    var i = 0
+    for c in vehicleHeaderViews {
+      if let v = c.value {
+        println("v\(i) frame: \(v.frame)")
+        println("v\(i) bounds: \(v.bounds)")
+        println("v\(i) center: \(v.center)")
+      }
+      ++i
+    }
+
+    // update scrollview content width based on the location of the last subview and margins
+    if let last = vehicleHeaderViews.last?.value, first = vehicleHeaderViews.first?.value {
+      let contentWidth = last.frame.maxX
+      println("content width: \(contentWidth), \(last.frame.maxX), \(first.frame.minX)")
+      for c in scrollView.constraints() {
+        if let c = c as? NSLayoutConstraint where c.firstAttribute == .Trailing {
+          c.constant = contentWidth - first.frame.maxX + first.frame.minX
+          println("constraint constant: \(c.constant)")
+        }
+      }
+    }
+
+    // calculate the page width for the scrollview
+    if vehicleHeaderViews.count > 1 {
+      let first = vehicleHeaderViews[0].value!
+      let second = vehicleHeaderViews[1].value!
+      scrollViewPageWidth = second.center.x - first.center.x
+      println("scrollViewPageWidth: \(scrollViewPageWidth)")
+    }
   }
   
   override func viewDidLoad() {
     super.viewDidLoad()
     
     scrollView.decelerationRate = UIScrollViewDecelerationRateFast
-//    scrollView.setTranslatesAutoresizingMaskIntoConstraints(false)
+    //    scrollView.setTranslatesAutoresizingMaskIntoConstraints(false)
     
     vehicleHeaderViews.append(WeakContainer(vehicleHeaderView))
     let tempArchive = NSKeyedArchiver.archivedDataWithRootObject(vehicleHeaderView)
@@ -164,15 +192,12 @@ class SearchResultsViewController: UIViewController {
 //      nextVehicleHeaderView.setTranslatesAutoresizingMaskIntoConstraints(false);
       
       let offsetConstraint = NSLayoutConstraint(item: nextVehicleHeaderView, attribute: .Leading, relatedBy: .Equal,
-        toItem: vehicleHeaderViews[i - 1].value, attribute: NSLayoutAttribute.Right, multiplier: 1, constant: 10)
+        toItem: vehicleHeaderViews[i - 1].value, attribute: NSLayoutAttribute.Right, multiplier: 1, constant: scrollVIewContentMargin)
       offsetConstraint.active = true
       let topConstraint = NSLayoutConstraint(item: nextVehicleHeaderView, attribute: .Top, relatedBy: .Equal, toItem: nextVehicleHeaderView.superview, attribute: NSLayoutAttribute.Top, multiplier: 1, constant: 0)
       topConstraint.active = true
       
-//      println("vehicleHeader frame1: \(vehicleHeaderView.frame), frame2: \(nextVehicleHeaderView.frame)")
-//      println("vehicleHeader bounds1: \(vehicleHeaderView.bounds), bounds2: \(nextVehicleHeaderView.bounds)")
     }
-//    scrollView.bounds.size.width = 10000
     println("scrollView bounds: \(scrollView.bounds), frame: \(scrollView.frame), contentsize: \(scrollView.contentSize)")
 
     NSNotificationCenter.defaultCenter().addObserver(self, selector: "locationUpdated:", name: "newLocationNotif", object: nil)
@@ -345,46 +370,43 @@ extension SearchResultsViewController {
     }
   }
 }
-
+//             ----- -----
+// |xxxXXXXxxx|xxxXXXXxxx|xxxXXXXxxx|
 // MARK: - UIScrollViewDelegate
 extension SearchResultsViewController: UIScrollViewDelegate {
   
+  func scrollViewDidEndScrollingAnimation(scrollView: UIScrollView) {
+    println("scroll end on page: \(floor((scrollView.contentOffset.x + scrollViewPageWidth / 2) / scrollViewPageWidth))")
+  }
+  
+  // paging for scrollview
   func scrollViewWillEndDragging(scrollView: UIScrollView, withVelocity velocity: CGPoint, targetContentOffset: UnsafeMutablePointer<CGPoint>) {
     
-    var pageWidth = Float(200 + 10)
-    var currentOffset = Float(scrollView.contentOffset.x)
-    var targetOffset = Float(targetContentOffset.memory.x)
-    var newTargetOffset = Float(0)
-    var scrollViewWidth = Float(scrollView.contentSize.width)
+    var currentOffset = CGFloat(scrollView.contentOffset.x)
+    var targetOffset = CGFloat(targetContentOffset.memory.x)
+    var newTargetOffset = CGFloat(0)
     
-    if targetOffset > currentOffset {
-      newTargetOffset = ceilf(currentOffset / pageWidth) * pageWidth
-    } else {
-      newTargetOffset = floorf(currentOffset / pageWidth) * pageWidth
-    }
+//    if targetOffset > currentOffset {
+      newTargetOffset = round((targetOffset) / scrollViewPageWidth) * scrollViewPageWidth
+//    } else {
+//      newTargetOffset = floor(currentOffset / scrollViewPageWidth) * scrollViewPageWidth
+//    }
     
     if newTargetOffset < 0 {
       newTargetOffset = 0
-    } else if newTargetOffset > currentOffset {
-      newTargetOffset = currentOffset
     }
     
-    Float(targetContentOffset.memory.x) == currentOffset
+    if velocity.x != 0 && newTargetOffset != targetOffset {
+      if velocity.x > 0 {
+        newTargetOffset = ceil((targetOffset - scrollViewPageWidth / 2) / scrollViewPageWidth ) * scrollViewPageWidth
+        targetContentOffset.memory.x = newTargetOffset
+      } else {
+        newTargetOffset = floor((targetOffset + scrollViewPageWidth / 2) / scrollViewPageWidth ) * scrollViewPageWidth
+        targetContentOffset.memory.x = newTargetOffset
+      }
+    } else {
+      scrollView.setContentOffset(CGPointMake(CGFloat(newTargetOffset), 0), animated: true)
+    }
     
-    scrollView.setContentOffset(CGPointMake(CGFloat(newTargetOffset), 0), animated: true)
-  
-//    let currentOffset = scrollView.contentOffset
-//    var newOffset = CGPointZero
-//    
-//    if let lastScrollOffset = lastScrollOffset {
-//      println("scrollView offsets: last: \(lastScrollOffset.x), current: \(currentOffset.x)")
-//      if lastScrollOffset.x < currentOffset.x {
-//        newOffset.x = lastScrollOffset.x + 298
-//      } else {
-//        newOffset.x = lastScrollOffset.x - 298
-//      }
-//    }
-//
-//    UIView.animateWithDuration(0.4) { targetContentOffset.memory = newOffset}
   }
 }

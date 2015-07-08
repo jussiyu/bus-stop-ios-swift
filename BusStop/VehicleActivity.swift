@@ -11,7 +11,8 @@ import CoreLocation
 import SwiftyJSON
 
 class VehicleActivity {
- 
+
+  // MARK: - properties
   let lineRef: String
   let vehRef: String
   var loc: CLLocation?
@@ -20,6 +21,24 @@ class VehicleActivity {
     return "vehRef: \(vehRef), loc: \(loc?.coordinate.latitude.toString(fractionDigits: 2)):\(loc?.coordinate.longitude.toString(fractionDigits: 2))"
   }
  
+  var formattedVehicleRef: String {
+    let comps = vehRef.componentsSeparatedByString("_")
+    if comps.count == 2 {
+      return "\(comps[0]) \(comps[1])"
+    } else {
+      return vehRef
+    }
+  }
+  
+  var nextStop: NSURL? {
+    if stops.count > 0 {
+      return stops[0]
+    } else {
+      return nil
+    }
+  }
+
+  // MARK: - initialization
   init?(fromJSON monVeh: JSON) {
     if let vehRef = monVeh["vehicleRef"].string, lineRef = monVeh["lineRef"].string where !vehRef.isEmpty && !lineRef.isEmpty {
       self.vehRef = vehRef
@@ -47,33 +66,14 @@ class VehicleActivity {
     }
   }
   
-  
+  // MARK: - methods
   func addStopAsString(stopRef: String) {
     if let url = NSURL(fileURLWithPath: stopRef) {
       stops.append(url)
     }
   }
-
-  func getFormattedVehicleRef() -> String {
-    let comps = vehRef.componentsSeparatedByString("_")
-    if comps.count == 2 {
-      return "\(comps[0]) \(comps[1])"
-    } else {
-      return vehRef
-    }
-  }
   
-  func getNextStop() -> NSURL? {
-    if stops.count > 0 {
-      return stops[0]
-    } else {
-      return nil
-    }
-  
-  }
-  
-  
-  func getDistanceFromUserLocation(userLoc: CLLocation) -> String {
+  func distanceFromUserLocation(userLoc: CLLocation) -> String {
     if let dist = loc?.distanceFromLocation(userLoc) {
       if dist < 1000 {
         return NSString.localizedStringWithFormat(NSLocalizedString("%d meter(s) from your location", comment: "distance in meters"), lround(dist)) as String
@@ -87,7 +87,7 @@ class VehicleActivity {
     
   }
   
-  func getDistanceFromUserLocation(userLoc: CLLocation) -> CLLocationDistance? {
+  func distanceFromUserLocation(userLoc: CLLocation) -> CLLocationDistance? {
     return loc?.distanceFromLocation(userLoc)
   }
   

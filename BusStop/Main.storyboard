@@ -19,7 +19,7 @@
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                         <subviews>
                             <tableView clipsSubviews="YES" contentMode="scaleToFill" verticalCompressionResistancePriority="749" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="44" sectionHeaderHeight="22" sectionFooterHeight="22" translatesAutoresizingMaskIntoConstraints="NO" id="gZm-hb-9Zh">
-                                <rect key="frame" x="6" y="190" width="586" height="410"/>
+                                <rect key="frame" x="6" y="209" width="586" height="391"/>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                 <prototypes>
                                     <tableViewCell contentMode="scaleToFill" selectionStyle="blue" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="SearchResultCell" textLabel="kkc-YY-XNN" detailTextLabel="yxb-yV-dMV" style="IBUITableViewCellStyleSubtitle" id="WMJ-Qj-ukO">
@@ -54,11 +54,11 @@
                                     <outlet property="delegate" destination="vXZ-lx-hvc" id="qIK-Jt-Jcq"/>
                                 </connections>
                             </tableView>
-                            <scrollView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" showsVerticalScrollIndicator="NO" translatesAutoresizingMaskIntoConstraints="NO" id="JgN-zL-pjo">
-                                <rect key="frame" x="16" y="72" width="568" height="110"/>
+                            <scrollView autoresizesSubviews="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" ambiguous="YES" showsVerticalScrollIndicator="NO" translatesAutoresizingMaskIntoConstraints="NO" id="JgN-zL-pjo">
+                                <rect key="frame" x="16" y="72" width="568" height="129"/>
                                 <subviews>
-                                    <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="S84-Og-gol" userLabel="vehicleHeaderView">
-                                        <rect key="frame" x="134" y="0.0" width="300" height="110"/>
+                                    <view hidden="YES" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="S84-Og-gol" userLabel="vehicleHeaderView">
+                                        <rect key="frame" x="134" y="0.0" width="300" height="129"/>
                                         <subviews>
                                             <label opaque="NO" userInteractionEnabled="NO" tag="1" contentMode="center" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Line 1" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="KYc-66-N5F" userLabel="lineLabel">
                                                 <rect key="frame" x="0.0" y="20" width="300" height="20"/>
@@ -72,8 +72,11 @@
                                                 <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
                                                 <nil key="highlightedColor"/>
                                             </label>
-                                            <label opaque="NO" userInteractionEnabled="NO" tag="3" contentMode="center" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="5 meters" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="cPD-3g-MiA" userLabel="vehicleDistanceLabel">
-                                                <rect key="frame" x="0.0" y="73" width="300" height="17"/>
+                                            <label opaque="NO" userInteractionEnabled="NO" tag="3" contentMode="center" horizontalHuggingPriority="251" verticalHuggingPriority="251" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="2" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="cPD-3g-MiA" userLabel="vehicleDistanceLabel">
+                                                <rect key="frame" x="0.0" y="73" width="300" height="36"/>
+                                                <string key="text">5 meters
+a
+ </string>
                                                 <fontDescription key="fontDescription" style="UICTFontTextStyleSubhead"/>
                                                 <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
                                                 <nil key="highlightedColor"/>
@@ -82,14 +85,15 @@
                                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                         <constraints>
                                             <constraint firstItem="cPD-3g-MiA" firstAttribute="leading" secondItem="S84-Og-gol" secondAttribute="leading" id="5Vt-zm-sda"/>
+                                            <constraint firstItem="KtV-DO-Apc" firstAttribute="leading" secondItem="S84-Og-gol" secondAttribute="leading" id="Cod-DQ-yc9"/>
                                             <constraint firstAttribute="width" relation="greaterThanOrEqual" constant="200" id="Pzw-g5-127"/>
-                                            <constraint firstItem="KtV-DO-Apc" firstAttribute="leading" secondItem="S84-Og-gol" secondAttribute="leading" id="SkH-7n-yVV"/>
-                                            <constraint firstAttribute="height" constant="110" id="ULk-jT-g12"/>
                                             <constraint firstItem="cPD-3g-MiA" firstAttribute="top" secondItem="KtV-DO-Apc" secondAttribute="bottom" constant="8" id="VMN-f7-HGO"/>
                                             <constraint firstItem="KYc-66-N5F" firstAttribute="leading" secondItem="S84-Og-gol" secondAttribute="leading" id="Wev-df-ykd"/>
-                                            <constraint firstAttribute="trailing" secondItem="cPD-3g-MiA" secondAttribute="trailing" id="e2a-my-8QI"/>
+                                            <constraint firstAttribute="height" constant="129" id="Yoo-Fu-tfh"/>
+                                            <constraint firstAttribute="bottom" secondItem="cPD-3g-MiA" secondAttribute="bottom" constant="20" id="cf6-J4-33P"/>
                                             <constraint firstItem="KYc-66-N5F" firstAttribute="top" secondItem="S84-Og-gol" secondAttribute="top" constant="20" id="f2m-qL-h9H"/>
                                             <constraint firstAttribute="trailing" secondItem="KYc-66-N5F" secondAttribute="trailing" id="fE9-9l-yfc"/>
+                                            <constraint firstAttribute="trailing" secondItem="cPD-3g-MiA" secondAttribute="trailing" id="h3m-W5-uCs"/>
                                             <constraint firstItem="KtV-DO-Apc" firstAttribute="top" secondItem="KYc-66-N5F" secondAttribute="bottom" constant="8" id="wct-yM-eob"/>
                                             <constraint firstAttribute="trailing" secondItem="KtV-DO-Apc" secondAttribute="trailing" id="y3g-O9-5UE"/>
                                         </constraints>
@@ -97,12 +101,10 @@
                                 </subviews>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                 <constraints>
-                                    <constraint firstAttribute="trailing" secondItem="S84-Og-gol" secondAttribute="trailing" constant="1334" id="4Sk-OE-ciw"/>
                                     <constraint firstItem="S84-Og-gol" firstAttribute="top" secondItem="JgN-zL-pjo" secondAttribute="top" id="5GA-W3-ubd"/>
                                     <constraint firstAttribute="centerX" secondItem="S84-Og-gol" secondAttribute="centerX" id="7aj-qU-RHF"/>
-                                    <constraint firstAttribute="height" constant="110" id="CCO-fK-X7j"/>
-                                    <constraint firstAttribute="bottom" secondItem="S84-Og-gol" secondAttribute="bottom" id="Hvo-Y4-s8t"/>
-                                    <constraint firstAttribute="bottom" secondItem="S84-Og-gol" secondAttribute="bottom" id="VRi-iH-w5a"/>
+                                    <constraint firstAttribute="trailing" secondItem="S84-Og-gol" secondAttribute="trailing" constant="1134" id="QKf-84-kLb"/>
+                                    <constraint firstItem="S84-Og-gol" firstAttribute="height" secondItem="JgN-zL-pjo" secondAttribute="height" id="sGs-FY-wob"/>
                                 </constraints>
                                 <connections>
                                     <outlet property="delegate" destination="vXZ-lx-hvc" id="ZgP-tD-dMU"/>
