@@ -12,7 +12,8 @@ import SwiftyJSON
 
 class Vehicles {
   var vehicles = [VehicleActivity]()
-
+  let maxVehiclesToRead = 500
+  
   var count: Int {
     return vehicles.count
   }
@@ -28,7 +29,7 @@ class Vehicles {
       if var v = VehicleActivity(fromJSON: monVeh) {
         vehicles.append(v)
         ++vehicleCount
-        if vehicleCount >= 100 {
+        if vehicleCount >= maxVehiclesToRead {
           break
         }
       }
