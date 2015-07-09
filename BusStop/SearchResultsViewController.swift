@@ -9,6 +9,7 @@
 import UIKit
 import SwiftyJSON
 import CoreLocation
+import CircleProgressView
 
 struct WeakContainer<T where T: AnyObject> {
   weak var value : T?
@@ -26,11 +27,12 @@ struct WeakContainer<T where T: AnyObject> {
 class SearchResultsViewController: UIViewController {
   
   // MARK: - outlets
-  @IBOutlet var vehicleTableView: UITableView!
+  @IBOutlet weak var vehicleTableView: UITableView!
   @IBOutlet weak var refreshToggle: UIBarButtonItem!
   
   @IBOutlet weak var scrollView: UIScrollView!
   @IBOutlet weak var vehicleHeaderView: UIView!
+  @IBOutlet weak var progressView: CircleProgressView!
 
   // MARK: - properties
   var vehicleHeaderViews = Array<WeakContainer<UIView>>()
@@ -80,8 +82,10 @@ class SearchResultsViewController: UIViewController {
       }
       func didReceiveAPIResults(results: JSON) {
         dispatch_async(dispatch_get_main_queue(), {
+          self.ref.progressView.progress = 0.6
           if results["status"] == "success" {
             self.ref.vehicles = Vehicles(fromJSON: results["body"])
+            self.ref.progressView.progress = 0.9
             if let userLoc = self.ref.userLoc where self.ref.closestVehicles.count > 0 {
               for var i = 0; i < self.ref.maxVehicleCount; ++i {
                 if i < self.ref.closestVehicles.count {
@@ -102,6 +106,9 @@ class SearchResultsViewController: UIViewController {
               self.ref.vehicleHeaderViews[0].value?.hidden = false
             }
             self.ref.vehicleTableView!.reloadData()
+            UIView.transitionWithView(self.ref.progressView,
+              duration: 1, options: UIViewAnimationOptions.TransitionCrossDissolve,
+              animations: {self.ref.progressView.alpha = 0}, completion: {(finished) in self.ref.progressView.hidden = true})
           } else {
             let errorTitle = results["data"]["title"] ?? "unknown error"
             let errorMessage = results["data"]["message"] ?? "unknown details"
@@ -121,9 +128,13 @@ class SearchResultsViewController: UIViewController {
       }
       func didReceiveAPIResults(results: JSON) {
         dispatch_async(dispatch_get_main_queue(), {
+          self.ref.progressView.progress = 0.2
           if results["status"] == "success" {
             self.ref.stops = Stop.StopsFromJSON(results["body"])
+            self.ref.progressView.progress = 0.3
+            self.ref.api.getVehicleActivities()
           } else {
+            self.ref.progressView.hidden = true
             let errorTitle = results["data"]["title"] ?? "unknown error"
             let errorMessage = results["data"]["message"] ?? "unknown details"
             let alertController = UIAlertController(title: "Network error", message:
@@ -133,7 +144,6 @@ class SearchResultsViewController: UIViewController {
           }
           
           // Load initial vehicle data after stops have been read
-          self.ref.doLoadVehicleData()
         })
       }
     }
@@ -207,41 +217,31 @@ class SearchResultsViewController: UIViewController {
     }
     
     initAutoRefreshTimer()
+    println("Intial refresh")
+    refreshData()
   }
   
   override func didReceiveMemoryWarning() {
     super.didReceiveMemoryWarning()
     // Dispose of any resources that can be recreated.
   }
-  
   // MARK: - actions
   @IBAction func refreshToggled(sender: AnyObject) {
     if let toggle = refreshToggle.customView as? UISwitch {
       autoRefresh = toggle.on
-      if autoRefresh {
-        initAutoRefreshTimer()
-        println("Refresh enabled")
-      } else {
-        println("Refresh disabled")
-        autoRefreshTimer?.invalidate()
-      }
+      initAutoRefreshTimer()
     }
   }
 
-  @IBAction func inputFieldChanged(sender: AnyObject) {
-    doLoadVehicleData()
-  }
-  
   // MARK: - utility functions
   private func initAutoRefreshTimer() {
     autoRefreshTimer?.invalidate()
     if autoRefresh {
       autoRefreshTimer = NSTimer.scheduledTimerWithTimeInterval(10, target: self, selector: "timedRefreshRequested:", userInfo: nil, repeats: true)
       //      autoRefreshTimer?.tolerance =
-      autoRefreshTimer?.fire()
+      println("Refresh enabled")
     } else {
-      println("Intial reload")
-      api.getStops()
+      println("Refresh disabled")
     }
   }
   
@@ -262,14 +262,19 @@ class SearchResultsViewController: UIViewController {
   }
   
   
-  func doLoadVehicleData() {
-    var lineId = 1
-    api.getVehicleActivities()
+  func refreshData() {
+    progressView.progress = 0
+    progressView.alpha = 0
+    progressView.hidden = false
+    UIView.transitionWithView(progressView,
+      duration: 0.2, options: UIViewAnimationOptions.TransitionCrossDissolve,
+      animations: {self.progressView.alpha = 1}, completion: nil)
+    println("Refresh requested1")
+    api.getStops()
   }
   
   func timedRefreshRequested(timer: NSTimer) {
-    println("Refresh requested1")
-    api.getStops()
+    refreshData()
   }
   
 }
@@ -278,11 +283,7 @@ class SearchResultsViewController: UIViewController {
 extension SearchResultsViewController: UITableViewDataSource {
   
   func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-    if closestVehicle != nil {
-      return closestVehicle!.stops.count
-    } else {
-      return 0
-    }
+    return closestVehicle?.stops.count ?? 0
   }
   
   func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
