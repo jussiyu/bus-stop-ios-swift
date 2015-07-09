@@ -34,9 +34,8 @@ class APIController {
 
   private func doGetOnPath(urlPath: String, delegate: APIControllerProtocol) {
     let url = NSURL(string: urlPath)
-    let session = NSURLSession.sharedSession()
     UIApplication.sharedApplication().networkActivityIndicatorVisible = true
-    let task = session.dataTaskWithURL(url!, completionHandler: {data, response, urlError -> Void in
+    let task = NSURLSession.sharedSession().dataTaskWithURL(url!, completionHandler: {data, response, urlError -> Void in
       UIApplication.sharedApplication().networkActivityIndicatorVisible = false
       if(urlError != nil) {
         // If there is an error in the web request, print it to the console
