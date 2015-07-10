@@ -9,7 +9,7 @@
 import UIKit
 import SwiftyJSON
 import CoreLocation
-import CircleProgressView
+import MediumProgressView
 
 struct WeakContainer<T where T: AnyObject> {
   weak var value : T?
@@ -32,8 +32,9 @@ class SearchResultsViewController: UIViewController {
   
   @IBOutlet weak var scrollView: UIScrollView!
   @IBOutlet weak var vehicleHeaderView: UIView!
-  @IBOutlet weak var progressView: CircleProgressView!
 
+  var progressViewManager = MediumProgressViewManager.sharedInstance
+  
   // MARK: - properties
   var vehicleHeaderViews = Array<WeakContainer<UIView>>()
   var scrollViewPageWidth: CGFloat = 200 + 20
@@ -81,10 +82,8 @@ class SearchResultsViewController: UIViewController {
         self.ref = ref
       }
       func didReceiveAPIResults(results: JSON) {
-        self.ref.updateProgress(0.6)
         if results["status"] == "success" {
           self.ref.vehicles = Vehicles(fromJSON: results["body"])
-          self.ref.updateProgress(0.8)
           dispatch_async(dispatch_get_main_queue(), {
             if let userLoc = self.ref.userLoc where self.ref.closestVehicles.count > 0 {
               for var i = 0; i < self.ref.maxVehicleCount; ++i {
@@ -106,22 +105,17 @@ class SearchResultsViewController: UIViewController {
               self.ref.vehicleHeaderViews[0].value?.hidden = false
             }
             self.ref.vehicleTableView!.reloadData()
-            self.ref.updateProgress(1)
-            UIView.transitionWithView(self.ref.progressView,
-              duration: 0.2, options: UIViewAnimationOptions.TransitionCrossDissolve,
-              animations: {self.ref.progressView.alpha = 0}, completion: {(finished) in self.ref.progressView.hidden = true})
+            self.ref.progressViewManager.hideProgress()
           })
-        } else {
+        } else { // status != success
           dispatch_async(dispatch_get_main_queue(), {
-            UIView.transitionWithView(self.ref.progressView,
-              duration: 0.2, options: UIViewAnimationOptions.TransitionCrossDissolve,
-              animations: {self.ref.progressView.alpha = 0}, completion: {(finished) in self.ref.progressView.hidden = true})
             let errorTitle = results["data"]["title"] ?? "unknown error"
             let errorMessage = results["data"]["message"] ?? "unknown details"
             let alertController = UIAlertController(title: "Network error", message:
               "Failed to read data from network. The detailed error was:\n \"\(errorTitle): \(errorMessage)\"", preferredStyle: UIAlertControllerStyle.Alert)
             alertController.addAction(UIAlertAction(title: "Dismiss", style: UIAlertActionStyle.Default, handler: nil))
             self.ref.presentViewController(alertController, animated: true, completion: nil)
+            self.ref.progressViewManager.hideProgress()
           })
         }
       }
@@ -133,24 +127,19 @@ class SearchResultsViewController: UIViewController {
         self.ref = ref
       }
       func didReceiveAPIResults(results: JSON) {
-        self.ref.updateProgress(0.3)
         if results["status"] == "success" {
           self.ref.stops = Stop.StopsFromJSON(results["body"])
-          self.ref.updateProgress(0.4)
           // Load initial vehicle data after stops have been read
           self.ref.api.getVehicleActivities()
         } else {
           dispatch_async(dispatch_get_main_queue(), {
-            UIView.transitionWithView(self.ref.progressView,
-              duration: 0.2, options: UIViewAnimationOptions.TransitionCrossDissolve,
-              animations: {self.ref.progressView.alpha = 0}, completion: {(finished) in self.ref.progressView.hidden = true})
-            self.ref.progressView.hidden = true
             let errorTitle = results["data"]["title"] ?? "unknown error"
             let errorMessage = results["data"]["message"] ?? "unknown details"
             let alertController = UIAlertController(title: "Network error", message:
               "Failed to read data from network. The detailed error was:\n \"\(errorTitle): \(errorMessage)\"", preferredStyle: UIAlertControllerStyle.Alert)
             alertController.addAction(UIAlertAction(title: "Dismiss", style: UIAlertActionStyle.Default, handler: nil))
             self.ref.presentViewController(alertController, animated: true, completion: nil)
+            self.ref.progressViewManager.hideProgress()
           })
         }
       }
@@ -162,16 +151,16 @@ class SearchResultsViewController: UIViewController {
   // MARK: - lifecycle
   override func viewDidLayoutSubviews() {
     
-    // debugging
-    var i = 0
-    for c in vehicleHeaderViews {
-      if let v = c.value {
-        println("v\(i) frame: \(v.frame)")
-        println("v\(i) bounds: \(v.bounds)")
-        println("v\(i) center: \(v.center)")
-      }
-      ++i
-    }
+//    // debugging
+//    var i = 0
+//    for c in vehicleHeaderViews {
+//      if let v = c.value {
+//        println("v\(i) frame: \(v.frame)")
+//        println("v\(i) bounds: \(v.bounds)")
+//        println("v\(i) center: \(v.center)")
+//      }
+//      ++i
+//    }
 
     // update scrollview content width based on the location of the last subview and margins
     if let last = vehicleHeaderViews.last?.value, first = vehicleHeaderViews.first?.value {
@@ -221,6 +210,13 @@ class SearchResultsViewController: UIViewController {
     if let toggle = refreshToggle.customView as? UISwitch {
       autoRefresh = toggle.on
     }
+
+    progressViewManager.position = .Top // Default is top.
+//    progressViewManager.color    = .Red
+    // Default is UIColor(red:0.33, green:0.83, blue:0.44, alpha:1).
+    progressViewManager.height   = 4.0 // Default is 4.0.
+//    progressViewManager.isLeft   = true // Default is true.
+    progressViewManager.duration = 1.0  // Default is 1.2.
     
     initAutoRefreshTimer()
     println("Intial refresh")
@@ -243,24 +239,17 @@ class SearchResultsViewController: UIViewController {
   @IBAction func refreshToggled(sender: AnyObject) {
     if let toggle = refreshToggle.customView as? UISwitch {
       autoRefresh = toggle.on
-      initAutoRefreshTimer()
+      initAutoRefreshTimer(andFire: true)
     }
   }
 
   // MARK: - utility functions
   
-  func updateProgress(progress: Double) {
-    if NSThread.isMainThread() {
-      progressView.progress = progress
-    } else {
-      dispatch_async(dispatch_get_main_queue()) {self.progressView.progress = progress}
-    }
-  }
-  
-  private func initAutoRefreshTimer() {
+  private func initAutoRefreshTimer(andFire: Bool = false) {
     autoRefreshTimer?.invalidate()
     if autoRefresh {
       autoRefreshTimer = NSTimer.scheduledTimerWithTimeInterval(10, target: self, selector: "timedRefreshRequested:", userInfo: nil, repeats: true)
+      if andFire {autoRefreshTimer?.fire()}
       autoRefreshTimer?.tolerance = 2
       println("Refresh enabled")
     } else {
@@ -286,12 +275,7 @@ class SearchResultsViewController: UIViewController {
   
   
   func refreshVehicles() {
-    updateProgress(0.1)
-    progressView.alpha = 0
-    progressView.hidden = false
-    UIView.transitionWithView(progressView,
-      duration: 0.2, options: UIViewAnimationOptions.TransitionCrossDissolve,
-      animations: {self.progressView.alpha = 1}, completion: nil)
+    progressViewManager.showProgress()
     println("Refresh requested1")
     if stops.count == 0 {
       api.getStops()

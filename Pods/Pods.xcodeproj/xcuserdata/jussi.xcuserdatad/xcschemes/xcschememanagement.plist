@@ -4,17 +4,12 @@
 <dict>
 	<key>SchemeUserState</key>
 	<dict>
-		<key>Pods-BusStop-CircleProgressView.xcscheme</key>
+		<key>Pods-BusStop-MediumProgressView.xcscheme</key>
 		<dict>
 			<key>isShown</key>
 			<false/>
 		</dict>
 		<key>Pods-BusStop-SwiftyJSON.xcscheme</key>
-		<dict>
-			<key>isShown</key>
-			<false/>
-		</dict>
-		<key>Pods-BusStop-TaskQueue.xcscheme</key>
 		<dict>
 			<key>isShown</key>
 			<false/>
@@ -37,32 +32,27 @@
 	</dict>
 	<key>SuppressBuildableAutocreation</key>
 	<dict>
-		<key>1CC318C08C508E631F5ADC2A</key>
+		<key>46984DD84D02384F9A3B5B22</key>
 		<dict>
 			<key>primary</key>
 			<true/>
 		</dict>
-		<key>4B0667881CFA7004E9C211C6</key>
+		<key>7CECBB7F0452627AC8343E16</key>
 		<dict>
 			<key>primary</key>
 			<true/>
 		</dict>
-		<key>553C5074555DECA5A87C3226</key>
+		<key>B9C81519A3D2C275392F4677</key>
 		<dict>
 			<key>primary</key>
 			<true/>
 		</dict>
-		<key>B88DA9079F4636CD8FB33F8A</key>
+		<key>CB968ADDB4A0089367BE9267</key>
 		<dict>
 			<key>primary</key>
 			<true/>
 		</dict>
-		<key>C9E5329D5E2D632E95FE891C</key>
-		<dict>
-			<key>primary</key>
-			<true/>
-		</dict>
-		<key>F6317C76252AB124FAC1464C</key>
+		<key>D6F81BAD77631867DD18779C</key>
 		<dict>
 			<key>primary</key>
 			<true/>

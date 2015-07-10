@@ -1,16 +1,13 @@
 PODS:
-  - CircleProgressView (1.0.5)
+  - MediumProgressView (1.0.5)
   - SwiftyJSON (2.2.0)
-  - TaskQueue (0.9.6)
 
 DEPENDENCIES:
-  - CircleProgressView (~> 1.0)
+  - MediumProgressView (~> 1.0)
   - SwiftyJSON (~> 2.2)
-  - TaskQueue (~> 0.9)
 
 SPEC CHECKSUMS:
-  CircleProgressView: e4f48c4a8f38b02245080041aeb2b2eb0e866b7f
+  MediumProgressView: ad8eef246266cd99574811f3a50e45de7ab90352
   SwiftyJSON: 0b3e6c07af17ff745e77e8e9984097b55c956e5c
-  TaskQueue: 86cea1f6cb37b77a85bd826b564e9b387faadce4
 
 COCOAPODS: 0.37.2

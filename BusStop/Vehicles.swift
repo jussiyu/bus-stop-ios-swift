@@ -34,7 +34,7 @@ class Vehicles {
         }
       }
     }
-    //    println("Vehicles read: \(vehicles.count)")
+        println("Vehicles read: \(vehicles.count)")
   }
  
   func getFirstVehicle() -> VehicleActivity? {
