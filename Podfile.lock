@@ -1,13 +1,22 @@
 PODS:
-  - MediumProgressView (1.0.5)
+  - MediumProgressView (1.0.6)
   - SwiftyJSON (2.2.0)
 
 DEPENDENCIES:
-  - MediumProgressView (~> 1.0)
+  - MediumProgressView (from `file:///Users/jussi/dev/iOS/mediumprogressview/`)
   - SwiftyJSON (~> 2.2)
 
+EXTERNAL SOURCES:
+  MediumProgressView:
+    :git: file:///Users/jussi/dev/iOS/mediumprogressview/
+
+CHECKOUT OPTIONS:
+  MediumProgressView:
+    :commit: 90355f260172301fa2e6caf55760896794da6d5c
+    :git: file:///Users/jussi/dev/iOS/mediumprogressview/
+
 SPEC CHECKSUMS:
-  MediumProgressView: ad8eef246266cd99574811f3a50e45de7ab90352
+  MediumProgressView: 96911061f6f1843ca7512fd4a7950c6c5d1dc543
   SwiftyJSON: 0b3e6c07af17ff745e77e8e9984097b55c956e5c
 
 COCOAPODS: 0.37.2

@@ -10,7 +10,7 @@
 #define COCOAPODS_POD_AVAILABLE_MediumProgressView
 #define COCOAPODS_VERSION_MAJOR_MediumProgressView 1
 #define COCOAPODS_VERSION_MINOR_MediumProgressView 0
-#define COCOAPODS_VERSION_PATCH_MediumProgressView 5
+#define COCOAPODS_VERSION_PATCH_MediumProgressView 6
 
 // SwiftyJSON
 #define COCOAPODS_POD_AVAILABLE_SwiftyJSON
