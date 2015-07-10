@@ -9,6 +9,11 @@
 			<key>isShown</key>
 			<false/>
 		</dict>
+		<key>Pods-BusStop-ReachabilitySwift.xcscheme</key>
+		<dict>
+			<key>isShown</key>
+			<false/>
+		</dict>
 		<key>Pods-BusStop-SwiftyJSON.xcscheme</key>
 		<dict>
 			<key>isShown</key>
@@ -32,27 +37,32 @@
 	</dict>
 	<key>SuppressBuildableAutocreation</key>
 	<dict>
-		<key>07F95D110D2AB508761596BF</key>
+		<key>352BE8E9F51F3E09571CC132</key>
 		<dict>
 			<key>primary</key>
 			<true/>
 		</dict>
-		<key>4C4ADA4F94E763DC86E4EAB8</key>
+		<key>48C45AE82826F3D4CE05754F</key>
 		<dict>
 			<key>primary</key>
 			<true/>
 		</dict>
-		<key>82D04C16178D7413A54420EB</key>
+		<key>58146F4C1228440B0A671355</key>
 		<dict>
 			<key>primary</key>
 			<true/>
 		</dict>
-		<key>9B383AE2667F869125B1B076</key>
+		<key>7B91EFC3CB70546EA466FAD7</key>
 		<dict>
 			<key>primary</key>
 			<true/>
 		</dict>
-		<key>C7EEB65F0EB7182A0A7459AC</key>
+		<key>ADDD88BAA073519359493596</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>FCE3F2628B38B9107EEAD3A5</key>
 		<dict>
 			<key>primary</key>
 			<true/>

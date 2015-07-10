@@ -5,6 +5,7 @@ use_frameworks!
 target 'BusStop' do
   pod 'SwiftyJSON', '~> 2.2'
   pod 'MediumProgressView', :git => 'file:///Users/jussi/dev/iOS/mediumprogressview/'
+  pod 'ReachabilitySwift', '~> 1.1'
 end
 
 target 'BusStopTests' do

@@ -10,6 +10,7 @@ import UIKit
 import SwiftyJSON
 import CoreLocation
 import MediumProgressView
+import ReachabilitySwift
 
 struct WeakContainer<T where T: AnyObject> {
   weak var value : T?
@@ -33,7 +34,8 @@ class SearchResultsViewController: UIViewController {
   @IBOutlet weak var scrollView: UIScrollView!
   @IBOutlet weak var vehicleHeaderView: UIView!
 
-  var progressViewManager = MediumProgressViewManager.sharedInstance
+  let progressViewManager = MediumProgressViewManager.sharedInstance
+  let reachability = Reachability.reachabilityForInternetConnection()
   
   // MARK: - properties
   var vehicleHeaderViews = Array<WeakContainer<UIView>>()
@@ -119,6 +121,10 @@ class SearchResultsViewController: UIViewController {
           })
         }
       }
+      
+      func didReceiveError(urlerror: NSError) {
+        self.ref.progressViewManager.hideProgress()
+      }
     }
     
     class StopsDelegate: APIControllerProtocol {
@@ -142,6 +148,10 @@ class SearchResultsViewController: UIViewController {
             self.ref.progressViewManager.hideProgress()
           })
         }
+      }
+
+      func didReceiveError(urlerror: NSError) {
+        self.ref.progressViewManager.hideProgress()
       }
     }
     
@@ -183,9 +193,15 @@ class SearchResultsViewController: UIViewController {
     }
   }
   
+  override func viewDidAppear(animated: Bool) {
+    println("Initial refresh")
+    refreshVehicles()
+  }
+  
   override func viewDidLoad() {
     super.viewDidLoad()
     
+    // vehicle header scrollview
     scrollView.decelerationRate = UIScrollViewDecelerationRateFast
     //    scrollView.setTranslatesAutoresizingMaskIntoConstraints(false)
     
@@ -204,23 +220,22 @@ class SearchResultsViewController: UIViewController {
       let topConstraint = NSLayoutConstraint(item: nextVehicleHeaderView, attribute: .Top, relatedBy: .Equal, toItem: nextVehicleHeaderView.superview, attribute: NSLayoutAttribute.Top, multiplier: 1, constant: 0)
       topConstraint.active = true
     }
-    
     println("scrollView bounds: \(scrollView.bounds), frame: \(scrollView.frame), contentsize: \(scrollView.contentSize)")
 
-    if let toggle = refreshToggle.customView as? UISwitch {
-      autoRefresh = toggle.on
-    }
+    // Autorefresh
+    autoRefresh = (refreshToggle.customView as! UISwitch).on
 
-    progressViewManager.position = .Top // Default is top.
-//    progressViewManager.color    = .Red
-    // Default is UIColor(red:0.33, green:0.83, blue:0.44, alpha:1).
-    progressViewManager.height   = 4.0 // Default is 4.0.
-//    progressViewManager.isLeft   = true // Default is true.
-    progressViewManager.duration = 1.0  // Default is 1.2.
-    
+    // Reachability
+    reachability.whenReachable = { reachability in
+      println("Now reachable")
+      if self.stops.count == 0 {
+        // Do successful refresh done earlier
+        self.refreshVehicles()
+      }
+    }
+    reachability.startNotifier()
+
     initAutoRefreshTimer()
-    println("Intial refresh")
-    refreshVehicles()
   }
 
   override func viewWillAppear(animated: Bool) {
@@ -235,6 +250,8 @@ class SearchResultsViewController: UIViewController {
     super.didReceiveMemoryWarning()
     // Dispose of any resources that can be recreated.
   }
+
+  
   // MARK: - actions
   @IBAction func refreshToggled(sender: AnyObject) {
     if let toggle = refreshToggle.customView as? UISwitch {
@@ -274,14 +291,32 @@ class SearchResultsViewController: UIViewController {
   }
   
   
-  func refreshVehicles() {
+  private func refreshVehicles() {
+    println("RefreshVehicles")
     progressViewManager.showProgress()
-    println("Refresh requested1")
-    if stops.count == 0 {
-      api.getStops()
+    
+    if reachability.isReachable() {
+      if reachability.isReachableViaWiFi() {
+        println("Reachable via WiFi")
+      } else {
+        println("Reachable via Cellular")
+      }
+      if stops.count == 0 {
+        api.getStops()
+      } else {
+        api.getVehicleActivities()
+      }
     } else {
-      api.getVehicleActivities()
+      println("Not reachable")
+      progressViewManager.hideProgress()
+      
+      // Disable autorefresh
+      (refreshToggle.customView as! UISwitch).on = false
+      let alert = UIAlertController(title: NSLocalizedString("Cannot connect to network", comment:""), message: NSLocalizedString("Please check that you have network connection.", comment: ""), preferredStyle: UIAlertControllerStyle.Alert)
+      alert.addAction(UIAlertAction(title: NSLocalizedString("OK", comment: ""), style: UIAlertActionStyle.Default, handler: nil))
+      presentViewController(alert, animated: true, completion: nil)
     }
+
   }
   
   func timedRefreshRequested(timer: NSTimer) {
@@ -319,16 +354,6 @@ extension SearchResultsViewController: UITableViewDataSource {
 // MARK: - UITableViewDelegate
 extension SearchResultsViewController: UITableViewDelegate {
   func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
-    //    // Get the row data for the selected row
-    //    if let rowData = self.vehicleData[indexPath.row] as? NSDictionary,
-    //      // Get the name of the track for this row
-    //      name = rowData["trackName"] as? String,
-    //      // Get the price of the track on this row
-    //      formattedPrice = rowData["formattedPrice"] as? String {
-    //        let alert = UIAlertController(title: name, message: formattedPrice, preferredStyle: .Alert)
-    //        alert.addAction(UIAlertAction(title: "Ok", style: .Default, handler: nil))
-    //        self.presentViewController(alert, animated: true, completion: nil)
-    //    }
   }
 }
 
@@ -358,18 +383,6 @@ extension SearchResultsViewController: UIPickerViewDataSource {
   }
 }
 
-//
-////MARK: - APIControllerProtocol
-//extension SearchResultsViewController: APIControllerProtocol {
-//  func didReceiveAPIResults(results: JSON) {
-//    dispatch_async(dispatch_get_main_queue(), {
-//      self.lineVehicles = LineVehicles(fromJSON: results["body"])
-//      self.vehicleTableView!.reloadData()
-//    })
-//  }
-//}
-//
-
 // MARK: - locationUpdate notification handler
 extension SearchResultsViewController {
   @objc func locationUpdated(notification: NSNotification){
@@ -381,6 +394,7 @@ extension SearchResultsViewController {
     }
   }
 }
+
 //             ----- -----
 // |xxxXXXXxxx|xxxXXXXxxx|xxxXXXXxxx|
 // MARK: - UIScrollViewDelegate
@@ -396,18 +410,16 @@ extension SearchResultsViewController: UIScrollViewDelegate {
     var currentOffset = CGFloat(scrollView.contentOffset.x)
     var targetOffset = CGFloat(targetContentOffset.memory.x)
     var newTargetOffset = CGFloat(0)
-    
-//    if targetOffset > currentOffset {
-      newTargetOffset = round((targetOffset) / scrollViewPageWidth) * scrollViewPageWidth
-//    } else {
-//      newTargetOffset = floor(currentOffset / scrollViewPageWidth) * scrollViewPageWidth
-//    }
+
+    // try first with the targetOffset
+    newTargetOffset = round((targetOffset) / scrollViewPageWidth) * scrollViewPageWidth
     
     if newTargetOffset < 0 {
       newTargetOffset = 0
     }
-    
+
     if velocity.x != 0 && newTargetOffset != targetOffset {
+      // take velocity into account and set targetOffset to the io/out parameter
       if velocity.x > 0 {
         newTargetOffset = ceil((targetOffset - scrollViewPageWidth / 2) / scrollViewPageWidth ) * scrollViewPageWidth
         targetContentOffset.memory.x = newTargetOffset
@@ -416,6 +428,7 @@ extension SearchResultsViewController: UIScrollViewDelegate {
         targetContentOffset.memory.x = newTargetOffset
       }
     } else {
+      // no velocity so animate manually
       scrollView.setContentOffset(CGPointMake(CGFloat(newTargetOffset), 0), animated: true)
     }
     

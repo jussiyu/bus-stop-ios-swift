@@ -1,9 +1,11 @@
 PODS:
   - MediumProgressView (1.0.6)
+  - ReachabilitySwift (1.1)
   - SwiftyJSON (2.2.0)
 
 DEPENDENCIES:
   - MediumProgressView (from `file:///Users/jussi/dev/iOS/mediumprogressview/`)
+  - ReachabilitySwift (~> 1.1)
   - SwiftyJSON (~> 2.2)
 
 EXTERNAL SOURCES:
@@ -17,6 +19,7 @@ CHECKOUT OPTIONS:
 
 SPEC CHECKSUMS:
   MediumProgressView: 96911061f6f1843ca7512fd4a7950c6c5d1dc543
+  ReachabilitySwift: 1e53abddb01111deac0d229dabdb8bb043567b18
   SwiftyJSON: 0b3e6c07af17ff745e77e8e9984097b55c956e5c
 
 COCOAPODS: 0.37.2

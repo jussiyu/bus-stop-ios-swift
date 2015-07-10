@@ -8,6 +8,7 @@
 
 import UIKit
 import CoreLocation
+import ReachabilitySwift
 
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {
@@ -30,6 +31,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     default:
       println("location auth failed: \(locStatus.hashValue)")
     }
+    
     return true
   }
 
@@ -91,7 +93,7 @@ extension AppDelegate: CLLocationManagerDelegate {
   }
   
   func locationManager(manager: CLLocationManager!, didFailWithError error: NSError!) {
-    println("didFailWithError: \(error)")
+    println("Location Manager didFailWithError: \(error)")
     if error == CLError.Denied.rawValue || error == CLError.LocationUnknown.rawValue {
       lm?.stopUpdatingLocation()
     }
