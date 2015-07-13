@@ -937,6 +937,7 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = B1B4DD0DCAE38E3D3A976F22 /* Pods-BusStop.release.xcconfig */;
 			buildSettings = {
+				CLANG_ENABLE_MODULES = YES;
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				CURRENT_PROJECT_VERSION = 1;
 				DEFINES_MODULE = YES;
@@ -1020,6 +1021,7 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = BC300FDDB04C11FDA93735BD /* Pods-BusStop.debug.xcconfig */;
 			buildSettings = {
+				CLANG_ENABLE_MODULES = YES;
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				CURRENT_PROJECT_VERSION = 1;
 				DEFINES_MODULE = YES;

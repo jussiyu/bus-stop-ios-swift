@@ -31,8 +31,8 @@ class SearchResultsViewController: UIViewController {
   @IBOutlet weak var vehicleTableView: UITableView!
   @IBOutlet weak var refreshToggle: UIBarButtonItem!
   
-  @IBOutlet weak var scrollView: UIScrollView!
-  @IBOutlet weak var vehicleHeaderView: UIView!
+  @IBOutlet weak var scrollView: HorizontalScroller!
+//  @IBOutlet weak var vehicleHeaderView: UIView!
 
   let progressViewManager = MediumProgressViewManager.sharedInstance
   let reachability = Reachability.reachabilityForInternetConnection()
@@ -210,28 +210,10 @@ class SearchResultsViewController: UIViewController {
   
   override func viewDidLoad() {
     super.viewDidLoad()
-    
-    // vehicle header scrollview
-    scrollView.decelerationRate = UIScrollViewDecelerationRateFast
-    //    scrollView.setTranslatesAutoresizingMaskIntoConstraints(false)
-    
-    vehicleHeaderViews.append(WeakContainer(vehicleHeaderView))
-    let tempArchive = NSKeyedArchiver.archivedDataWithRootObject(vehicleHeaderView)
-    for i in 1..<maxVisibleVehicleCount {
-      let nextVehicleHeaderView = NSKeyedUnarchiver.unarchiveObjectWithData(tempArchive) as! UIView
-      vehicleHeaderViews.append(WeakContainer(nextVehicleHeaderView))
-      
-      scrollView.addSubview(nextVehicleHeaderView)
-//      nextVehicleHeaderView.setTranslatesAutoresizingMaskIntoConstraints(false);
-      
-      let offsetConstraint = NSLayoutConstraint(item: nextVehicleHeaderView, attribute: .Leading, relatedBy: .Equal,
-        toItem: vehicleHeaderViews[i - 1].value, attribute: NSLayoutAttribute.Right, multiplier: 1, constant: scrollVIewContentMargin)
-      offsetConstraint.active = true
-      let topConstraint = NSLayoutConstraint(item: nextVehicleHeaderView, attribute: .Top, relatedBy: .Equal, toItem: nextVehicleHeaderView.superview, attribute: NSLayoutAttribute.Top, multiplier: 1, constant: 0)
-      topConstraint.active = true
-    }
-    println("scrollView bounds: \(scrollView.bounds), frame: \(scrollView.frame), contentsize: \(scrollView.contentSize)")
 
+    scrollView.delegate = self
+    scrollView.reload()
+    
     // Autorefresh
     autoRefresh = (refreshToggle.customView as! UISwitch).on
 
@@ -453,5 +435,18 @@ extension SearchResultsViewController: UIScrollViewDelegate {
       scrollView.setContentOffset(CGPointMake(CGFloat(newTargetOffset), 0), animated: true)
     }
     
+  }
+}
+
+extension SearchResultsViewController: HorizontalScrollerDelegate {
+  func horizontalScroller(horizontalScroller: HorizontalScroller, viewAtIndexPath indexPath: Int) -> UIView {
+//    let view = NSBundle.mainBundle().loadNibNamed("VehicleHeaderView", owner: self, options: nil).first as! UIView
+    let subView = VehicleHeaderView()
+    vehicleHeaderViews.append(WeakContainer(subView))
+    return subView
+  }
+  
+  func numberOfItemsInHorizontalScroller(horizontalScroller: HorizontalScroller) -> Int {
+    return maxVisibleVehicleCount
   }
 }
