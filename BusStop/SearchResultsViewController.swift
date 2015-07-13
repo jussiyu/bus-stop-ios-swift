@@ -388,55 +388,6 @@ extension SearchResultsViewController {
   }
 }
 
-//             ----- -----
-// |xxxXXXXxxx|xxxXXXXxxx|xxxXXXXxxx|
-// MARK: - UIScrollViewDelegate
-extension SearchResultsViewController: UIScrollViewDelegate {
-  
-  func scrollViewDidEndScrollingAnimation(scrollView: UIScrollView) {
-    let page = Double((scrollView.contentOffset.x + scrollViewPageWidth / 2) / scrollViewPageWidth)
-    scrollViewPage = page.toInt()
-    vehicleTableView.reloadData()
-    println("scroll end on page: \(scrollViewPage)")
-  }
-  
-  func scrollViewDidEndDecelerating(scrollView: UIScrollView) {
-    let page = Double((scrollView.contentOffset.x + scrollViewPageWidth / 2) / scrollViewPageWidth)
-    scrollViewPage = page.toInt()
-    vehicleTableView.reloadData()
-    println("deaccelarate end on page: \(scrollViewPage)")
-  }
-  
-  // paging for scrollview
-  func scrollViewWillEndDragging(scrollView: UIScrollView, withVelocity velocity: CGPoint, targetContentOffset: UnsafeMutablePointer<CGPoint>) {
-    
-    var currentOffset = CGFloat(scrollView.contentOffset.x)
-    var targetOffset = CGFloat(targetContentOffset.memory.x)
-    var newTargetOffset = CGFloat(0)
-
-    // try first with the targetOffset
-    newTargetOffset = round((targetOffset) / scrollViewPageWidth) * scrollViewPageWidth
-    
-    if newTargetOffset < 0 {
-      newTargetOffset = 0
-    }
-
-    if velocity.x != 0 && newTargetOffset != targetOffset {
-      // take velocity into account and set targetOffset to the io/out parameter
-      if velocity.x > 0 {
-        newTargetOffset = ceil((targetOffset - scrollViewPageWidth / 2) / scrollViewPageWidth ) * scrollViewPageWidth
-        targetContentOffset.memory.x = newTargetOffset
-      } else {
-        newTargetOffset = floor((targetOffset + scrollViewPageWidth / 2) / scrollViewPageWidth ) * scrollViewPageWidth
-        targetContentOffset.memory.x = newTargetOffset
-      }
-    } else {
-      // no velocity so animate manually
-      scrollView.setContentOffset(CGPointMake(CGFloat(newTargetOffset), 0), animated: true)
-    }
-    
-  }
-}
 
 extension SearchResultsViewController: HorizontalScrollerDelegate {
   func horizontalScroller(horizontalScroller: HorizontalScroller, viewAtIndexPath indexPath: Int) -> UIView {
@@ -448,5 +399,9 @@ extension SearchResultsViewController: HorizontalScrollerDelegate {
   
   func numberOfItemsInHorizontalScroller(horizontalScroller: HorizontalScroller) -> Int {
     return maxVisibleVehicleCount
+  }
+  
+  func horizontalScroller(horizontalScroller: HorizontalScroller, clickedAtIndex: Int) {
+    println("clickedAtIndex: \(clickedAtIndex)")
   }
 }

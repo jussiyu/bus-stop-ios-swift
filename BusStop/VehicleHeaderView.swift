@@ -18,11 +18,10 @@ class VehicleHeaderView: UIView {
   let VIEW_DIMENSIONS: CGFloat = 200
 
   convenience init() {
-//    var frame = CGRectMake(CGFloat(0), CGFloat(0), CGFloat(200), CGFloat(129))
     var frame = CGRectZero
     self.init(frame: frame)
     self.backgroundColor = UIColor.redColor()
-    let xibView = NSBundle.mainBundle().loadNibNamed("VehicleHeaderView", owner: self, options: nil).first as! UIView
+    let xibView = NSBundle.mainBundle().loadNibNamed(self.nameOfClass, owner: self, options: nil).first as! UIView
 
     xibView.setTranslatesAutoresizingMaskIntoConstraints(false)
     
