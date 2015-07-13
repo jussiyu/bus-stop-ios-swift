@@ -41,21 +41,10 @@ class SearchResultsViewController: UIViewController {
   var vehicleHeaderViews = Array<WeakContainer<UIView>>()
   var scrollViewPageWidth: CGFloat = 200 + 20
   let scrollVIewContentMargin: CGFloat = 10
+  var scrollViewPage = 0
+  
+  let maxVisibleVehicleCount = 10
   var vehicles = Vehicles()
-  let maxVehicleCount = 10
-  
-  private var stops = [String: Stop]()
-  private var userLoc: CLLocation?
-  var closestVehicle: VehicleActivity? {
-    if userLoc != nil {
-      //      println("Getting closest vehicle")
-      return vehicles.getClosestVehicle(userLoc!)
-    } else {
-      //      println("Getting first vehicle")
-      return vehicles.getFirstVehicle()
-    }
-  }
-  
   var closestVehicles: [VehicleActivity] {
     if userLoc != nil {
       //      println("Getting closest vehicle")
@@ -68,6 +57,27 @@ class SearchResultsViewController: UIViewController {
       return []
     }
   }
+  var currentVehicle: VehicleActivity? {
+    let closestVehicles = self.closestVehicles
+    if closestVehicles.count > scrollViewPage {
+      return closestVehicles[scrollViewPage]
+    } else {
+      return nil
+    }
+  }
+
+  private var stops = [String: Stop]()
+  private var userLoc: CLLocation?
+//  var closestVehicle: VehicleActivity? {
+//    if userLoc != nil {
+//      //      println("Getting closest vehicle")
+//      return vehicles.getClosestVehicle(userLoc!)
+//    } else {
+//      //      println("Getting first vehicle")
+//      return vehicles.getFirstVehicle()
+//    }
+//  }
+  
   
   var imageCache = [String:UIImage]()
   let kCellIdentifier: String = "SearchResultCell"
@@ -88,7 +98,7 @@ class SearchResultsViewController: UIViewController {
           self.ref.vehicles = Vehicles(fromJSON: results["body"])
           dispatch_async(dispatch_get_main_queue(), {
             if let userLoc = self.ref.userLoc where self.ref.closestVehicles.count > 0 {
-              for var i = 0; i < self.ref.maxVehicleCount; ++i {
+              for var i = 0; i < self.ref.maxVisibleVehicleCount; ++i {
                 if i < self.ref.closestVehicles.count {
                   self.ref.vehicleHeaderViews[i].value?.hidden = false
                   let veh = self.ref.closestVehicles[i]
@@ -207,7 +217,7 @@ class SearchResultsViewController: UIViewController {
     
     vehicleHeaderViews.append(WeakContainer(vehicleHeaderView))
     let tempArchive = NSKeyedArchiver.archivedDataWithRootObject(vehicleHeaderView)
-    for i in 1..<maxVehicleCount {
+    for i in 1..<maxVisibleVehicleCount {
       let nextVehicleHeaderView = NSKeyedUnarchiver.unarchiveObjectWithData(tempArchive) as! UIView
       vehicleHeaderViews.append(WeakContainer(nextVehicleHeaderView))
       
@@ -329,18 +339,19 @@ class SearchResultsViewController: UIViewController {
 extension SearchResultsViewController: UITableViewDataSource {
   
   func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-    return closestVehicle?.stops.count ?? 0
+    return currentVehicle?.stops.count ?? 0
   }
   
   func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
     let cell = tableView.dequeueReusableCellWithIdentifier(kCellIdentifier, forIndexPath:indexPath) as! UITableViewCell
     
-    if closestVehicle != nil {
-      if let lastPath = closestVehicle!.stops[indexPath.item].lastPathComponent, stop = stops[lastPath] {
+    let currentVehicle = self.currentVehicle
+    if currentVehicle != nil {
+      if let lastPath = currentVehicle?.stops[indexPath.item].lastPathComponent, stop = stops[lastPath] {
         cell.textLabel?.text = stop.name
         cell.detailTextLabel?.text = stop.id
       } else {
-        cell.textLabel?.text = closestVehicle!.stops[indexPath.item].lastPathComponent
+        cell.textLabel?.text = currentVehicle?.stops[indexPath.item].lastPathComponent
         cell.detailTextLabel?.text = "unknown stop"
       }
     } else {
@@ -401,7 +412,17 @@ extension SearchResultsViewController {
 extension SearchResultsViewController: UIScrollViewDelegate {
   
   func scrollViewDidEndScrollingAnimation(scrollView: UIScrollView) {
-    println("scroll end on page: \(floor((scrollView.contentOffset.x + scrollViewPageWidth / 2) / scrollViewPageWidth))")
+    let page = Double((scrollView.contentOffset.x + scrollViewPageWidth / 2) / scrollViewPageWidth)
+    scrollViewPage = page.toInt()
+    vehicleTableView.reloadData()
+    println("scroll end on page: \(scrollViewPage)")
+  }
+  
+  func scrollViewDidEndDecelerating(scrollView: UIScrollView) {
+    let page = Double((scrollView.contentOffset.x + scrollViewPageWidth / 2) / scrollViewPageWidth)
+    scrollViewPage = page.toInt()
+    vehicleTableView.reloadData()
+    println("deaccelarate end on page: \(scrollViewPage)")
   }
   
   // paging for scrollview

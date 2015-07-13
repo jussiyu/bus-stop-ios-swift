@@ -49,7 +49,10 @@ extension Double {
     }
     
   }
-  
+
+  func toInt(rounded: Bool = true) -> Int {
+    return rounded ? Int(round(self)) : Int(self)
+  }
 }
 
 func delay(delay:Double, closure:()->()) {
