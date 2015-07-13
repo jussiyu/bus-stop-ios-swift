@@ -51,7 +51,11 @@ class HorizontalScroller: UIView {
     return viewArray[index]
   }
   
-  func reload() {
+  var viewCount: Int {
+    return viewArray.count
+  }
+  
+  func reloadData() {
     if let delegate = delegate {
       viewArray = []
       
@@ -68,37 +72,45 @@ class HorizontalScroller: UIView {
 //        subView.frame.origin.x = CGFloat(xValue)
         scroller.addSubview(subView)
         subView.setTranslatesAutoresizingMaskIntoConstraints(false)
-        scroller.addConstraint(NSLayoutConstraint(item: subView, attribute: .Top, relatedBy: .Equal, toItem: scroller, attribute: .Top, multiplier: 1.0, constant: VIEW_PADDING))
+        scroller.addConstraint(NSLayoutConstraint(item: subView, attribute: .Top, relatedBy: .Equal, toItem: scroller, attribute: .Top, multiplier: 1.0, constant: 0))
         if index == 0 {
           scroller.addConstraint(NSLayoutConstraint(item: subView, attribute: .CenterX, relatedBy: .Equal, toItem: scroller, attribute: .CenterX, multiplier: 1.0, constant: 0))
-          VIEW_OFFSET = subView.frame.minX
-          xValue = VIEW_OFFSET
         } else {
           scroller.addConstraint(NSLayoutConstraint(item: subView, attribute: .Leading, relatedBy: .Equal, toItem: viewArray.last!, attribute: .Trailing, multiplier: 1.0, constant: 0))
         }
         subView.addConstraint(NSLayoutConstraint(item: subView, attribute: .Width, relatedBy: .Equal, toItem: nil, attribute: .NotAnAttribute, multiplier: 1.0, constant: VIEW_WIDTH))
         subView.addConstraint(NSLayoutConstraint(item: subView, attribute: .Height, relatedBy: .Equal, toItem: nil, attribute: .NotAnAttribute, multiplier: 1.0, constant: 129))
-        xValue += VIEW_WIDTH + VIEW_PADDING
         viewArray.append(subView)
       }
-      
+
+      // Force layout so that we can use leading padding for calculating the trailing padding
+      setNeedsLayout()
+      layoutIfNeeded()
+
       if viewArray.count > 0 {
-        scroller.addConstraint(NSLayoutConstraint(item: viewArray.last!, attribute: .Trailing, relatedBy: .Equal, toItem: scroller, attribute: .Trailing, multiplier: 1.0, constant: VIEW_OFFSET))
         scroller.addConstraint(NSLayoutConstraint(item: viewArray.last!, attribute: .Bottom, relatedBy: .Equal, toItem: scroller, attribute: .Bottom, multiplier: 1.0, constant: 0))
+        scroller.addConstraint(NSLayoutConstraint(item: viewArray.last!, attribute: .Trailing, relatedBy: .Equal, toItem: scroller, attribute: .Trailing, multiplier: 1.0, constant: -viewArray.first!.frame.minX))
       }
-      
+
       if let initialView = delegate.initialViewIndex?(self) {
-        scroller.setContentOffset(CGPoint(x: CGFloat(VIEW_OFFSET), y: 0), animated: true)
+        scroller.setContentOffset(CGPoint(x: CGFloat(viewArray.first!.frame.minX), y: 0), animated: true)
 //        scroller.setContentOffset(CGPoint(x: CGFloat(initialView)*CGFloat((VIEW_DIMENSIONS + (2 * VIEW_PADDING))), y: 0), animated: true)
       }
-      println("Scroller contentsize: \(scroller.contentSize)")
-      println("Scroller bounds: \(scroller.bounds)")
-      println("Scroller frame: \(scroller.frame)")
-//      println("contentview bounds: \(contentView.bounds)")
-//      println("contentview frame: \(contentView.frame)")
-//      println("contentview origin: \(contentView.frame.origin)")
-      println("horiz bounds: \(self.bounds)")
-      println("horiz frame: \(self.frame)")
+      
+//      setNeedsLayout()
+//      layoutIfNeeded()
+//      
+//      for i in 0..<viewCount {
+//        let subView = viewAtIndex(i)
+//        println("scroller subView \(i) bounds: \(subView.bounds)")
+//        println("scroller subView \(i) frame: \(subView.frame)")
+//      }
+//
+//      println("Scroller contentsize: \(scroller.contentSize)")
+//      println("Scroller bounds: \(scroller.bounds)")
+//      println("Scroller frame: \(scroller.frame)")
+//      println("horiz bounds: \(self.bounds)")
+//      println("horiz frame: \(self.frame)")
       
     }
   }
@@ -112,7 +124,7 @@ extension HorizontalScroller: UIScrollViewDelegate {
   func scrollViewDidEndScrollingAnimation(scrollView: UIScrollView) {
     if let scrollViewPageWidth = viewArray.first?.bounds.width {
       let page = Double((scrollView.contentOffset.x + scrollViewPageWidth / 2) / scrollViewPageWidth)
-      let scrollViewPage = page.toInt()
+      let scrollViewPage = page.toInt() - 1
       delegate?.horizontalScroller(self, clickedAtIndex: scrollViewPage)
       //    vehicleTableView.reloadData()
       println("scroll end on page: \(scrollViewPage)")
@@ -122,7 +134,7 @@ extension HorizontalScroller: UIScrollViewDelegate {
   func scrollViewDidEndDecelerating(scrollView: UIScrollView) {
     if let scrollViewPageWidth = viewArray.first?.bounds.width {
       let page = Double((scrollView.contentOffset.x + scrollViewPageWidth / 2) / scrollViewPageWidth)
-      let scrollViewPage = page.toInt()
+      let scrollViewPage = page.toInt() - 1
       //    vehicleTableView.reloadData()
       delegate?.horizontalScroller(self, clickedAtIndex: scrollViewPage)
       println("deaccelarate end on page: \(scrollViewPage)")

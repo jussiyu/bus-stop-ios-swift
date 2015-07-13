@@ -32,15 +32,11 @@ class SearchResultsViewController: UIViewController {
   @IBOutlet weak var refreshToggle: UIBarButtonItem!
   
   @IBOutlet weak var scrollView: HorizontalScroller!
-//  @IBOutlet weak var vehicleHeaderView: UIView!
 
   let progressViewManager = MediumProgressViewManager.sharedInstance
   let reachability = Reachability.reachabilityForInternetConnection()
   
   // MARK: - properties
-  var vehicleHeaderViews = Array<WeakContainer<UIView>>()
-  var scrollViewPageWidth: CGFloat = 200 + 20
-  let scrollVIewContentMargin: CGFloat = 10
   var scrollViewPage = 0
   
   let maxVisibleVehicleCount = 10
@@ -79,7 +75,6 @@ class SearchResultsViewController: UIViewController {
 //  }
   
   
-  var imageCache = [String:UIImage]()
   let kCellIdentifier: String = "SearchResultCell"
   
   var autoRefresh:Bool = false
@@ -97,28 +92,10 @@ class SearchResultsViewController: UIViewController {
         if results["status"] == "success" {
           self.ref.vehicles = Vehicles(fromJSON: results["body"])
           dispatch_async(dispatch_get_main_queue(), {
-            if let userLoc = self.ref.userLoc where self.ref.closestVehicles.count > 0 {
-              for var i = 0; i < self.ref.maxVisibleVehicleCount; ++i {
-                if i < self.ref.closestVehicles.count {
-                  self.ref.vehicleHeaderViews[i].value?.hidden = false
-                  let veh = self.ref.closestVehicles[i]
-                  self.ref.setVehicleLabelsForIndex(i,
-                    lineRef: String(format: NSLocalizedString("Line %@", comment: "Line name header"), veh.lineRef),
-                    vehicleRef: veh.formattedVehicleRef,
-                    distance: veh.distanceFromUserLocation(userLoc))
-                } else {
-                  self.ref.vehicleHeaderViews[i].value?.hidden = true
-                }
-              }
-            } else {
-              self.ref.setVehicleLabelsForIndex(0, lineRef: NSLocalizedString("no busses near you", comment: "show as vehicle label when no busses near or no user location known"),
-                  vehicleRef: "",
-                  distance: "")
-              self.ref.vehicleHeaderViews[0].value?.hidden = false
-            }
-            self.ref.vehicleTableView!.reloadData()
-            self.ref.progressViewManager.hideProgress()
+            self.ref.scrollView.reloadData()
+            self.ref.vehicleTableView.reloadData()
           })
+          dispatch_async(dispatch_get_main_queue()) {self.ref.progressViewManager.hideProgress()}
         } else { // status != success
           dispatch_async(dispatch_get_main_queue(), {
             let errorTitle = results["data"]["title"] ?? "unknown error"
@@ -133,7 +110,9 @@ class SearchResultsViewController: UIViewController {
       }
       
       func didReceiveError(urlerror: NSError) {
-        self.ref.progressViewManager.hideProgress()
+        dispatch_async(dispatch_get_main_queue(), {
+          self.ref.progressViewManager.hideProgress()
+        })
       }
     }
     
@@ -170,39 +149,8 @@ class SearchResultsViewController: UIViewController {
   
   // MARK: - lifecycle
   override func viewDidLayoutSubviews() {
-    
-//    // debugging
-//    var i = 0
-//    for c in vehicleHeaderViews {
-//      if let v = c.value {
-//        println("v\(i) frame: \(v.frame)")
-//        println("v\(i) bounds: \(v.bounds)")
-//        println("v\(i) center: \(v.center)")
-//      }
-//      ++i
-//    }
-
-    // update scrollview content width based on the location of the last subview and margins
-    if let last = vehicleHeaderViews.last?.value, first = vehicleHeaderViews.first?.value {
-      let contentWidth = last.frame.maxX
-      println("content width: \(contentWidth), \(last.frame.maxX), \(first.frame.minX)")
-      for c in scrollView.constraints() {
-        if let c = c as? NSLayoutConstraint where c.firstAttribute == .Trailing {
-          c.constant = contentWidth - first.frame.maxX + first.frame.minX
-          println("constraint constant: \(c.constant)")
-        }
-      }
-    }
-
-    // calculate the page width for the scrollview
-    if vehicleHeaderViews.count > 1 {
-      let first = vehicleHeaderViews[0].value!
-      let second = vehicleHeaderViews[1].value!
-      scrollViewPageWidth = second.center.x - first.center.x
-      println("scrollViewPageWidth: \(scrollViewPageWidth)")
-    }
   }
-  
+
   override func viewDidAppear(animated: Bool) {
     println("Initial refresh")
     refreshVehicles()
@@ -212,7 +160,7 @@ class SearchResultsViewController: UIViewController {
     super.viewDidLoad()
 
     scrollView.delegate = self
-    scrollView.reload()
+//    scrollView.reload()
     
     // Autorefresh
     autoRefresh = (refreshToggle.customView as! UISwitch).on
@@ -265,23 +213,7 @@ class SearchResultsViewController: UIViewController {
       println("Refresh disabled")
     }
   }
-  
-  private func setVehicleLabelsForIndex(index: Int, lineRef: String, vehicleRef: String, distance: String) {
-    if index < vehicleHeaderViews.count {
-      if let vehView = vehicleHeaderViews[index].value {
-        if let label = vehView.viewWithTag(1) as? UILabel {
-          label.text = lineRef
-        }
-        if let label = vehView.viewWithTag(2) as? UILabel {
-          label.text = vehicleRef
-        }
-        if let label = vehView.viewWithTag(3) as? UILabel {
-          label.text = distance.stringByReplacingOccurrencesOfString("\\n", withString: "\n", options: nil)
-        }
-      }
-    }
-  }
-  
+
   
   private func refreshVehicles() {
     println("RefreshVehicles")
@@ -392,16 +324,39 @@ extension SearchResultsViewController {
 extension SearchResultsViewController: HorizontalScrollerDelegate {
   func horizontalScroller(horizontalScroller: HorizontalScroller, viewAtIndexPath indexPath: Int) -> UIView {
 //    let view = NSBundle.mainBundle().loadNibNamed("VehicleHeaderView", owner: self, options: nil).first as! UIView
-    let subView = VehicleHeaderView()
-    vehicleHeaderViews.append(WeakContainer(subView))
-    return subView
+    let closestVehicles = self.closestVehicles
+    var subView: UIView = UIView()
+    if let userLoc = userLoc where closestVehicles.count > indexPath {
+//      subView.hidden = false
+      let veh = closestVehicles[indexPath]
+      subView = VehicleHeaderView(
+        lineRef: String(format: NSLocalizedString("Line %@", comment: "Line name header"), veh.lineRef),
+        vehicleRef: veh.formattedVehicleRef,
+        distance: veh.distanceFromUserLocation(userLoc))
+    } else {
+      subView = UIView()
+    }
+    
+    println("subView at index \(indexPath): \(subView)")
+    return subView  //TODO: return optional
+//      } else {
+//        self.ref.setVehicleLabelsForIndex(0, lineRef: NSLocalizedString("no busses near you", comment: "show as vehicle label when no busses near or no user location known"),
+//          vehicleRef: "",
+//          distance: "")
+//        self.ref.vehicleHeaderViews[0].value?.hidden = false
+//      }
+//
   }
-  
+
   func numberOfItemsInHorizontalScroller(horizontalScroller: HorizontalScroller) -> Int {
-    return maxVisibleVehicleCount
+    let count = min(maxVisibleVehicleCount, vehicles.count)
+    println("numberOfItemsInHorizontalScroller: \(count)")
+    return count
   }
   
   func horizontalScroller(horizontalScroller: HorizontalScroller, clickedAtIndex: Int) {
     println("clickedAtIndex: \(clickedAtIndex)")
+    scrollViewPage = clickedAtIndex
+    vehicleTableView.reloadData()
   }
 }

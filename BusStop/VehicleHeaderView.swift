@@ -17,12 +17,16 @@ class VehicleHeaderView: UIView {
 
   let VIEW_DIMENSIONS: CGFloat = 200
 
-  convenience init() {
+  convenience init(lineRef: String, vehicleRef: String, distance: String) {
     var frame = CGRectZero
     self.init(frame: frame)
     self.backgroundColor = UIColor.redColor()
     let xibView = NSBundle.mainBundle().loadNibNamed(self.nameOfClass, owner: self, options: nil).first as! UIView
-
+    
+    lineLabel.text = lineRef
+    vehicleLabel.text = vehicleRef
+    vehicleDistanceLabel.text = distance.stringByReplacingOccurrencesOfString("\\n", withString: "\n", options: nil)
+    
     xibView.setTranslatesAutoresizingMaskIntoConstraints(false)
     
     addSubview(xibView)
@@ -38,5 +42,16 @@ class VehicleHeaderView: UIView {
   
   required init(coder aDecoder: NSCoder) {
       fatalError("init(coder:) has not been implemented")
+  }
+  
+}
+
+extension VehicleHeaderView: Printable, DebugPrintable{
+  override var description: String {
+    return "** VehicleHeaderView: \(lineLabel.text!), \(vehicleLabel.text!), \(vehicleDistanceLabel.text!)"
+  }
+
+  override var debugDescription: String {
+    return "** VehicleHeaderView: \(lineLabel!.text), \(vehicleLabel!.text), \(vehicleDistanceLabel!.text)"
   }
 }
