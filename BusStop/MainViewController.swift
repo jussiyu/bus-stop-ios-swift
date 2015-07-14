@@ -12,20 +12,8 @@ import CoreLocation
 import MediumProgressView
 import ReachabilitySwift
 
-struct WeakContainer<T where T: AnyObject> {
-  weak var value : T?
-  
-  init (_ value: T) {
-    self.value = value
-  }
-  
-  func get() -> T? {
-    return value
-  }
-}
-
 // MARK: - UIViewController
-class SearchResultsViewController: UIViewController {
+class MainViewController: UIViewController {
   
   // MARK: - outlets
   @IBOutlet weak var vehicleTableView: UITableView!
@@ -84,8 +72,8 @@ class SearchResultsViewController: UIViewController {
   lazy private var api: APIController = {
     
     class VehicleDelegate: APIControllerProtocol {
-      let ref: SearchResultsViewController
-      init(ref: SearchResultsViewController) {
+      let ref: MainViewController
+      init(ref: MainViewController) {
         self.ref = ref
       }
       func didReceiveAPIResults(results: JSON) {
@@ -117,8 +105,8 @@ class SearchResultsViewController: UIViewController {
     }
     
     class StopsDelegate: APIControllerProtocol {
-      let ref: SearchResultsViewController
-      init(ref: SearchResultsViewController) {
+      let ref: MainViewController
+      init(ref: MainViewController) {
         self.ref = ref
       }
       func didReceiveAPIResults(results: JSON) {
@@ -250,7 +238,7 @@ class SearchResultsViewController: UIViewController {
 }
 
 // MARK: - UITableViewDataSource
-extension SearchResultsViewController: UITableViewDataSource {
+extension MainViewController: UITableViewDataSource {
   
   func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
     return currentVehicle?.stops.count ?? 0
@@ -277,13 +265,13 @@ extension SearchResultsViewController: UITableViewDataSource {
 }
 
 // MARK: - UITableViewDelegate
-extension SearchResultsViewController: UITableViewDelegate {
+extension MainViewController: UITableViewDelegate {
   func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
   }
 }
 
 // MARK: - UITextFieldDelegate
-extension SearchResultsViewController: UITextFieldDelegate {
+extension MainViewController: UITextFieldDelegate {
   func textFieldShouldReturn(textField: UITextField) -> Bool {
     textField.resignFirstResponder()
     return true
@@ -291,7 +279,7 @@ extension SearchResultsViewController: UITextFieldDelegate {
 }
 
 // MARK: - UIPickerViewDataSource
-extension SearchResultsViewController: UIPickerViewDataSource {
+extension MainViewController: UIPickerViewDataSource {
   func pickerView(pickerView: UIPickerView, numberOfRowsInComponent component: Int) -> Int {
     switch component {
     case 0:
@@ -309,7 +297,7 @@ extension SearchResultsViewController: UIPickerViewDataSource {
 }
 
 // MARK: - locationUpdate notification handler
-extension SearchResultsViewController {
+extension MainViewController {
   @objc func locationUpdated(notification: NSNotification){
     println("locationUpdate \(notification.name)")
     if let loc = notification.userInfo as? [String:CLLocation] {
@@ -321,7 +309,7 @@ extension SearchResultsViewController {
 }
 
 
-extension SearchResultsViewController: HorizontalScrollerDelegate {
+extension MainViewController: HorizontalScrollerDelegate {
   func horizontalScroller(horizontalScroller: HorizontalScroller, viewAtIndexPath indexPath: Int) -> UIView {
 //    let view = NSBundle.mainBundle().loadNibNamed("VehicleHeaderView", owner: self, options: nil).first as! UIView
     let closestVehicles = self.closestVehicles
