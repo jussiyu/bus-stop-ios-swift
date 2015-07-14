@@ -16,16 +16,16 @@ import ReachabilitySwift
 class MainViewController: UIViewController {
   
   // MARK: - outlets
-  @IBOutlet weak var vehicleTableView: UITableView!
+  @IBOutlet weak var vehicleStopTableView: UITableView!
+  @IBOutlet weak var vehicleScrollView: HorizontalScroller!
   @IBOutlet weak var refreshToggle: UIBarButtonItem!
-  @IBOutlet weak var scrollView: HorizontalScroller!
 
   let progressViewManager = MediumProgressViewManager.sharedInstance
   let reachability = Reachability.reachabilityForInternetConnection()
   
   // MARK: - properties
   var scrollViewPage = 0
-  let kCellIdentifier: String = "SearchResultCell"
+  let kCellIdentifier: String = "VehicleStopCell"
   var autoRefresh:Bool = false
   var autoRefreshTimer: NSTimer?
   
@@ -64,7 +64,11 @@ class MainViewController: UIViewController {
 //    }
 //  }
   
-  
+  let label: UILabel = {
+    let temporaryLabel = UILabel(frame: CGRect(x: 0, y: 0, width: Int.max, height: Int.max))
+    temporaryLabel.text = "test"
+    return temporaryLabel
+    }()
   
   lazy private var api: APIController = {
     
@@ -77,8 +81,8 @@ class MainViewController: UIViewController {
         if results["status"] == "success" {
           self.ref.vehicles = Vehicles(fromJSON: results["body"])
           dispatch_async(dispatch_get_main_queue(), {
-            self.ref.scrollView.reloadData()
-            self.ref.vehicleTableView.reloadData()
+            self.ref.vehicleScrollView.reloadData()
+            self.ref.vehicleStopTableView.reloadData()
           })
           dispatch_async(dispatch_get_main_queue()) {self.ref.progressViewManager.hideProgress()}
         } else { // status != success
@@ -144,7 +148,7 @@ class MainViewController: UIViewController {
   override func viewDidLoad() {
     super.viewDidLoad()
 
-    scrollView.delegate = self
+    vehicleScrollView.delegate = self
 //    scrollView.reload()
     
     // Autorefresh
@@ -161,6 +165,11 @@ class MainViewController: UIViewController {
     reachability.startNotifier()
 
     initAutoRefreshTimer()
+
+    NSNotificationCenter.defaultCenter().addObserver(self,
+      selector: "preferredContentSizeChanged:",
+      name: UIContentSizeCategoryDidChangeNotification,
+      object: nil)
   }
 
   override func viewWillAppear(animated: Bool) {
@@ -247,11 +256,9 @@ extension MainViewController: UITableViewDataSource {
     let currentVehicle = self.currentVehicle
     if currentVehicle != nil {
       if let lastPath = currentVehicle?.stops[indexPath.item].lastPathComponent, stop = stops[lastPath] {
-        cell.textLabel?.text = stop.name
-        cell.detailTextLabel?.text = stop.id
+        cell.textLabel?.text = "\(stop.name) (\(stop.id))"
       } else {
-        cell.textLabel?.text = currentVehicle?.stops[indexPath.item].lastPathComponent
-        cell.detailTextLabel?.text = "unknown stop"
+        cell.textLabel?.text = "Unknown stop (\(currentVehicle?.stops[indexPath.item].lastPathComponent))"
       }
     } else {
     }
@@ -273,6 +280,12 @@ extension MainViewController: UITextFieldDelegate {
     textField.resignFirstResponder()
     return true
   }
+  
+//  func tableView(tableView: UITableView, heightForRowAtIndexPath indexPath: NSIndexPath) -> CGFloat {
+//    label.font = UIFont.preferredFontForTextStyle(UIFontTextStyleHeadline)
+//    label.sizeToFit()
+//    return label.frame.height * 1.7
+//  }
 }
 
 // MARK: - UIPickerViewDataSource
@@ -300,11 +313,18 @@ extension MainViewController {
     if let loc = notification.userInfo as? [String:CLLocation] {
       userLoc = loc["newLocationResult"]
       println("new user loc:  \(userLoc?.description)")
-      vehicleTableView.reloadData()
+      vehicleStopTableView.reloadData()
     }
   }
 }
 
+// MARK: - preferredContentSizeChanged notification handler
+extension MainViewController {
+  func preferredContentSizeChanged(notification: NSNotification) {
+//    vehicleStopTableView.reloadData() // takes care of itself
+    vehicleScrollView.reloadData()
+  }
+}
 
 extension MainViewController: HorizontalScrollerDelegate {
   func horizontalScroller(horizontalScroller: HorizontalScroller, viewAtIndexPath indexPath: Int) -> UIView {
@@ -341,6 +361,6 @@ extension MainViewController: HorizontalScrollerDelegate {
   func horizontalScroller(horizontalScroller: HorizontalScroller, clickedAtIndex: Int) {
     println("clickedAtIndex: \(clickedAtIndex)")
     scrollViewPage = clickedAtIndex
-    vehicleTableView.reloadData()
+    vehicleStopTableView.reloadData()
   }
 }
