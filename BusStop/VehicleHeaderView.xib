@@ -25,17 +25,16 @@
                 <label opaque="NO" userInteractionEnabled="NO" tag="2" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="sPz-eS-vbk" userLabel="vehicleLabel">
                     <rect key="frame" x="0.0" y="36" width="200" height="14"/>
                     <fontDescription key="fontDescription" style="UICTFontTextStyleCaption1"/>
-                    <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
+                    <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
                     <nil key="highlightedColor"/>
                 </label>
                 <label opaque="NO" userInteractionEnabled="NO" tag="3" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="2" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="EOO-9J-ZfO" userLabel="vehicleDistanceLabel">
                     <rect key="frame" x="0.0" y="58" width="200" height="14"/>
                     <fontDescription key="fontDescription" style="UICTFontTextStyleCaption2"/>
-                    <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
+                    <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
                     <nil key="highlightedColor"/>
                 </label>
             </subviews>
-            <color key="backgroundColor" red="0.11204173050000001" green="0.88210227269999997" blue="0.35031163199999998" alpha="1" colorSpace="calibratedRGB"/>
             <constraints>
                 <constraint firstItem="sPz-eS-vbk" firstAttribute="top" secondItem="pqE-Kp-G0e" secondAttribute="bottom" constant="8" id="Inf-D7-ic6"/>
                 <constraint firstAttribute="trailing" secondItem="sPz-eS-vbk" secondAttribute="trailing" id="MZv-bR-6Me"/>

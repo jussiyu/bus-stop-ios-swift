@@ -18,7 +18,6 @@ class MainViewController: UIViewController {
   // MARK: - outlets
   @IBOutlet weak var vehicleTableView: UITableView!
   @IBOutlet weak var refreshToggle: UIBarButtonItem!
-  
   @IBOutlet weak var scrollView: HorizontalScroller!
 
   let progressViewManager = MediumProgressViewManager.sharedInstance
@@ -26,6 +25,9 @@ class MainViewController: UIViewController {
   
   // MARK: - properties
   var scrollViewPage = 0
+  let kCellIdentifier: String = "SearchResultCell"
+  var autoRefresh:Bool = false
+  var autoRefreshTimer: NSTimer?
   
   let maxVisibleVehicleCount = 10
   var vehicles = Vehicles()
@@ -63,11 +65,6 @@ class MainViewController: UIViewController {
 //  }
   
   
-  let kCellIdentifier: String = "SearchResultCell"
-  
-  var autoRefresh:Bool = false
-  
-  var autoRefreshTimer: NSTimer?
   
   lazy private var api: APIController = {
     

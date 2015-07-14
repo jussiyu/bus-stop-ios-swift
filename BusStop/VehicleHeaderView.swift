@@ -20,7 +20,7 @@ class VehicleHeaderView: UIView {
   convenience init(lineRef: String, vehicleRef: String, distance: String) {
     var frame = CGRectZero
     self.init(frame: frame)
-    self.backgroundColor = UIColor.redColor()
+//    self.backgroundColor = UIColor.redColor()
     let xibView = NSBundle.mainBundle().loadNibNamed(self.nameOfClass, owner: self, options: nil).first as! UIView
     
     lineLabel.text = lineRef

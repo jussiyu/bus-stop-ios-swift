@@ -31,7 +31,6 @@ class HorizontalScroller: UIView {
   }
   
   private func initialize() {
-    self.backgroundColor = UIColor.brownColor()
     scroller = UIScrollView()
     self.setTranslatesAutoresizingMaskIntoConstraints(false)
     scroller.setTranslatesAutoresizingMaskIntoConstraints(false)
@@ -58,18 +57,16 @@ class HorizontalScroller: UIView {
   func reloadData() {
     if let delegate = delegate {
       viewArray = []
-      
+
+      // delete old views 
+      // TODO: reuse old views
       let views = scroller.subviews
       for view in views {
         view.removeFromSuperview()
       }
-      var VIEW_OFFSET: CGFloat = 0
-      var xValue: CGFloat = 0
       
       for index in 0..<delegate.numberOfItemsInHorizontalScroller(self) {
-//        xValue += VIEW_PADDING
         let subView = delegate.horizontalScroller(self, viewAtIndexPath: index)
-//        subView.frame.origin.x = CGFloat(xValue)
         scroller.addSubview(subView)
         subView.setTranslatesAutoresizingMaskIntoConstraints(false)
         scroller.addConstraint(NSLayoutConstraint(item: subView, attribute: .Top, relatedBy: .Equal, toItem: scroller, attribute: .Top, multiplier: 1.0, constant: 0))
@@ -93,8 +90,7 @@ class HorizontalScroller: UIView {
       }
 
       if let initialView = delegate.initialViewIndex?(self) {
-        scroller.setContentOffset(CGPoint(x: CGFloat(viewArray.first!.frame.minX), y: 0), animated: true)
-//        scroller.setContentOffset(CGPoint(x: CGFloat(initialView)*CGFloat((VIEW_DIMENSIONS + (2 * VIEW_PADDING))), y: 0), animated: true)
+        scroller.setContentOffset(CGPoint(x: CGFloat(viewArray[initialView].frame.minX), y: 0), animated: true)
       }
       
 //      setNeedsLayout()
@@ -126,7 +122,6 @@ extension HorizontalScroller: UIScrollViewDelegate {
       let page = Double((scrollView.contentOffset.x + scrollViewPageWidth / 2) / scrollViewPageWidth)
       let scrollViewPage = page.toInt() - 1
       delegate?.horizontalScroller(self, clickedAtIndex: scrollViewPage)
-      //    vehicleTableView.reloadData()
       println("scroll end on page: \(scrollViewPage)")
     }
   }
@@ -135,7 +130,6 @@ extension HorizontalScroller: UIScrollViewDelegate {
     if let scrollViewPageWidth = viewArray.first?.bounds.width {
       let page = Double((scrollView.contentOffset.x + scrollViewPageWidth / 2) / scrollViewPageWidth)
       let scrollViewPage = page.toInt() - 1
-      //    vehicleTableView.reloadData()
       delegate?.horizontalScroller(self, clickedAtIndex: scrollViewPage)
       println("deaccelarate end on page: \(scrollViewPage)")
     }
