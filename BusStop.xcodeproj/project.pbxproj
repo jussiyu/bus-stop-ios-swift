@@ -135,13 +135,12 @@
 		4A0EA35B1B21C0B000F747D0 /* BusStop */ = {
 			isa = PBXGroup;
 			children = (
-				4ABEDB141B53A59800C29E5C /* backup */,
-				4AB26CD81B53B6CE00F3FA11 /* View */,
-				4A0EA35E1B21C0B000F747D0 /* AppDelegate.swift */,
-				4AB26CDA1B53B6E500F3FA11 /* Controller */,
-				4A10E1F11B30214100231417 /* Common.swift */,
-				4AB26CD91B53B6DC00F3FA11 /* API */,
 				4AB26CDB1B53B6FE00F3FA11 /* Model */,
+				4AB26CD81B53B6CE00F3FA11 /* View */,
+				4AB26CDA1B53B6E500F3FA11 /* Controller */,
+				4AB26CD91B53B6DC00F3FA11 /* API */,
+				4A10E1F11B30214100231417 /* Common.swift */,
+				4A0EA35E1B21C0B000F747D0 /* AppDelegate.swift */,
 				4A0EA3651B21C0B000F747D0 /* Images.xcassets */,
 				4A0EA35C1B21C0B000F747D0 /* Supporting Files */,
 			);
@@ -178,9 +177,9 @@
 		4AB26CD81B53B6CE00F3FA11 /* View */ = {
 			isa = PBXGroup;
 			children = (
-				4ABEDB121B539FBF00C29E5C /* HorizontalScroller.swift */,
 				4A0EA3671B21C0B000F747D0 /* LaunchScreen.xib */,
 				4AAFBABA1B236791008F488D /* Main.storyboard */,
+				4ABEDB121B539FBF00C29E5C /* HorizontalScroller.swift */,
 				4ABEDB101B539FA400C29E5C /* VehicleHeaderView.xib */,
 				4A6BC41E1B53B0DC0095FC71 /* VehicleHeaderView.swift */,
 			);
@@ -211,13 +210,6 @@
 				4AC2E4791B483DB600D8F20E /* Vehicles.swift */,
 			);
 			name = Model;
-			sourceTree = "<group>";
-		};
-		4ABEDB141B53A59800C29E5C /* backup */ = {
-			isa = PBXGroup;
-			children = (
-			);
-			name = backup;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
