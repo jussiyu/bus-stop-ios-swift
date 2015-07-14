@@ -15,8 +15,6 @@ class VehicleHeaderView: UIView {
   @IBOutlet weak var vehicleLabel: UILabel!
   @IBOutlet weak var vehicleDistanceLabel: UILabel!
 
-  let VIEW_DIMENSIONS: CGFloat = 200
-
   convenience init(lineRef: String, vehicleRef: String, distance: String) {
     var frame = CGRectZero
     self.init(frame: frame)
@@ -43,7 +41,7 @@ class VehicleHeaderView: UIView {
   required init(coder aDecoder: NSCoder) {
       fatalError("init(coder:) has not been implemented")
   }
-  
+    
 }
 
 extension VehicleHeaderView: Printable, DebugPrintable{
