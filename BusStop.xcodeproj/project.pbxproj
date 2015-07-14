@@ -17,6 +17,7 @@
 		4A10E1F21B30214100231417 /* Common.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A10E1F11B30214100231417 /* Common.swift */; };
 		4A141BA01B2B15890009DED9 /* Stop.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A141B9F1B2B15890009DED9 /* Stop.swift */; };
 		4A2BB8111B4AEAB900F350C7 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = 4A2BB80F1B4AEAB900F350C7 /* Localizable.strings */; };
+		4A2FA8571B5533720088C00F /* UIFontDescriptorExt.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A2FA8561B5533720088C00F /* UIFontDescriptorExt.swift */; };
 		4A3DF9A91B4B0A9900CF1345 /* Localizable.stringsdict in Resources */ = {isa = PBXBuildFile; fileRef = 4A3DF9A71B4B0A9900CF1345 /* Localizable.stringsdict */; };
 		4A4D12B91B2AC01900B6B757 /* VehicleActivity.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A4D12B81B2AC01900B6B757 /* VehicleActivity.swift */; };
 		4A6BC41F1B53B0DC0095FC71 /* VehicleHeaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A6BC41E1B53B0DC0095FC71 /* VehicleHeaderView.swift */; };
@@ -54,6 +55,7 @@
 		4A10E1F11B30214100231417 /* Common.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Common.swift; sourceTree = "<group>"; };
 		4A141B9F1B2B15890009DED9 /* Stop.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Stop.swift; sourceTree = "<group>"; };
 		4A2BB8101B4AEAB900F350C7 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/Localizable.strings; sourceTree = "<group>"; };
+		4A2FA8561B5533720088C00F /* UIFontDescriptorExt.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UIFontDescriptorExt.swift; sourceTree = "<group>"; };
 		4A3DF9A21B4AF90500CF1345 /* fi */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fi; path = fi.lproj/Localizable.strings; sourceTree = "<group>"; };
 		4A3DF9A81B4B0A9900CF1345 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.xml; name = en; path = en.lproj/Localizable.stringsdict; sourceTree = "<group>"; };
 		4A3DF9AA1B4B0AA000CF1345 /* fi */ = {isa = PBXFileReference; lastKnownFileType = text.xml; name = fi; path = fi.lproj/Localizable.stringsdict; sourceTree = "<group>"; };
@@ -182,6 +184,7 @@
 				4ABEDB121B539FBF00C29E5C /* HorizontalScroller.swift */,
 				4ABEDB101B539FA400C29E5C /* VehicleHeaderView.xib */,
 				4A6BC41E1B53B0DC0095FC71 /* VehicleHeaderView.swift */,
+				4A2FA8561B5533720088C00F /* UIFontDescriptorExt.swift */,
 			);
 			name = View;
 			sourceTree = "<group>";
@@ -423,6 +426,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				4A0EA3811B23235800F747D0 /* APIController.swift in Sources */,
+				4A2FA8571B5533720088C00F /* UIFontDescriptorExt.swift in Sources */,
 				4A10E1F21B30214100231417 /* Common.swift in Sources */,
 				4A6BC41F1B53B0DC0095FC71 /* VehicleHeaderView.swift in Sources */,
 				4A4D12B91B2AC01900B6B757 /* VehicleActivity.swift in Sources */,

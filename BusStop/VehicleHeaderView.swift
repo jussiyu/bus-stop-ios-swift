@@ -32,6 +32,13 @@ class VehicleHeaderView: UIView {
     self.addConstraint(NSLayoutConstraint(item: xibView, attribute: .Trailing, relatedBy: .Equal, toItem: self, attribute: .Trailing, multiplier: 1.0, constant: 0.0))
     self.addConstraint(NSLayoutConstraint(item: xibView, attribute: .Top, relatedBy: .Equal, toItem: self, attribute: .Top, multiplier: 1.0, constant: 0.0))
     self.addConstraint(NSLayoutConstraint(item: xibView, attribute: .Bottom, relatedBy: .Equal, toItem: self, attribute: .Bottom, multiplier: 1.0, constant: 0.0))
+    
+    // Increase font sizes of the labels
+    let lineLabelFont = UIFont(descriptor: UIFontDescriptor.preferredDescriptorWithStyle(UIFontTextStyleHeadline, oversizedBy: 16), size: 0)
+    lineLabel.font = lineLabelFont
+    let vehicleLabelFont = UIFont(descriptor: UIFontDescriptor.defaultDescriptorWithStyle(UIFontTextStyleSubheadline, oversizedBy: 10), size: 0)
+    vehicleLabel.font = vehicleLabelFont
+    
   }
   
   override init(frame: CGRect) {

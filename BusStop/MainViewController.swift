@@ -64,12 +64,6 @@ class MainViewController: UIViewController {
 //    }
 //  }
   
-  let label: UILabel = {
-    let temporaryLabel = UILabel(frame: CGRect(x: 0, y: 0, width: Int.max, height: Int.max))
-    temporaryLabel.text = "test"
-    return temporaryLabel
-    }()
-  
   lazy private var api: APIController = {
     
     class VehicleDelegate: APIControllerProtocol {
@@ -280,12 +274,6 @@ extension MainViewController: UITextFieldDelegate {
     textField.resignFirstResponder()
     return true
   }
-  
-//  func tableView(tableView: UITableView, heightForRowAtIndexPath indexPath: NSIndexPath) -> CGFloat {
-//    label.font = UIFont.preferredFontForTextStyle(UIFontTextStyleHeadline)
-//    label.sizeToFit()
-//    return label.frame.height * 1.7
-//  }
 }
 
 // MARK: - UIPickerViewDataSource
