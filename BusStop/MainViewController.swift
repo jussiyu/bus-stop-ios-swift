@@ -308,11 +308,9 @@ extension MainViewController {
 
 extension MainViewController: HorizontalScrollerDelegate {
   func horizontalScroller(horizontalScroller: HorizontalScroller, viewAtIndexPath indexPath: Int) -> UIView {
-//    let view = NSBundle.mainBundle().loadNibNamed("VehicleHeaderView", owner: self, options: nil).first as! UIView
     let closestVehicles = self.closestVehicles
     var subView: UIView = UIView()
     if let userLoc = userLoc where closestVehicles.count > indexPath {
-//      subView.hidden = false
       let veh = closestVehicles[indexPath]
       subView = VehicleHeaderView(
         lineRef: String(format: NSLocalizedString("Line %@", comment: "Line name header"), veh.lineRef),
@@ -324,13 +322,14 @@ extension MainViewController: HorizontalScrollerDelegate {
     
     println("subView at index \(indexPath): \(subView)")
     return subView  //TODO: return optional
-//      } else {
-//        self.ref.setVehicleLabelsForIndex(0, lineRef: NSLocalizedString("no busses near you", comment: "show as vehicle label when no busses near or no user location known"),
-//          vehicleRef: "",
-//          distance: "")
-//        self.ref.vehicleHeaderViews[0].value?.hidden = false
-//      }
-//
+}
+  
+  func horizontalScrollerNoDataView(horizontalScroller: HorizontalScroller) -> UIView {
+    let noDataView = VehicleHeaderView(
+      lineRef: NSLocalizedString("no busses near you", comment: "show as vehicle label when no busses near or no user location known"),
+      vehicleRef: "",
+      distance: "")
+    return noDataView
   }
 
   func numberOfItemsInHorizontalScroller(horizontalScroller: HorizontalScroller) -> Int {

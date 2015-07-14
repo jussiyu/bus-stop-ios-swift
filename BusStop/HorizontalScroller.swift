@@ -11,6 +11,7 @@ import UIKit
 @objc protocol HorizontalScrollerDelegate: class {
   func numberOfItemsInHorizontalScroller(horizontalScroller: HorizontalScroller) -> Int
   func horizontalScroller(horizontalScroller: HorizontalScroller, viewAtIndexPath indexPath: Int) -> UIView
+  func horizontalScrollerNoDataView(horizontalScroller: HorizontalScroller) -> UIView
   optional func initialViewIndex(horizontalScroller: HorizontalScroller) -> Int
   func horizontalScroller(horizontalScroller: HorizontalScroller, clickedAtIndex: Int)
 }
@@ -22,8 +23,8 @@ class HorizontalScroller: UIView {
   private var scroller: UIScrollView!
   var viewArray = [UIView]()
 
-  let VIEW_PADDING: CGFloat = 10
-  let VIEW_WIDTH: CGFloat = 200
+  let subViewWidth: CGFloat = 200
+  let subViewHeight: CGFloat = 129
   
   required init(coder aDecoder: NSCoder) {
     super.init(coder: aDecoder)
@@ -65,18 +66,31 @@ class HorizontalScroller: UIView {
         view.removeFromSuperview()
       }
       
+      // Create all the subviews
       for index in 0..<delegate.numberOfItemsInHorizontalScroller(self) {
         let subView = delegate.horizontalScroller(self, viewAtIndexPath: index)
-        scroller.addSubview(subView)
         subView.setTranslatesAutoresizingMaskIntoConstraints(false)
+        scroller.addSubview(subView)
         scroller.addConstraint(NSLayoutConstraint(item: subView, attribute: .Top, relatedBy: .Equal, toItem: scroller, attribute: .Top, multiplier: 1.0, constant: 0))
         if index == 0 {
           scroller.addConstraint(NSLayoutConstraint(item: subView, attribute: .CenterX, relatedBy: .Equal, toItem: scroller, attribute: .CenterX, multiplier: 1.0, constant: 0))
         } else {
           scroller.addConstraint(NSLayoutConstraint(item: subView, attribute: .Leading, relatedBy: .Equal, toItem: viewArray.last!, attribute: .Trailing, multiplier: 1.0, constant: 0))
         }
-        subView.addConstraint(NSLayoutConstraint(item: subView, attribute: .Width, relatedBy: .Equal, toItem: nil, attribute: .NotAnAttribute, multiplier: 1.0, constant: VIEW_WIDTH))
-        subView.addConstraint(NSLayoutConstraint(item: subView, attribute: .Height, relatedBy: .Equal, toItem: nil, attribute: .NotAnAttribute, multiplier: 1.0, constant: 129))
+        subView.addConstraint(NSLayoutConstraint(item: subView, attribute: .Width, relatedBy: .Equal, toItem: nil, attribute: .NotAnAttribute, multiplier: 1.0, constant: subViewWidth))
+        subView.addConstraint(NSLayoutConstraint(item: subView, attribute: .Height, relatedBy: .Equal, toItem: nil, attribute: .NotAnAttribute, multiplier: 1.0, constant: subViewHeight))
+        viewArray.append(subView)
+      }
+      
+      // Create no-data view if no other subviews
+      if delegate.numberOfItemsInHorizontalScroller(self) == 0 {
+        let subView = delegate.horizontalScrollerNoDataView(self)
+        subView.setTranslatesAutoresizingMaskIntoConstraints(false)
+        scroller.addSubview(subView)
+        scroller.addConstraint(NSLayoutConstraint(item: subView, attribute: .Top, relatedBy: .Equal, toItem: scroller, attribute: .Top, multiplier: 1.0, constant: 0))
+        scroller.addConstraint(NSLayoutConstraint(item: subView, attribute: .CenterX, relatedBy: .Equal, toItem: scroller, attribute: .CenterX, multiplier: 1.0, constant: 0))
+        subView.addConstraint(NSLayoutConstraint(item: subView, attribute: .Width, relatedBy: .Equal, toItem: nil, attribute: .NotAnAttribute, multiplier: 1.0, constant: subViewWidth))
+        subView.addConstraint(NSLayoutConstraint(item: subView, attribute: .Height, relatedBy: .Equal, toItem: nil, attribute: .NotAnAttribute, multiplier: 1.0, constant: subViewHeight))
         viewArray.append(subView)
       }
 
