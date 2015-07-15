@@ -48,7 +48,11 @@ class VehicleHeaderView: UIView {
   required init(coder aDecoder: NSCoder) {
       fatalError("init(coder:) has not been implemented")
   }
-    
+  
+  override func intrinsicContentSize() -> CGSize {
+    return CGSize(width: 200, height: 129)
+  }
+
 }
 
 extension VehicleHeaderView: Printable, DebugPrintable{

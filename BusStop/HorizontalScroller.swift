@@ -23,9 +23,6 @@ class HorizontalScroller: UIView {
   private var scroller: UIScrollView!
   var viewArray = [UIView]()
 
-  let subViewWidth: CGFloat = 200
-  let subViewHeight: CGFloat = 129
-  
   required init(coder aDecoder: NSCoder) {
     super.init(coder: aDecoder)
     initialize()
@@ -73,8 +70,6 @@ class HorizontalScroller: UIView {
         } else {
           scroller.addConstraint(NSLayoutConstraint(item: subView, attribute: .Leading, relatedBy: .Equal, toItem: viewArray.last!, attribute: .Trailing, multiplier: 1.0, constant: 0))
         }
-        subView.addConstraint(NSLayoutConstraint(item: subView, attribute: .Width, relatedBy: .Equal, toItem: nil, attribute: .NotAnAttribute, multiplier: 1.0, constant: subViewWidth))
-        subView.addConstraint(NSLayoutConstraint(item: subView, attribute: .Height, relatedBy: .Equal, toItem: nil, attribute: .NotAnAttribute, multiplier: 1.0, constant: subViewHeight))
         viewArray.append(subView)
       }
       
@@ -85,8 +80,6 @@ class HorizontalScroller: UIView {
         scroller.addSubview(subView)
         scroller.addConstraint(NSLayoutConstraint(item: subView, attribute: .Top, relatedBy: .Equal, toItem: scroller, attribute: .Top, multiplier: 1.0, constant: 0))
         scroller.addConstraint(NSLayoutConstraint(item: subView, attribute: .CenterX, relatedBy: .Equal, toItem: scroller, attribute: .CenterX, multiplier: 1.0, constant: 0))
-        subView.addConstraint(NSLayoutConstraint(item: subView, attribute: .Width, relatedBy: .Equal, toItem: nil, attribute: .NotAnAttribute, multiplier: 1.0, constant: subViewWidth))
-        subView.addConstraint(NSLayoutConstraint(item: subView, attribute: .Height, relatedBy: .Equal, toItem: nil, attribute: .NotAnAttribute, multiplier: 1.0, constant: subViewHeight))
         viewArray.append(subView)
       }
 
