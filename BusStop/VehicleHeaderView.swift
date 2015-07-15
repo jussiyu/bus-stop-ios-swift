@@ -13,10 +13,14 @@ class VehicleHeaderView: UIView {
   var lineLabel: UILabel!
   var vehicleLabel: UILabel!
   var vehicleDistanceLabel: UILabel!
-
+  
+  static let defaultWidth: CGFloat = 200
+  var widthExtra: CGFloat = 0
+  
   convenience init(lineRef: String, vehicleRef: String, distance: String) {
     var frame = CGRectZero
     self.init(frame: frame)
+    self.setContentHuggingPriority(0, forAxis: .Horizontal)
 
     lineLabel = UILabel()
     lineLabel.textAlignment = NSTextAlignment.Center
@@ -64,8 +68,8 @@ class VehicleHeaderView: UIView {
   }
   
   override func intrinsicContentSize() -> CGSize {
-    println("header vehicleDistanceLabel frame: \(vehicleDistanceLabel.frame)")
-    return CGSize(width: 200, height: vehicleDistanceLabel.frame.maxY + 8)
+//    println("header vehicleDistanceLabel frame: \(vehicleDistanceLabel.frame)")
+    return CGSize(width: VehicleHeaderView.defaultWidth + widthExtra, height: vehicleDistanceLabel.frame.maxY + 8)
   }
 
 }

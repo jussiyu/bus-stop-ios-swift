@@ -26,7 +26,7 @@ class MainViewController: UIViewController {
   let reachability = Reachability.reachabilityForInternetConnection()
   
   // MARK: - properties
-  var scrollViewPage = 0
+  var currentVehicleIndex = 0
   let kCellIdentifier: String = "VehicleStopCell"
   var autoRefresh:Bool = false
   var autoRefreshTimer: NSTimer?
@@ -47,8 +47,8 @@ class MainViewController: UIViewController {
   }
   var currentVehicle: VehicleActivity? {
     let closestVehicles = self.closestVehicles
-    if closestVehicles.count > scrollViewPage {
-      return closestVehicles[scrollViewPage]
+    if closestVehicles.count > currentVehicleIndex {
+      return closestVehicles[currentVehicleIndex]
     } else {
       return nil
     }
@@ -274,6 +274,15 @@ extension MainViewController: UITableViewDelegate {
     let offset = max(scrollView.contentOffset.y, 0)
     println("vehicleScrollView y offset \(offset)")
     vehicleScrollViewTopConstraint.constant = -min(offset, vehicleScrollView.bounds.height +  NSLayoutConstraint.standardAquaSpaceConstraintFromItem) + NSLayoutConstraint.standardAquaSpaceConstraintFromItem
+    vehicleScrollView.alpha = (vehicleScrollView.bounds.height - offset) / vehicleScrollView.bounds.height * 0.7
+    if let currentVehicleHeaderView = vehicleScrollView.viewAtIndex(currentVehicleIndex) as? VehicleHeaderView {
+      //    currentVehicleHeaderView.transform = CGAffineTransformMakeScale((offset + 100) / 100, 1)
+      currentVehicleHeaderView.widthExtra = offset
+      let newWidth = currentVehicleHeaderView.intrinsicContentSize().width
+      currentVehicleHeaderView.invalidateIntrinsicContentSize()
+      let offsetHalf = offset / 4
+      vehicleScrollView.scroller.contentOffset.x = round(vehicleScrollView.scroller.contentOffset.x / (200 + offsetHalf)) * (200 + offsetHalf) // TODO: fix calculation
+    }
   }
 }
 
@@ -340,7 +349,7 @@ extension MainViewController: HorizontalScrollerDelegate {
     
     println("subView at index \(indexPath): \(subView)")
     return subView  //TODO: return optional
-}
+  }
   
   func horizontalScrollerNoDataView(horizontalScroller: HorizontalScroller) -> UIView {
     let noDataView = VehicleHeaderView(
@@ -358,7 +367,11 @@ extension MainViewController: HorizontalScrollerDelegate {
   
   func horizontalScroller(horizontalScroller: HorizontalScroller, clickedAtIndex: Int) {
     println("clickedAtIndex: \(clickedAtIndex)")
-    scrollViewPage = clickedAtIndex
+    currentVehicleIndex = clickedAtIndex
     vehicleStopTableView.reloadData()
+  }
+  
+  func horizontalScrollerWillBeginDragging(horizontalScroller: HorizontalScroller) {
+    vehicleStopTableView.scrollToRowAtIndexPath(NSIndexPath(indexes: [0,0], length: 2), atScrollPosition: UITableViewScrollPosition.Top, animated: true)
   }
 }

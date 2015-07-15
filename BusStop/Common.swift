@@ -102,3 +102,17 @@ extension NSLayoutConstraint {
     return Holder.standardConstantBetweenSuperview!
   }
 }
+
+extension UIView {
+  func constraintsWithIdentifier(identifier: String) -> [NSLayoutConstraint] {
+    var matching = [NSLayoutConstraint]()
+    for c in constraints() {
+      if let c = c as? NSLayoutConstraint {
+        if c.identifier == identifier {
+          matching.append(c)
+        }
+      }
+    }
+    return matching
+  }
+}

@@ -12,16 +12,19 @@ import UIKit
   func numberOfItemsInHorizontalScroller(horizontalScroller: HorizontalScroller) -> Int
   func horizontalScroller(horizontalScroller: HorizontalScroller, viewAtIndexPath indexPath: Int) -> UIView
   func horizontalScrollerNoDataView(horizontalScroller: HorizontalScroller) -> UIView
-  optional func initialViewIndex(horizontalScroller: HorizontalScroller) -> Int
   func horizontalScroller(horizontalScroller: HorizontalScroller, clickedAtIndex: Int)
+  optional func initialViewIndex(horizontalScroller: HorizontalScroller) -> Int
+  optional func horizontalScrollerWillBeginDragging(horizontalScroller: HorizontalScroller)
 }
 
 class HorizontalScroller: UIView {
   
   weak var delegate: HorizontalScrollerDelegate?
   
-  private var scroller: UIScrollView!
+  var scroller: UIScrollView!
   var viewArray = [UIView]()
+  
+  static let subviewConstraintSidePadding = "subviewConstraintSidePadding"
 
   required init(coder aDecoder: NSCoder) {
     super.init(coder: aDecoder)
@@ -61,26 +64,28 @@ class HorizontalScroller: UIView {
       
       // Create all the subviews
       for index in 0..<delegate.numberOfItemsInHorizontalScroller(self) {
-        let subView = delegate.horizontalScroller(self, viewAtIndexPath: index)
-        subView.setTranslatesAutoresizingMaskIntoConstraints(false)
-        scroller.addSubview(subView)
-        scroller.addConstraint(NSLayoutConstraint(item: subView, attribute: .Top, relatedBy: .Equal, toItem: scroller, attribute: .Top, multiplier: 1.0, constant: 0))
+        let subview = delegate.horizontalScroller(self, viewAtIndexPath: index)
+        subview.setTranslatesAutoresizingMaskIntoConstraints(false)
+        scroller.addSubview(subview)
+        scroller.addConstraint(NSLayoutConstraint(item: subview, attribute: .Top, relatedBy: .Equal, toItem: scroller, attribute: .Top, multiplier: 1.0, constant: 0))
         if index == 0 {
-          scroller.addConstraint(NSLayoutConstraint(item: subView, attribute: .CenterX, relatedBy: .Equal, toItem: scroller, attribute: .CenterX, multiplier: 1.0, constant: 0))
+          scroller.addConstraint(NSLayoutConstraint(item: subview, attribute: .CenterX, relatedBy: .Equal, toItem: scroller, attribute: .CenterX, multiplier: 1.0, constant: 0))
         } else {
-          scroller.addConstraint(NSLayoutConstraint(item: subView, attribute: .Leading, relatedBy: .Equal, toItem: viewArray.last!, attribute: .Trailing, multiplier: 1.0, constant: 0))
+          let left = NSLayoutConstraint(item: subview, attribute: .Leading, relatedBy: .Equal, toItem: viewArray.last!, attribute: .Trailing, multiplier: 1.0, constant: 0)
+          left.identifier = HorizontalScroller.subviewConstraintSidePadding
+          scroller.addConstraint(left)
         }
-        viewArray.append(subView)
+        viewArray.append(subview)
       }
       
       // Create no-data view if no other subviews
       if delegate.numberOfItemsInHorizontalScroller(self) == 0 {
-        let subView = delegate.horizontalScrollerNoDataView(self)
-        subView.setTranslatesAutoresizingMaskIntoConstraints(false)
-        scroller.addSubview(subView)
-        scroller.addConstraint(NSLayoutConstraint(item: subView, attribute: .Top, relatedBy: .Equal, toItem: scroller, attribute: .Top, multiplier: 1.0, constant: 0))
-        scroller.addConstraint(NSLayoutConstraint(item: subView, attribute: .CenterX, relatedBy: .Equal, toItem: scroller, attribute: .CenterX, multiplier: 1.0, constant: 0))
-        viewArray.append(subView)
+        let subview = delegate.horizontalScrollerNoDataView(self)
+        subview.setTranslatesAutoresizingMaskIntoConstraints(false)
+        scroller.addSubview(subview)
+        scroller.addConstraint(NSLayoutConstraint(item: subview, attribute: .Top, relatedBy: .Equal, toItem: scroller, attribute: .Top, multiplier: 1.0, constant: 0))
+        scroller.addConstraint(NSLayoutConstraint(item: subview, attribute: .CenterX, relatedBy: .Equal, toItem: scroller, attribute: .CenterX, multiplier: 1.0, constant: 0))
+        viewArray.append(subview)
       }
 
       // Force layout so that we can use leading padding for calculating the trailing padding
@@ -156,7 +161,7 @@ extension HorizontalScroller: UIScrollViewDelegate {
       var newTargetOffset = CGFloat(0)
       
       // try first with the targetOffset
-      newTargetOffset = round((targetOffset) / scrollViewPageWidth) * scrollViewPageWidth
+      newTargetOffset = round(targetOffset / scrollViewPageWidth) * scrollViewPageWidth
       
       if newTargetOffset < 0 {
         newTargetOffset = 0
@@ -176,6 +181,10 @@ extension HorizontalScroller: UIScrollViewDelegate {
         scrollView.setContentOffset(CGPointMake(CGFloat(newTargetOffset), 0), animated: true)
       }
     }
+  }
+  
+  func scrollViewWillBeginDragging(scrollView: UIScrollView) {
+    delegate?.horizontalScrollerWillBeginDragging?(self)
   }
   
 }
