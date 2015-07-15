@@ -18,6 +18,8 @@ class MainViewController: UIViewController {
   // MARK: - outlets
   @IBOutlet weak var vehicleStopTableView: UITableView!
   @IBOutlet weak var vehicleScrollView: HorizontalScroller!
+  @IBOutlet weak var vehicleScrollViewTopConstraint: NSLayoutConstraint!
+  @IBOutlet weak var vehicleScrollViewBottomConstraint: NSLayoutConstraint!
   @IBOutlet weak var refreshToggle: UIBarButtonItem!
 
   let progressViewManager = MediumProgressViewManager.sharedInstance
@@ -265,6 +267,13 @@ extension MainViewController: UITableViewDataSource {
 // MARK: - UITableViewDelegate
 extension MainViewController: UITableViewDelegate {
   func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
+    println("vehicleScrollView:didSelectRowAtIndexPath: \(indexPath.item)")
+  }
+  
+  func scrollViewDidScroll(scrollView: UIScrollView) {
+    let offset = max(scrollView.contentOffset.y, 0)
+    println("vehicleScrollView y offset \(offset)")
+    vehicleScrollViewTopConstraint.constant = -min(offset, vehicleScrollView.bounds.height +  NSLayoutConstraint.standardAquaSpaceConstraintFromItem) + NSLayoutConstraint.standardAquaSpaceConstraintFromItem
   }
 }
 

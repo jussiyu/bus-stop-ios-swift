@@ -7,6 +7,8 @@
 //
 
 import Foundation
+import UIKit
+
 extension String {
   static var f: NSNumberFormatter = {
     let f = NSNumberFormatter()
@@ -70,5 +72,33 @@ public extension NSObject{
   
   public var nameOfClass: String{
     return NSStringFromClass(self.dynamicType).componentsSeparatedByString(".").last!
+  }
+}
+
+extension NSLayoutConstraint {
+  class var standardAquaSpaceConstraintFromItem: CGFloat {
+    struct Holder {
+      static var standardConstantBetweenSiblings: CGFloat?
+    }
+    if Holder.standardConstantBetweenSiblings == nil {
+      let view = UIView()
+      let constraintWithStandardConstantBetweenSiblings = NSLayoutConstraint.constraintsWithVisualFormat("[view]-[view]", options:nil, metrics: [:], views: ["view": view]).first as! NSLayoutConstraint
+      Holder.standardConstantBetweenSiblings = constraintWithStandardConstantBetweenSiblings.constant     // 8.0
+    }
+    return Holder.standardConstantBetweenSiblings!
+  }
+  
+  static var standardConstantBetweenSuperview: CGFloat {
+    struct Holder {
+      static var standardConstantBetweenSuperview: CGFloat?
+    }
+    if Holder.standardConstantBetweenSuperview == nil {
+      let superview = UIView()
+      let subView = UIView()
+      superview.addSubview(subView)
+      let constraintWithStandardConstantBetweenSuperview = NSLayoutConstraint.constraintsWithVisualFormat("[view]-|",  options:nil, metrics:[:], views: ["view": subView]).first as! NSLayoutConstraint
+      Holder.standardConstantBetweenSuperview = constraintWithStandardConstantBetweenSuperview.constant    // 20.0
+    }
+    return Holder.standardConstantBetweenSuperview!
   }
 }

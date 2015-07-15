@@ -58,7 +58,7 @@
                             <constraint firstItem="gZm-hb-9Zh" firstAttribute="leading" secondItem="kh9-bI-dsS" secondAttribute="leading" constant="6" id="ACn-IB-Q01"/>
                             <constraint firstItem="gZm-hb-9Zh" firstAttribute="top" secondItem="csx-9f-M92" secondAttribute="bottom" constant="8" id="IkI-Wz-nft"/>
                             <constraint firstAttribute="trailingMargin" secondItem="csx-9f-M92" secondAttribute="trailing" constant="-16" id="SpG-AJ-IrQ"/>
-                            <constraint firstItem="csx-9f-M92" firstAttribute="top" secondItem="jyV-Pf-zRb" secondAttribute="bottom" constant="8" id="T8J-t0-g46"/>
+                            <constraint firstItem="csx-9f-M92" firstAttribute="top" secondItem="jyV-Pf-zRb" secondAttribute="bottom" constant="8" id="T8J-t0-g46" userLabel="Horizontal Scroller Top constraint"/>
                             <constraint firstItem="csx-9f-M92" firstAttribute="leading" secondItem="kh9-bI-dsS" secondAttribute="leadingMargin" constant="-16" id="UaB-DX-r19"/>
                             <constraint firstItem="gZm-hb-9Zh" firstAttribute="bottom" secondItem="2fi-mo-0CV" secondAttribute="top" id="ouA-xD-sBW"/>
                         </constraints>
@@ -77,6 +77,8 @@
                     <connections>
                         <outlet property="refreshToggle" destination="xuj-HQ-FG6" id="T4Q-tL-uid"/>
                         <outlet property="vehicleScrollView" destination="csx-9f-M92" id="7d2-bs-NA4"/>
+                        <outlet property="vehicleScrollViewBottomConstraint" destination="IkI-Wz-nft" id="iov-Wq-1cK"/>
+                        <outlet property="vehicleScrollViewTopConstraint" destination="T8J-t0-g46" id="2QM-4g-t6v"/>
                         <outlet property="vehicleStopTableView" destination="gZm-hb-9Zh" id="rLf-iq-5bB"/>
                     </connections>
                 </viewController>
