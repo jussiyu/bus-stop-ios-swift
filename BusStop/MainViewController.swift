@@ -318,7 +318,8 @@ extension MainViewController {
 // MARK: - preferredContentSizeChanged notification handler
 extension MainViewController {
   func preferredContentSizeChanged(notification: NSNotification) {
-//    vehicleStopTableView.reloadData() // takes care of itself
+    println("preferredContentSizeChanged")
+    //    vehicleStopTableView takes care of itself
     vehicleScrollView.reloadData()
   }
 }

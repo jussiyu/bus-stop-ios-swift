@@ -96,6 +96,9 @@ class HorizontalScroller: UIView {
         scroller.setContentOffset(CGPoint(x: CGFloat(viewArray[initialView].frame.minX), y: 0), animated: true)
       }
       
+      // force intrisic size calculation now that all subviews have been created
+      invalidateIntrinsicContentSize()
+      
 //      setNeedsLayout()
 //      layoutIfNeeded()
 //      
@@ -112,6 +115,12 @@ class HorizontalScroller: UIView {
 //      println("horiz frame: \(self.frame)")
       
     }
+  }
+  
+  override func intrinsicContentSize() -> CGSize {
+    // Calculate height based on the first subview bounds
+    println("viewArray.first?.bounds.height: \(viewArray.first?.bounds.height)")
+    return CGSize(width: UIViewNoIntrinsicMetric, height: viewArray.first?.bounds.height ?? UIViewNoIntrinsicMetric)
   }
 }
 

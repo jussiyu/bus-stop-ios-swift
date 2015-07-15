@@ -22,7 +22,6 @@
 		4A4D12B91B2AC01900B6B757 /* VehicleActivity.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A4D12B81B2AC01900B6B757 /* VehicleActivity.swift */; };
 		4A6BC41F1B53B0DC0095FC71 /* VehicleHeaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A6BC41E1B53B0DC0095FC71 /* VehicleHeaderView.swift */; };
 		4AAFBABB1B236791008F488D /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 4AAFBABA1B236791008F488D /* Main.storyboard */; };
-		4ABEDB111B539FA400C29E5C /* VehicleHeaderView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 4ABEDB101B539FA400C29E5C /* VehicleHeaderView.xib */; };
 		4ABEDB131B539FBF00C29E5C /* HorizontalScroller.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4ABEDB121B539FBF00C29E5C /* HorizontalScroller.swift */; };
 		4AC2E47A1B483DB600D8F20E /* Vehicles.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4AC2E4791B483DB600D8F20E /* Vehicles.swift */; };
 		64A12E5854F293C1C1F594F3 /* Pods_BusStop.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = EAB3E59295EC798745861F0F /* Pods_BusStop.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
@@ -63,7 +62,6 @@
 		4A6BC41E1B53B0DC0095FC71 /* VehicleHeaderView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = VehicleHeaderView.swift; sourceTree = "<group>"; };
 		4A75298AA8FC50C4F94424EA /* Pods-BusStop.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-BusStop.release.xcconfig"; path = "Pods/Target Support Files/Pods-BusStop/Pods-BusStop.release.xcconfig"; sourceTree = "<group>"; };
 		4AAFBABA1B236791008F488D /* Main.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = Main.storyboard; sourceTree = "<group>"; };
-		4ABEDB101B539FA400C29E5C /* VehicleHeaderView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = VehicleHeaderView.xib; sourceTree = "<group>"; };
 		4ABEDB121B539FBF00C29E5C /* HorizontalScroller.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HorizontalScroller.swift; sourceTree = "<group>"; };
 		4AC2E4791B483DB600D8F20E /* Vehicles.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Vehicles.swift; sourceTree = "<group>"; };
 		943E961222DF8A313F9D305B /* Pods-BusStopTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-BusStopTests.release.xcconfig"; path = "Pods/Target Support Files/Pods-BusStopTests/Pods-BusStopTests.release.xcconfig"; sourceTree = "<group>"; };
@@ -182,7 +180,6 @@
 				4A0EA3671B21C0B000F747D0 /* LaunchScreen.xib */,
 				4AAFBABA1B236791008F488D /* Main.storyboard */,
 				4ABEDB121B539FBF00C29E5C /* HorizontalScroller.swift */,
-				4ABEDB101B539FA400C29E5C /* VehicleHeaderView.xib */,
 				4A6BC41E1B53B0DC0095FC71 /* VehicleHeaderView.swift */,
 				4A2FA8561B5533720088C00F /* UIFontDescriptorExt.swift */,
 			);
@@ -314,7 +311,6 @@
 				4A0EA3691B21C0B000F747D0 /* LaunchScreen.xib in Resources */,
 				4A3DF9A91B4B0A9900CF1345 /* Localizable.stringsdict in Resources */,
 				4A0EA3661B21C0B000F747D0 /* Images.xcassets in Resources */,
-				4ABEDB111B539FA400C29E5C /* VehicleHeaderView.xib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

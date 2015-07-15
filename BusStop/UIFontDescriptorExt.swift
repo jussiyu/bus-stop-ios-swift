@@ -113,7 +113,7 @@ extension UIFontDescriptor {
     return UIFontDescriptor(name: name, size: CGFloat(size + oversizedBy))
   }
   
-  class func defaultDescriptorWithStyle(style: String, oversizedBy: Int) -> UIFontDescriptor {
+  class func defaultDescriptorWithStyle(style: String, oversizedBy: Int = 0) -> UIFontDescriptor {
     
     let contentSize = UIApplication.sharedApplication().preferredContentSizeCategory
     

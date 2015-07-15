@@ -10,34 +10,48 @@ import UIKit
 
 class VehicleHeaderView: UIView {
   
-  @IBOutlet weak var view: UIView!
-  @IBOutlet weak var lineLabel: UILabel!
-  @IBOutlet weak var vehicleLabel: UILabel!
-  @IBOutlet weak var vehicleDistanceLabel: UILabel!
+  var lineLabel: UILabel!
+  var vehicleLabel: UILabel!
+  var vehicleDistanceLabel: UILabel!
 
   convenience init(lineRef: String, vehicleRef: String, distance: String) {
     var frame = CGRectZero
     self.init(frame: frame)
-//    self.backgroundColor = UIColor.redColor()
-    let xibView = NSBundle.mainBundle().loadNibNamed(self.nameOfClass, owner: self, options: nil).first as! UIView
-    
+
+    lineLabel = UILabel()
+    lineLabel.textAlignment = NSTextAlignment.Center
     lineLabel.text = lineRef
+    vehicleLabel = UILabel()
+    vehicleLabel.textAlignment = NSTextAlignment.Center
     vehicleLabel.text = vehicleRef
+    vehicleDistanceLabel = UILabel()
+    vehicleDistanceLabel.textAlignment = NSTextAlignment.Center
     vehicleDistanceLabel.text = distance.stringByReplacingOccurrencesOfString("\\n", withString: "\n", options: nil)
+    vehicleDistanceLabel.numberOfLines = 2
     
-    xibView.setTranslatesAutoresizingMaskIntoConstraints(false)
-    
-    addSubview(xibView)
-    self.addConstraint(NSLayoutConstraint(item: xibView, attribute: .Leading, relatedBy: .Equal, toItem: self, attribute: .Leading, multiplier: 1.0, constant: 0.0))
-    self.addConstraint(NSLayoutConstraint(item: xibView, attribute: .Trailing, relatedBy: .Equal, toItem: self, attribute: .Trailing, multiplier: 1.0, constant: 0.0))
-    self.addConstraint(NSLayoutConstraint(item: xibView, attribute: .Top, relatedBy: .Equal, toItem: self, attribute: .Top, multiplier: 1.0, constant: 0.0))
-    self.addConstraint(NSLayoutConstraint(item: xibView, attribute: .Bottom, relatedBy: .Equal, toItem: self, attribute: .Bottom, multiplier: 1.0, constant: 0.0))
+    // add child views
+    addSubview(lineLabel)
+    addSubview(vehicleLabel)
+    addSubview(vehicleDistanceLabel)
+
+    // Constraints
+    lineLabel.setTranslatesAutoresizingMaskIntoConstraints(false)
+    vehicleLabel.setTranslatesAutoresizingMaskIntoConstraints(false)
+    vehicleDistanceLabel.setTranslatesAutoresizingMaskIntoConstraints(false)
+    NSLayoutConstraint.activateConstraints(NSLayoutConstraint.constraintsWithVisualFormat("V:|-[a]-[b]-[c]-|", options: nil, metrics: [:], views: ["a":lineLabel, "b":vehicleLabel, "c":vehicleDistanceLabel]))
+    NSLayoutConstraint.activateConstraints(NSLayoutConstraint.constraintsWithVisualFormat("H:|[v]|", options: nil, metrics: [:], views: ["v":lineLabel]))
+    NSLayoutConstraint.activateConstraints(NSLayoutConstraint.constraintsWithVisualFormat("H:|[v]|", options: nil, metrics: [:], views: ["v":vehicleLabel]))
+    NSLayoutConstraint.activateConstraints(NSLayoutConstraint.constraintsWithVisualFormat("H:|[v]|", options: nil, metrics: [:], views: ["v":vehicleDistanceLabel]))
     
     // Increase font sizes of the labels
     let lineLabelFont = UIFont(descriptor: UIFontDescriptor.preferredDescriptorWithStyle(UIFontTextStyleHeadline, oversizedBy: 16), size: 0)
     lineLabel.font = lineLabelFont
     let vehicleLabelFont = UIFont(descriptor: UIFontDescriptor.defaultDescriptorWithStyle(UIFontTextStyleSubheadline, oversizedBy: 10), size: 0)
     vehicleLabel.font = vehicleLabelFont
+    let vehicleDistanceLabelFont = UIFont(descriptor: UIFontDescriptor.defaultDescriptorWithStyle(UIFontTextStyleCaption1
+      ), size: 0)
+    vehicleDistanceLabel.font = vehicleDistanceLabelFont
+    
     
   }
   
@@ -50,7 +64,8 @@ class VehicleHeaderView: UIView {
   }
   
   override func intrinsicContentSize() -> CGSize {
-    return CGSize(width: 200, height: 129)
+    println("header vehicleDistanceLabel frame: \(vehicleDistanceLabel.frame)")
+    return CGSize(width: 200, height: vehicleDistanceLabel.frame.maxY + 8)
   }
 
 }
