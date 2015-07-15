@@ -130,7 +130,7 @@ extension HorizontalScroller: UIScrollViewDelegate {
   func scrollViewDidEndScrollingAnimation(scrollView: UIScrollView) {
     if let scrollViewPageWidth = viewArray.first?.bounds.width {
       let page = Double((scrollView.contentOffset.x + scrollViewPageWidth / 2) / scrollViewPageWidth)
-      let scrollViewPage = page.toInt() - 1
+      let scrollViewPage = max(page.toInt() - 1, 0)
       delegate?.horizontalScroller(self, clickedAtIndex: scrollViewPage)
       println("scroll end on page: \(scrollViewPage)")
     }
@@ -139,7 +139,7 @@ extension HorizontalScroller: UIScrollViewDelegate {
   func scrollViewDidEndDecelerating(scrollView: UIScrollView) {
     if let scrollViewPageWidth = viewArray.first?.bounds.width {
       let page = Double((scrollView.contentOffset.x + scrollViewPageWidth / 2) / scrollViewPageWidth)
-      let scrollViewPage = page.toInt() - 1
+      let scrollViewPage = max(page.toInt() - 1, 0)
       delegate?.horizontalScroller(self, clickedAtIndex: scrollViewPage)
       println("deaccelarate end on page: \(scrollViewPage)")
     }
