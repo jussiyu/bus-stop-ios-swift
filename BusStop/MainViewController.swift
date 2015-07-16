@@ -278,10 +278,14 @@ extension MainViewController: UITableViewDelegate {
     let offset = max(scrollView.contentOffset.y, 0)
 //    println("vehicleScrollView vertical offset: \(offset)")
     
+    if let currentVehicleHeaderView = vehicleScrollView.viewAtIndex(currentVehicleIndex) as? VehicleHeaderView {
+        currentVehicleHeaderView.fadeOutByOffset(offset)
+    }
+      
     // Offset the header view up by max of its height
     vehicleScrollViewTopConstraint.constant = -min(offset, vehicleScrollView.bounds.height +  NSLayoutConstraint.standardAquaSpaceConstraintFromItem) + NSLayoutConstraint.standardAquaSpaceConstraintFromItem
 
-    vehicleScrollView.alpha = (vehicleScrollView.bounds.height - offset) / vehicleScrollView.bounds.height * 0.7
+//    vehicleScrollView.alpha = (vehicleScrollView.bounds.height - offset) / vehicleScrollView.bounds.height * 0.7
 
     // Scroll adjacent headers to side by making the current header wider and keeping it centered
     if let currentVehicleHeaderView = vehicleScrollView.viewAtIndex(currentVehicleIndex) as? VehicleHeaderView {

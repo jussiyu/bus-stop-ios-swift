@@ -116,3 +116,13 @@ extension UIView {
     return matching
   }
 }
+
+extension Array{
+  func each(each: (T) -> (T)) -> [T]{
+    var result = [T]()
+    for object: T in self {
+      result.append(each(object))
+    }
+    return result
+  }
+}

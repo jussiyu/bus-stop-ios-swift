@@ -54,26 +54,32 @@ class APIController {
   }
   
   private func doGetOnPath(urlPath: String, delegate: APIControllerProtocol) {
-    let url = NSURL(string: urlPath)
     UIApplication.sharedApplication().networkActivityIndicatorVisible = true
 
-    let task = NSURLSession.sharedSession().dataTaskWithURL(url!, completionHandler: {data, response, urlError -> Void in
-      UIApplication.sharedApplication().networkActivityIndicatorVisible = false
-      if(urlError != nil) {
-        println("Task completed unsuccessfully: " + urlPath)
-        println(urlError.localizedDescription)
-        delegate.didReceiveError(urlError)
-        return
-      } else {
-        println("Task completed successfully: " + urlPath)
-        let json = JSON(data: data)
-        delegate.didReceiveAPIResults(json)
-      }
-    })
-    
-    // The task is just an object with all these properties set
-    // In order to actually make the web request, we need to "resume"
-    task.resume()
+    let url = NSURL(string: urlPath)
+    if let url = url {
+      let request = NSURLRequest(URL: url, cachePolicy: .UseProtocolCachePolicy, timeoutInterval: 30.0)
+      var configuration = NSURLSessionConfiguration.defaultSessionConfiguration()
+      let task = NSURLSession(configuration: configuration).dataTaskWithURL(url, completionHandler: {data, response, urlError -> Void in
+        UIApplication.sharedApplication().networkActivityIndicatorVisible = false
+        if(urlError != nil) {
+          println("Task completed unsuccessfully: " + urlPath)
+          println(urlError.localizedDescription)
+          delegate.didReceiveError(urlError)
+          return
+        } else {
+          println("Task completed successfully: " + urlPath)
+          let json = JSON(data: data)
+          delegate.didReceiveAPIResults(json)
+        }
+      })
+      
+      // The task is just an object with all these properties set
+      // In order to actually make the web request, we need to "resume"
+      task.resume()
+    } else {
+      println("Invalid URL: " + urlPath)
+    }
   }
 }
 
