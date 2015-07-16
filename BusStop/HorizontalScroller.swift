@@ -51,8 +51,12 @@ class HorizontalScroller: UIView {
     NSLayoutConstraint.activateConstraints(NSLayoutConstraint.constraintsWithVisualFormat("H:|[scroller]|", options: nil, metrics: [:], views: ["scroller":scroller]))
   }
   
-  func viewAtIndex(index: Int) -> UIView {
-    return viewArray[index]
+  func viewAtIndex(index: Int) -> UIView? {
+    if index < viewArray.count {
+      return viewArray[index]
+    } else {
+      return nil
+    }
   }
   
   func scrollToViewWithIndex(index: Int, animated: Bool = true ) {
@@ -151,7 +155,7 @@ extension HorizontalScroller: UIScrollViewDelegate {
     if let scrollViewPageWidth = viewArray.first?.bounds.width {
       let page = Double((scrollView.contentOffset.x + scrollViewPageWidth / 2) / scrollViewPageWidth)
       let scrollViewPage = max(page.toInt() - 1, 0)
-      delegate?.horizontalScroller(self, didScrollToViewAtIndex: scrollViewPage)
+      delegate?.horizontalScroller?(self, didScrollToViewAtIndex: scrollViewPage)
     }
 
   }

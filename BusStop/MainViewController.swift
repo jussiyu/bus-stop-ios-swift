@@ -285,9 +285,7 @@ extension MainViewController: UITableViewDelegate {
 
     // Scroll adjacent headers to side by making the current header wider and keeping it centered
     if let currentVehicleHeaderView = vehicleScrollView.viewAtIndex(currentVehicleIndex) as? VehicleHeaderView {
-      //    currentVehicleHeaderView.transform = CGAffineTransformMakeScale((offset + 100) / 100, 1)
       currentVehicleHeaderView.widthExtra = offset
-      let newWidth = currentVehicleHeaderView.intrinsicContentSize().width
       currentVehicleHeaderView.invalidateIntrinsicContentSize()
       vehicleScrollView.layoutIfNeeded()
       vehicleScrollView.scrollToViewWithIndex(currentVehicleIndex, animated: false)
