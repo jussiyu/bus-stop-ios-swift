@@ -327,6 +327,7 @@ extension MainViewController {
 // MARK: - HorizontalScrollerDelegate
 extension MainViewController: HorizontalScrollerDelegate {
   
+  // MARK: - Data source functions
   func horizontalScroller(horizontalScroller: HorizontalScroller, viewAtIndexPath indexPath: Int) -> UIView {
     let closestVehicles = self.closestVehicles
     var subView: UIView = UIView()
@@ -352,15 +353,16 @@ extension MainViewController: HorizontalScrollerDelegate {
     return noDataView
   }
 
+  // MARK: - Notification functions
   func numberOfItemsInHorizontalScroller(horizontalScroller: HorizontalScroller) -> Int {
     let count = min(maxVisibleVehicleCount, vehicles.count)
     println("numberOfItemsInHorizontalScroller: \(count)")
     return count
   }
   
-  func horizontalScroller(horizontalScroller: HorizontalScroller, clickedAtIndex: Int) {
-    println("clickedAtIndex: \(clickedAtIndex)")
-    currentVehicleIndex = clickedAtIndex
+  func horizontalScroller(horizontalScroller: HorizontalScroller, didScrollToViewAtIndex: Int) {
+    println("horizontalScroller(_:didScrollToViewAtIndex: \(didScrollToViewAtIndex))")
+    currentVehicleIndex = didScrollToViewAtIndex
     vehicleStopTableView.reloadData()
   }
   
