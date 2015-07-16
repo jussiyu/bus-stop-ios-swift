@@ -271,17 +271,26 @@ extension MainViewController: UITableViewDelegate {
   }
   
   func scrollViewDidScroll(scrollView: UIScrollView) {
+    // Dim the vehicle scroller and move it up
+    // Also slide adjacent headers to the side
+
+    // Use the positive value of the table scroll offset to animate other views
     let offset = max(scrollView.contentOffset.y, 0)
-    println("vehicleScrollView y offset \(offset)")
+//    println("vehicleScrollView vertical offset: \(offset)")
+    
+    // Offset the header view up by max of its height
     vehicleScrollViewTopConstraint.constant = -min(offset, vehicleScrollView.bounds.height +  NSLayoutConstraint.standardAquaSpaceConstraintFromItem) + NSLayoutConstraint.standardAquaSpaceConstraintFromItem
+
     vehicleScrollView.alpha = (vehicleScrollView.bounds.height - offset) / vehicleScrollView.bounds.height * 0.7
+
+    // Scroll adjacent headers to side by making the current header wider and keeping it centered
     if let currentVehicleHeaderView = vehicleScrollView.viewAtIndex(currentVehicleIndex) as? VehicleHeaderView {
       //    currentVehicleHeaderView.transform = CGAffineTransformMakeScale((offset + 100) / 100, 1)
       currentVehicleHeaderView.widthExtra = offset
       let newWidth = currentVehicleHeaderView.intrinsicContentSize().width
       currentVehicleHeaderView.invalidateIntrinsicContentSize()
-      let offsetHalf = offset / 4
-      vehicleScrollView.scroller.contentOffset.x = round(vehicleScrollView.scroller.contentOffset.x / (200 + offsetHalf)) * (200 + offsetHalf) // TODO: fix calculation
+      vehicleScrollView.layoutIfNeeded()
+      vehicleScrollView.scrollToViewWithIndex(currentVehicleIndex, animated: false)
     }
   }
 }
@@ -291,24 +300,6 @@ extension MainViewController: UITextFieldDelegate {
   func textFieldShouldReturn(textField: UITextField) -> Bool {
     textField.resignFirstResponder()
     return true
-  }
-}
-
-// MARK: - UIPickerViewDataSource
-extension MainViewController: UIPickerViewDataSource {
-  func pickerView(pickerView: UIPickerView, numberOfRowsInComponent component: Int) -> Int {
-    switch component {
-    case 0:
-      return 20
-    case 1:
-      return vehicles.count + 1
-    default:
-      return 0
-    }
-  }
-  
-  func numberOfComponentsInPickerView(pickerView: UIPickerView) -> Int {
-    return 2
   }
 }
 
@@ -333,7 +324,9 @@ extension MainViewController {
   }
 }
 
+// MARK: - HorizontalScrollerDelegate
 extension MainViewController: HorizontalScrollerDelegate {
+  
   func horizontalScroller(horizontalScroller: HorizontalScroller, viewAtIndexPath indexPath: Int) -> UIView {
     let closestVehicles = self.closestVehicles
     var subView: UIView = UIView()
@@ -372,6 +365,7 @@ extension MainViewController: HorizontalScrollerDelegate {
   }
   
   func horizontalScrollerWillBeginDragging(horizontalScroller: HorizontalScroller) {
+    // User dragged vehicle header so scroll the stop table to top
     vehicleStopTableView.scrollToRowAtIndexPath(NSIndexPath(indexes: [0,0], length: 2), atScrollPosition: UITableViewScrollPosition.Top, animated: true)
   }
 }

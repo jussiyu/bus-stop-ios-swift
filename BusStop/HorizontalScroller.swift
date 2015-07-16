@@ -22,8 +22,12 @@ class HorizontalScroller: UIView {
   weak var delegate: HorizontalScrollerDelegate?
   
   var scroller: UIScrollView!
-  var viewArray = [UIView]()
+  private var viewArray = [UIView]()
   
+  var viewCount: Int {
+    return viewArray.count
+  }
+
   static let subviewConstraintSidePadding = "subviewConstraintSidePadding"
 
   required init(coder aDecoder: NSCoder) {
@@ -47,8 +51,12 @@ class HorizontalScroller: UIView {
     return viewArray[index]
   }
   
-  var viewCount: Int {
-    return viewArray.count
+  func scrollToViewWithIndex(index: Int, animated: Bool = true ) {
+    // center the header with index to the scroller
+    let scrollViewWidth = bounds.width
+    let currentViewCenter = viewArray[index].frame.midX
+    let newOffset = currentViewCenter - scrollViewWidth / 2
+    scroller.setContentOffset(CGPoint(x: CGFloat(newOffset), y: 0), animated: animated)
   }
   
   func reloadData() {
@@ -97,8 +105,8 @@ class HorizontalScroller: UIView {
         scroller.addConstraint(NSLayoutConstraint(item: viewArray.last!, attribute: .Trailing, relatedBy: .Equal, toItem: scroller, attribute: .Trailing, multiplier: 1.0, constant: -viewArray.first!.frame.minX))
       }
 
-      if let initialView = delegate.initialViewIndex?(self) {
-        scroller.setContentOffset(CGPoint(x: CGFloat(viewArray[initialView].frame.minX), y: 0), animated: true)
+      if let initialViewIndex = delegate.initialViewIndex?(self) {
+        scrollToViewWithIndex(initialViewIndex)
       }
       
       // force intrisic size calculation now that all subviews have been created
@@ -180,6 +188,8 @@ extension HorizontalScroller: UIScrollViewDelegate {
         // no velocity so animate manually
         scrollView.setContentOffset(CGPointMake(CGFloat(newTargetOffset), 0), animated: true)
       }
+      
+      println("scrolling to offset \(newTargetOffset)")
     }
   }
   
