@@ -376,4 +376,8 @@ extension MainViewController: HorizontalScrollerDelegate {
     // User dragged vehicle header so scroll the stop table to top
     vehicleStopTableView.scrollToRowAtIndexPath(NSIndexPath(indexes: [0,0], length: 2), atScrollPosition: UITableViewScrollPosition.Top, animated: true)
   }
+  
+  func horizontalScrollerTapped(horizontalScroller: HorizontalScroller) {
+    vehicleStopTableView.scrollToRowAtIndexPath(NSIndexPath(indexes: [0,0], length: 2), atScrollPosition: UITableViewScrollPosition.Top, animated: true)
+  }
 }

@@ -20,6 +20,7 @@ import XCGLogger
   optional func horizontalScroller(horizontalScroller: HorizontalScroller, didScrollToViewAtIndex: Int)
   optional func initialViewIndex(horizontalScroller: HorizontalScroller) -> Int
   optional func horizontalScrollerWillBeginDragging(horizontalScroller: HorizontalScroller)
+  optional func horizontalScrollerTapped(horizontalScroller: HorizontalScroller)
 }
 
 class HorizontalScroller: UIView {
@@ -50,6 +51,8 @@ class HorizontalScroller: UIView {
     
     NSLayoutConstraint.activateConstraints(NSLayoutConstraint.constraintsWithVisualFormat("V:|[scroller]|", options: nil, metrics: [:], views: ["scroller":scroller]))
     NSLayoutConstraint.activateConstraints(NSLayoutConstraint.constraintsWithVisualFormat("H:|[scroller]|", options: nil, metrics: [:], views: ["scroller":scroller]))
+    
+    addGestureRecognizer(UITapGestureRecognizer(target: self, action: "viewTapped:"))
   }
   
   func viewAtIndex(index: Int) -> UIView? {
@@ -144,6 +147,7 @@ class HorizontalScroller: UIView {
     log.verbose("viewArray.first?.bounds.height: \(self.scrollerSubviews.first?.bounds.height)")
     return CGSize(width: UIViewNoIntrinsicMetric, height: scrollerSubviews.first?.bounds.height ?? UIViewNoIntrinsicMetric)
   }
+  
 }
 
 //             ----- -----
@@ -201,3 +205,15 @@ extension HorizontalScroller: UIScrollViewDelegate {
   }
   
 }
+
+// MARK: - selector handler
+extension HorizontalScroller {
+  @objc func viewTapped(sender: UITapGestureRecognizer){
+    log.verbose("viewtapped)")
+    if sender.state == .Ended {
+      delegate?.horizontalScrollerTapped?(self)
+    }
+  }
+}
+// handling code
+
