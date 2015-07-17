@@ -287,15 +287,35 @@ extension MainViewController: UITableViewDelegate {
         currentVehicleHeaderView.fadeOutByOffset(offset)
         
         // Move adjacent headers to side and him them
-        for otherViewIndex in 0..<vehicleScrollView.viewCount {
-          if let leftView = vehicleScrollView.viewAtIndex(otherViewIndex) where otherViewIndex != currentVehicleIndex {
-            leftView.alpha = 1 - offset / 10
-            leftView.transform = CGAffineTransformMakeTranslation(otherViewIndex > currentVehicleIndex ? offset : -offset, 0)
+        for viewIndex in 0..<vehicleScrollView.viewCount {
+          if let view = vehicleScrollView.viewAtIndex(viewIndex) {
+            if viewIndex != currentVehicleIndex {
+              view.alpha = 1 - offset / 10
+              view.transform = CGAffineTransformMakeTranslation(viewIndex > currentVehicleIndex ? offset : -offset, 0)
+            } else {
+              view.alpha = 1
+              view.transform = CGAffineTransformIdentity
+            }
           }
         }
         
         // scroll table view up to match current header view bottom
         vehicleScrollViewBottomConstraint.constant = -min(offset, currentVehicleHeaderView.bounds.height +  NSLayoutConstraint.standardAquaSpaceConstraintFromItem) + NSLayoutConstraint.standardAquaSpaceConstraintFromItem
+      }
+    } else {
+      if let currentVehicleHeaderView = vehicleScrollView.viewAtIndex(currentVehicleIndex) {
+        currentVehicleHeaderView.alpha = 1
+        currentVehicleHeaderView.transform = CGAffineTransformIdentity
+      }
+    }
+  }
+  
+  func resetVehicleScrollView() {
+    for viewIndex in 0..<vehicleScrollView.viewCount {
+      if let view = vehicleScrollView.viewAtIndex(viewIndex) as? VehicleHeaderView {
+        view.alpha = 1
+        view.transform = CGAffineTransformIdentity
+        view.fadeOutByOffset(0)
       }
     }
   }
@@ -375,9 +395,11 @@ extension MainViewController: HorizontalScrollerDelegate {
   func horizontalScrollerWillBeginDragging(horizontalScroller: HorizontalScroller) {
     // User dragged vehicle header so scroll the stop table to top
     vehicleStopTableView.scrollToRowAtIndexPath(NSIndexPath(indexes: [0,0], length: 2), atScrollPosition: UITableViewScrollPosition.Top, animated: true)
+    resetVehicleScrollView()
   }
   
   func horizontalScrollerTapped(horizontalScroller: HorizontalScroller) {
     vehicleStopTableView.scrollToRowAtIndexPath(NSIndexPath(indexes: [0,0], length: 2), atScrollPosition: UITableViewScrollPosition.Top, animated: true)
+    resetVehicleScrollView()
   }
 }
