@@ -273,28 +273,29 @@ extension MainViewController: UITableViewDelegate {
   func scrollViewDidScroll(scrollView: UIScrollView) {
     // Dim the vehicle scroller and move it up
     // Also slide adjacent headers to the side
-
-    // Use the positive value of the table scroll offset to animate other views
-    let offset = max(scrollView.contentOffset.y, 0)
-//    println("vehicleScrollView vertical offset: \(offset)")
-    
-    if let currentVehicleHeaderView = vehicleScrollView.viewAtIndex(currentVehicleIndex) as? VehicleHeaderView {
-      // shink and hide not needed info
-      currentVehicleHeaderView.fadeOutByOffset(offset)
-    
-      // Scroll adjacent headers to side by making the current header wider and keeping it centered
-      currentVehicleHeaderView.widthExtra = offset
-      currentVehicleHeaderView.invalidateIntrinsicContentSize()
-      vehicleScrollView.layoutIfNeeded()
-      vehicleScrollView.scrollToViewWithIndex(currentVehicleIndex, animated: false)
-      for otherVehicleHeaderView in vehicleScrollView.scrollerSubviews as! [VehicleHeaderView] {
-        if currentVehicleHeaderView != otherVehicleHeaderView {
-            otherVehicleHeaderView.alpha = 1 - offset / 10
+   
+    // Do nothing if all rows fit so that bouncing does nothing
+    if scrollView.bounds.height < scrollView.contentSize.height {
+      
+      // Use the positive value of the table scroll offset to animate other views
+      let offset = max(scrollView.contentOffset.y, 0)
+      //    println("vehicleScrollView vertical offset: \(offset)")
+      
+      if let currentVehicleHeaderView = vehicleScrollView.viewAtIndex(currentVehicleIndex) as? VehicleHeaderView {
+        // shink and hide not needed info
+        currentVehicleHeaderView.fadeOutByOffset(offset)
+        
+        // Move adjacent headers to side and him them
+        for otherViewIndex in 0..<vehicleScrollView.viewCount {
+          if let leftView = vehicleScrollView.viewAtIndex(otherViewIndex) where otherViewIndex != currentVehicleIndex {
+            leftView.alpha = 1 - offset / 10
+            leftView.transform = CGAffineTransformMakeTranslation(otherViewIndex > currentVehicleIndex ? offset : -offset, 0)
+          }
         }
+        
+        // scroll table view up to match current header view bottom
+        vehicleScrollViewBottomConstraint.constant = -min(offset, currentVehicleHeaderView.bounds.height +  NSLayoutConstraint.standardAquaSpaceConstraintFromItem) + NSLayoutConstraint.standardAquaSpaceConstraintFromItem
       }
-
-      // scroll table view up to match current header view bottom
-      vehicleScrollViewBottomConstraint.constant = -min(offset, currentVehicleHeaderView.bounds.height +  NSLayoutConstraint.standardAquaSpaceConstraintFromItem) + NSLayoutConstraint.standardAquaSpaceConstraintFromItem
     }
   }
 }

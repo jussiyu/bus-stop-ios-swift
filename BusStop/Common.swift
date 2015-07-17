@@ -131,3 +131,9 @@ extension Array{
     return result
   }
 }
+
+var startTime = NSDate()
+func TICK(){ startTime =  NSDate() }
+func TOCK(function: String = __FUNCTION__, file: String = __FILE__, line: Int = __LINE__){
+  println("\(function) Time: \(startTime.timeIntervalSinceNow)\nLine:\(line) File: \(file)")
+}

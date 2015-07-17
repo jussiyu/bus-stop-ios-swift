@@ -26,7 +26,7 @@ class HorizontalScroller: UIView {
   weak var delegate: HorizontalScrollerDelegate?
   
   var scroller: UIScrollView!
-  var scrollerSubviews = [UIView]()
+  private var scrollerSubviews = [UIView]()
   
   var viewCount: Int {
     return scrollerSubviews.count
