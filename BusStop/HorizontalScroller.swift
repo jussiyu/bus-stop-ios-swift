@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import XCGLogger
 
 @objc protocol HorizontalScrollerDelegate: class {
   
@@ -125,22 +126,22 @@ class HorizontalScroller: UIView {
 //      
 //      for i in 0..<viewCount {
 //        let subView = viewAtIndex(i)
-//        println("scroller subView \(i) bounds: \(subView.bounds)")
-//        println("scroller subView \(i) frame: \(subView.frame)")
+//        log.verbose("scroller subView \(i) bounds: \(subView.bounds)")
+//        log.verbose("scroller subView \(i) frame: \(subView.frame)")
 //      }
 //
-//      println("Scroller contentsize: \(scroller.contentSize)")
-//      println("Scroller bounds: \(scroller.bounds)")
-//      println("Scroller frame: \(scroller.frame)")
-//      println("horiz bounds: \(self.bounds)")
-//      println("horiz frame: \(self.frame)")
+//      log.verbose("Scroller contentsize: \(scroller.contentSize)")
+//      log.verbose("Scroller bounds: \(scroller.bounds)")
+//      log.verbose("Scroller frame: \(scroller.frame)")
+//      log.verbose("horiz bounds: \(self.bounds)")
+//      log.verbose("horiz frame: \(self.frame)")
       
     }
   }
   
   override func intrinsicContentSize() -> CGSize {
     // Calculate height based on the first subview bounds
-    println("viewArray.first?.bounds.height: \(scrollerSubviews.first?.bounds.height)")
+    log.verbose("viewArray.first?.bounds.height: \(self.scrollerSubviews.first?.bounds.height)")
     return CGSize(width: UIViewNoIntrinsicMetric, height: scrollerSubviews.first?.bounds.height ?? UIViewNoIntrinsicMetric)
   }
 }
@@ -191,7 +192,7 @@ extension HorizontalScroller: UIScrollViewDelegate {
         scrollView.setContentOffset(CGPointMake(CGFloat(newTargetOffset), 0), animated: true)
       }
       
-      println("scrolling to offset \(newTargetOffset)")
+      log.debug("scrolling to offset \(newTargetOffset)")
     }
   }
   

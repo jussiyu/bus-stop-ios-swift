@@ -19,6 +19,11 @@
 			<key>isShown</key>
 			<false/>
 		</dict>
+		<key>Pods-BusStop-XCGLogger.xcscheme</key>
+		<dict>
+			<key>isShown</key>
+			<false/>
+		</dict>
 		<key>Pods-BusStop.xcscheme</key>
 		<dict>
 			<key>isShown</key>
@@ -37,6 +42,16 @@
 	</dict>
 	<key>SuppressBuildableAutocreation</key>
 	<dict>
+		<key>046E792CCD5B30262F1BCFE6</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>31BDA1804EAB22F770693311</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
 		<key>352BE8E9F51F3E09571CC132</key>
 		<dict>
 			<key>primary</key>
@@ -52,12 +67,37 @@
 			<key>primary</key>
 			<true/>
 		</dict>
+		<key>67F5F47FDC56FC231A32DBF2</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>7484AE0D7860F5EB7A0CA827</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
 		<key>7B91EFC3CB70546EA466FAD7</key>
 		<dict>
 			<key>primary</key>
 			<true/>
 		</dict>
+		<key>921A0EEB6BCC64FE7B6E430B</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
 		<key>ADDD88BAA073519359493596</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>DA41E669EBD507E43697D73F</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>E4B0E90DB4B357AD298EB64F</key>
 		<dict>
 			<key>primary</key>
 			<true/>

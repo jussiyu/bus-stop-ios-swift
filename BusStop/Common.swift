@@ -8,6 +8,7 @@
 
 import Foundation
 import UIKit
+import XCGLogger
 
 extension String {
   static var f: NSNumberFormatter = {
@@ -135,5 +136,5 @@ extension Array{
 var startTime = NSDate()
 func TICK(){ startTime =  NSDate() }
 func TOCK(function: String = __FUNCTION__, file: String = __FILE__, line: Int = __LINE__){
-  println("\(function) Time: \(startTime.timeIntervalSinceNow)\nLine:\(line) File: \(file)")
+  log.debug("\(function) Time: \(startTime.timeIntervalSinceNow)\nLine:\(line) File: \(file)")
 }

@@ -9,6 +9,7 @@
 import Foundation
 import CoreLocation
 import SwiftyJSON
+import XCGLogger
 
 class Vehicles {
   var vehicles = [VehicleActivity]()
@@ -34,7 +35,7 @@ class Vehicles {
         }
       }
     }
-        println("Vehicles read: \(vehicles.count)")
+        log.debug("Vehicles read: \(self.vehicles.count)")
   }
  
   func getFirstVehicle() -> VehicleActivity? {
@@ -44,7 +45,7 @@ class Vehicles {
   func getClosestVehicle(userLocation: CLLocation) -> VehicleActivity? {
     let sortedMatchingVehicles = sorted(vehicles) {$0.loc != nil && $1 != nil ? (userLocation.distanceFromLocation($0.loc!) < userLocation.distanceFromLocation($1.loc!)) : false}
     let closest = sortedMatchingVehicles.reduce("") { "\($0), \($1.description), "}
-//    println("Closest matching vehicles: \(closest)")
+//    log.debug("Closest matching vehicles: \(self.closest)")
     return sortedMatchingVehicles.first
   }
 

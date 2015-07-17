@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import XCGLogger
 
 class VehicleHeaderView: UIView {
   
@@ -77,7 +78,7 @@ class VehicleHeaderView: UIView {
   }
   
   override func intrinsicContentSize() -> CGSize {
-//    println("header vehicleDistanceLabel frame: \(vehicleDistanceLabel.frame)")
+    log.verbose("header vehicleDistanceLabel frame: \(self.vehicleDistanceLabel.frame)")
     return CGSize(width: VehicleHeaderView.defaultWidth + widthExtra, height: vehicleDistanceLabel.frame.maxY + 8)
   }
   
@@ -95,7 +96,7 @@ class VehicleHeaderView: UIView {
   }
   
   private func shrinkView(view: UIView, inout constraint: NSLayoutConstraint?, byAmount: CGFloat) {
-    println("shink amount: \(byAmount * 100)%, constraint.constant: \(constraint?.constant)")
+    log.verbose("shink amount: \(byAmount * 100)%, constraint.constant: \(constraint?.constant)")
     
     view.alpha =  1 - byAmount * 2
 

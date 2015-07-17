@@ -11,6 +11,7 @@ import SwiftyJSON
 import CoreLocation
 import MediumProgressView
 import ReachabilitySwift
+import XCGLogger
 
 // MARK: - UIViewController
 class MainViewController: UIViewController {
@@ -35,11 +36,11 @@ class MainViewController: UIViewController {
   var vehicles = Vehicles()
   var closestVehicles: [VehicleActivity] {
     if userLoc != nil {
-      //      println("Getting closest vehicle")
+      //      log.verbose("Getting closest vehicle")
       //      return lineVehicles.getClosestVehicles(userLoc!)
       return vehicles.getClosestVehicles(userLoc!)
     } else if let firstVeh = vehicles.getFirstVehicle() {
-      //      println("Getting first vehicle")
+      //      log.verbose("Getting first vehicle")
       return [firstVeh]
     } else {
       return []
@@ -58,10 +59,10 @@ class MainViewController: UIViewController {
   private var userLoc: CLLocation?
 //  var closestVehicle: VehicleActivity? {
 //    if userLoc != nil {
-//      //      println("Getting closest vehicle")
+//      //      log.verbose("Getting closest vehicle")
 //      return vehicles.getClosestVehicle(userLoc!)
 //    } else {
-//      //      println("Getting first vehicle")
+//      //      log.verbose("Getting first vehicle")
 //      return vehicles.getFirstVehicle()
 //    }
 //  }
@@ -137,7 +138,7 @@ class MainViewController: UIViewController {
   }
 
   override func viewDidAppear(animated: Bool) {
-    println("Initial refresh")
+    log.verbose("Initial refresh")
     refreshVehicles()
   }
   
@@ -152,7 +153,7 @@ class MainViewController: UIViewController {
 
     // Reachability
     reachability.whenReachable = { reachability in
-      println("Now reachable")
+      log.debug("Now reachable")
       if self.stops.count == 0 {
         // Do successful refresh done earlier
         self.refreshVehicles()
@@ -198,22 +199,22 @@ class MainViewController: UIViewController {
       autoRefreshTimer = NSTimer.scheduledTimerWithTimeInterval(10, target: self, selector: "timedRefreshRequested:", userInfo: nil, repeats: true)
       if andFire {autoRefreshTimer?.fire()}
       autoRefreshTimer?.tolerance = 2
-      println("Refresh enabled")
+      log.debug("Refresh enabled")
     } else {
-      println("Refresh disabled")
+      log.debug("Refresh disabled")
     }
   }
 
   
   private func refreshVehicles() {
-    println("RefreshVehicles")
+    log.verbose("RefreshVehicles")
     progressViewManager.showProgress()
     
     if reachability.isReachable() {
       if reachability.isReachableViaWiFi() {
-        println("Reachable via WiFi")
+        log.debug("Reachable via WiFi")
       } else {
-        println("Reachable via Cellular")
+        log.debug("Reachable via Cellular")
       }
       if stops.count == 0 {
         api.getStops()
@@ -221,7 +222,7 @@ class MainViewController: UIViewController {
         api.getVehicleActivities()
       }
     } else {
-      println("Not reachable")
+      log.debug("Not reachable")
       progressViewManager.hideProgress()
       
       // Disable autorefresh
@@ -267,7 +268,7 @@ extension MainViewController: UITableViewDataSource {
 // MARK: - UITableViewDelegate
 extension MainViewController: UITableViewDelegate {
   func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
-    println("vehicleScrollView:didSelectRowAtIndexPath: \(indexPath.item)")
+    log.verbose("vehicleScrollView:didSelectRowAtIndexPath: \(indexPath.item)")
   }
   
   func scrollViewDidScroll(scrollView: UIScrollView) {
@@ -279,7 +280,7 @@ extension MainViewController: UITableViewDelegate {
       
       // Use the positive value of the table scroll offset to animate other views
       let offset = max(scrollView.contentOffset.y, 0)
-      //    println("vehicleScrollView vertical offset: \(offset)")
+      //    log.debug("vehicleScrollView vertical offset: \(offset)")
       
       if let currentVehicleHeaderView = vehicleScrollView.viewAtIndex(currentVehicleIndex) as? VehicleHeaderView {
         // shink and hide not needed info
@@ -311,10 +312,10 @@ extension MainViewController: UITextFieldDelegate {
 // MARK: - locationUpdate notification handler
 extension MainViewController {
   @objc func locationUpdated(notification: NSNotification){
-    println("locationUpdate \(notification.name)")
+    log.verbose("locationUpdate \(notification.name)")
     if let loc = notification.userInfo as? [String:CLLocation] {
       userLoc = loc["newLocationResult"]
-      println("new user loc:  \(userLoc?.description)")
+      log.debug("new user loc:  \(self.userLoc?.description)")
       vehicleStopTableView.reloadData()
     }
   }
@@ -323,7 +324,7 @@ extension MainViewController {
 // MARK: - preferredContentSizeChanged notification handler
 extension MainViewController {
   func preferredContentSizeChanged(notification: NSNotification) {
-    println("preferredContentSizeChanged")
+    log.verbose("preferredContentSizeChanged")
     //    vehicleStopTableView takes care of itself
     vehicleScrollView.reloadData()
   }
@@ -346,7 +347,7 @@ extension MainViewController: HorizontalScrollerDelegate {
       subView = UIView()
     }
     
-    println("subView at index \(indexPath): \(subView)")
+    log.debug("subView at index \(indexPath): \(subView)")
     return subView  //TODO: return optional
   }
   
@@ -361,12 +362,12 @@ extension MainViewController: HorizontalScrollerDelegate {
   // MARK: - Notification functions
   func numberOfItemsInHorizontalScroller(horizontalScroller: HorizontalScroller) -> Int {
     let count = min(maxVisibleVehicleCount, vehicles.count)
-    println("numberOfItemsInHorizontalScroller: \(count)")
+    log.debug("numberOfItemsInHorizontalScroller: \(count)")
     return count
   }
   
   func horizontalScroller(horizontalScroller: HorizontalScroller, didScrollToViewAtIndex: Int) {
-    println("horizontalScroller(_:didScrollToViewAtIndex: \(didScrollToViewAtIndex))")
+    log.verbose("horizontalScroller(_:didScrollToViewAtIndex: \(didScrollToViewAtIndex))")
     currentVehicleIndex = didScrollToViewAtIndex
     vehicleStopTableView.reloadData()
   }

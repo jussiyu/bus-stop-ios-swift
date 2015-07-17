@@ -8,6 +8,7 @@
 import Foundation
 import SwiftyJSON
 import SystemConfiguration
+import XCGLogger
 
 protocol APIControllerProtocol {
   func didReceiveAPIResults(results: JSON)
@@ -63,12 +64,12 @@ class APIController {
       let task = NSURLSession(configuration: configuration).dataTaskWithURL(url, completionHandler: {data, response, urlError -> Void in
         UIApplication.sharedApplication().networkActivityIndicatorVisible = false
         if(urlError != nil) {
-          println("Task completed unsuccessfully: " + urlPath)
-          println(urlError.localizedDescription)
+          log.error("Task completed unsuccessfully: " + urlPath)
+          log.error(urlError.localizedDescription)
           delegate.didReceiveError(urlError)
           return
         } else {
-          println("Task completed successfully: " + urlPath)
+          log.verbose("Task completed successfully: " + urlPath)
           let json = JSON(data: data)
           delegate.didReceiveAPIResults(json)
         }
@@ -78,7 +79,7 @@ class APIController {
       // In order to actually make the web request, we need to "resume"
       task.resume()
     } else {
-      println("Invalid URL: " + urlPath)
+      log.severe("Invalid URL: " + urlPath)
     }
   }
 }

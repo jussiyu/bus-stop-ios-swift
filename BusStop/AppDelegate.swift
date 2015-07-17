@@ -9,6 +9,9 @@
 import UIKit
 import CoreLocation
 import ReachabilitySwift
+import XCGLogger
+
+let log = XCGLogger.defaultInstance()
 
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {
@@ -16,11 +19,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
   var window: UIWindow?
   var lm: CLLocationManager?
 
-
   func application(application: UIApplication, didFinishLaunchingWithOptions launchOptions: [NSObject: AnyObject]?) -> Bool {
     // Override point for customization after application launch.
     let locStatus = CLLocationManager.authorizationStatus()
-    println("location auth status: \(locStatus.hashValue)")
+    log.debug("location auth status: \(locStatus.hashValue)")
     switch locStatus {
     case CLAuthorizationStatus.AuthorizedAlways:
       initLocation(locStatus)
@@ -29,9 +31,20 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     case CLAuthorizationStatus.NotDetermined:
       initLocation(locStatus)
     default:
-      println("location auth failed: \(locStatus.hashValue)")
+      log.error("location auth failed: \(locStatus.hashValue)")
     }
-    
+
+    // Logger configuration
+    #if DEBUG
+      log.setup(logLevel: .Info, showLogLevel: true, showFileNames: true, showLineNumbers: true, writeToFile: nil, fileLogLevel: .None)
+      let shortLogDateFormatter = NSDateFormatter()
+      shortLogDateFormatter.locale = NSLocale.currentLocale()
+      shortLogDateFormatter.dateFormat = "HH:mm:ss.SSS"
+      log.dateFormatter = shortLogDateFormatter
+      log.xcodeColorsEnabled = true
+    #else
+      log.setup(logLevel: .Severe, showLogLevel: true, showFileNames: true, showLineNumbers: true, writeToFile: nil, fileLogLevel: .None)
+    #endif
     return true
   }
 
@@ -51,9 +64,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     lm?.requestWhenInUseAuthorization()
     if CLLocationManager.locationServicesEnabled() {
       lm?.startMonitoringSignificantLocationChanges()
-      println("start location monitoring")
+      log.debug("start location monitoring")
     } else {
-      println("location monitoring disabled")
+      log.debug("location monitoring disabled")
     }
   }
 
@@ -79,7 +92,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     case CLAuthorizationStatus.NotDetermined:
       lm?.requestWhenInUseAuthorization()
     default:
-      println("Location service not allowed")
+      log.warning("Location service not allowed")
     }
 
   }
@@ -88,26 +101,26 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
 extension AppDelegate: CLLocationManagerDelegate {
   func locationManager(manager: CLLocationManager!, didUpdateLocations locations: [AnyObject]!) {
-    println("didUpdateLocations: \(locations[0].description)")
+    log.debug("didUpdateLocations: \(locations[0].description)")
     NSNotificationCenter.defaultCenter().postNotificationName("newLocationNotif", object: self, userInfo: ["newLocationResult": locations[0]])
   }
   
   func locationManager(manager: CLLocationManager!, didFailWithError error: NSError!) {
-    println("Location Manager didFailWithError: \(error)")
+    log.error("Location Manager didFailWithError: \(error)")
     if error == CLError.Denied.rawValue || error == CLError.LocationUnknown.rawValue {
       lm?.stopUpdatingLocation()
     }
   }
   
   func locationManager(manager: CLLocationManager!, didChangeAuthorizationStatus status: CLAuthorizationStatus) {
-    println("didChangeAuthorizationStatus: \(status.hashValue)")
+    log.debug("didChangeAuthorizationStatus: \(status.hashValue)")
     switch status {
     case CLAuthorizationStatus.AuthorizedAlways:
       lm?.startUpdatingLocation()
     case CLAuthorizationStatus.AuthorizedWhenInUse:
       lm?.startUpdatingLocation()
     default:
-      println("Location service not allowed")
+      log.error("Location service not allowed")
     }
   }
 }
