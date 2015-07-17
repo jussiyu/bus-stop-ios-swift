@@ -101,6 +101,11 @@ extension NSLayoutConstraint {
     }
     return Holder.standardConstantBetweenSuperview!
   }
+  
+  class func constraintsWithVisualFormatForSwift(format: String, options opts: NSLayoutFormatOptions = nil, metrics: [String : AnyObject] = [:], views: [String : AnyObject] = [:]) -> [NSLayoutConstraint] {
+      return NSLayoutConstraint.constraintsWithVisualFormat(format, options: opts, metrics: metrics, views: views) as! [NSLayoutConstraint]
+  }
+
 }
 
 extension UIView {

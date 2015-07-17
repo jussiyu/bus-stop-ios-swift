@@ -14,9 +14,8 @@ class VehicleHeaderView: UIView {
   var vehicleLabel: UILabel!
   var vehicleDistanceLabel: UILabel!
   
-  var vehicleTopOffsetConstraint: NSLayoutConstraint!
-  var vehicleTopOffsetConstant: NSNumber = 0
-  var vehicleTopOffsetConstantDefault: CGFloat?
+  var lineLabelHeightConstraint: NSLayoutConstraint?
+  var vehicleDistanceLabelHeightConstraint: NSLayoutConstraint?
   
   static let defaultWidth: CGFloat = 200
   var widthExtra: CGFloat = 0
@@ -26,21 +25,22 @@ class VehicleHeaderView: UIView {
     self.init(frame: frame)
     self.setContentHuggingPriority(0, forAxis: .Horizontal)
 
-    backgroundColor = UIColor.lightGrayColor()
+//    backgroundColor = UIColor.lightGrayColor()
     lineLabel = UILabel()
     lineLabel.textAlignment = NSTextAlignment.Center
     lineLabel.text = lineRef
+//    lineLabel.backgroundColor = UIColor.yellowColor()
     vehicleLabel = UILabel()
     vehicleLabel.textAlignment = NSTextAlignment.Center
     vehicleLabel.text = vehicleRef
-    vehicleLabel.backgroundColor = UIColor.redColor()
+//    vehicleLabel.backgroundColor = UIColor.redColor()
     vehicleLabel.setContentHuggingPriority(1000, forAxis: .Vertical)
     vehicleDistanceLabel = UILabel()
     vehicleDistanceLabel.textAlignment = NSTextAlignment.Center
     vehicleDistanceLabel.text = distance.stringByReplacingOccurrencesOfString("\\n", withString: "\n", options: nil)
     vehicleDistanceLabel.numberOfLines = 2
     vehicleDistanceLabel.setContentHuggingPriority(1000, forAxis: .Vertical)
-    vehicleDistanceLabel.backgroundColor = UIColor.greenColor()
+//    vehicleDistanceLabel.backgroundColor = UIColor.greenColor()
     
     // add child views
     addSubview(lineLabel)
@@ -51,14 +51,8 @@ class VehicleHeaderView: UIView {
     lineLabel.setTranslatesAutoresizingMaskIntoConstraints(false)
     vehicleLabel.setTranslatesAutoresizingMaskIntoConstraints(false)
     vehicleDistanceLabel.setTranslatesAutoresizingMaskIntoConstraints(false)
-    NSLayoutConstraint.activateConstraints(NSLayoutConstraint.constraintsWithVisualFormat("V:|-(8@750)-[a]-(8@750)-[b]-(8@1000)-[c]-(8@1000)-|", options: nil, metrics: [:], views: ["a":lineLabel, "b":vehicleLabel, "c":vehicleDistanceLabel]))
-
-    //    vehicleTopOffsetConstraint = NSLayoutConstraint(item: self, attribute: NSLayoutAttribute.Top, relatedBy: .Equal, toItem: vehicleLabel, attribute: .Top, multiplier: 1, constant: 0)
-    //    vehicleTopOffsetConstraint.priority = 250
-    vehicleTopOffsetConstraint = NSLayoutConstraint.constraintsWithVisualFormat("V:|-(offset@250)-[v]", options: nil, metrics: ["offset":vehicleTopOffsetConstant], views: ["v":vehicleLabel]).first as! NSLayoutConstraint
-    
+    NSLayoutConstraint.activateConstraints(NSLayoutConstraint.constraintsWithVisualFormat("V:|-[a]-[b]-[c]-|", options: nil, metrics: [:], views: ["a":lineLabel, "b":vehicleLabel, "c":vehicleDistanceLabel]))
     NSLayoutConstraint.activateConstraints(NSLayoutConstraint.constraintsWithVisualFormat("H:|[v]|", options: nil, metrics: [:], views: ["v":lineLabel]))
-    NSLayoutConstraint.activateConstraints([vehicleTopOffsetConstraint])
     NSLayoutConstraint.activateConstraints(NSLayoutConstraint.constraintsWithVisualFormat("H:|[v]|", options: nil, metrics: [:], views: ["v":vehicleLabel]))
     NSLayoutConstraint.activateConstraints(NSLayoutConstraint.constraintsWithVisualFormat("H:|[v]|", options: nil, metrics: [:], views: ["v":vehicleDistanceLabel]))
     
@@ -87,18 +81,37 @@ class VehicleHeaderView: UIView {
     return CGSize(width: VehicleHeaderView.defaultWidth + widthExtra, height: vehicleDistanceLabel.frame.maxY + 8)
   }
   
-  func fadeOutByOffset(offset:CGFloat) {
-    let scaledOffset = Float((bounds.height - offset) / bounds.height)
-//    lineLabel.alpha =  scaledOffset * 0.7
+  func fadeOutByOffset(offset: CGFloat) {
+    var amount = min(1, 1 - (bounds.height - offset) / bounds.height)
+    amount = amount < 0.01 ? 0 : amount
+    
+    shrinkView(lineLabel, constraint: &lineLabelHeightConstraint, byAmount: amount)
+    shrinkView(vehicleDistanceLabel, constraint: &vehicleDistanceLabelHeightConstraint, byAmount: amount)
+    
 //    lineLabel.transform = CGAffineTransformMakeScale(1, scaledOffset)
-    vehicleTopOffsetConstantDefault = vehicleTopOffsetConstantDefault ?? vehicleLabel.frame.minY
-    vehicleTopOffsetConstraint.constant = max(0, vehicleTopOffsetConstantDefault! - offset * 10)
-    vehicleTopOffsetConstraint.priority = offset > 0 ? 999 : 250
-    vehicleDistanceLabel.alpha = (bounds.height - offset) / bounds.height * 0.7
-    println("scaledOffset: \(scaledOffset), vehicleTopOffsetConstraint.constant: \(vehicleTopOffsetConstraint.constant)")
-//    vehicleDistanceLabel.transform = CGAffineTransformMakeScale(1, scaledOffset)
-    invalidateIntrinsicContentSize()
+//    vehicleDistanceLabel.alpha = (bounds.height - offset) / bounds.height * 0.7
+//    invalidateIntrinsicContentSize()
     layoutIfNeeded()
+  }
+  
+  private func shrinkView(view: UIView, inout constraint: NSLayoutConstraint?, byAmount: CGFloat) {
+    println("shink amount: \(byAmount * 100)%, constraint.constant: \(constraint?.constant)")
+    
+    view.alpha =  1 - byAmount * 2
+
+    // store intrinsic height
+    let intrinsicHeight = view.intrinsicContentSize().height
+    
+    // initialize constraint with intrinsic height constant if not done already
+    if constraint == nil {
+      constraint = NSLayoutConstraint.constraintsWithVisualFormatForSwift("V:[v(intrinsic@250)]", metrics: ["intrinsic":intrinsicHeight], views: ["v":view]).first
+      constraint?.active = true
+    }
+    
+    // activate, set current constant based on offset and increase priority
+    constraint?.constant = intrinsicHeight * (1 - byAmount)
+    constraint?.priority = byAmount > 0 ? 999 : 250
+    
   }
 
 }

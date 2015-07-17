@@ -279,21 +279,24 @@ extension MainViewController: UITableViewDelegate {
 //    println("vehicleScrollView vertical offset: \(offset)")
     
     if let currentVehicleHeaderView = vehicleScrollView.viewAtIndex(currentVehicleIndex) as? VehicleHeaderView {
+      // shink and hide not needed info
         currentVehicleHeaderView.fadeOutByOffset(offset)
-    }
-      
-    // Offset the header view up by max of its height
-    vehicleScrollViewTopConstraint.constant = -min(offset, vehicleScrollView.bounds.height +  NSLayoutConstraint.standardAquaSpaceConstraintFromItem) + NSLayoutConstraint.standardAquaSpaceConstraintFromItem
-
-//    vehicleScrollView.alpha = (vehicleScrollView.bounds.height - offset) / vehicleScrollView.bounds.height * 0.7
-
-    // Scroll adjacent headers to side by making the current header wider and keeping it centered
-    if let currentVehicleHeaderView = vehicleScrollView.viewAtIndex(currentVehicleIndex) as? VehicleHeaderView {
+    
+      // Scroll adjacent headers to side by making the current header wider and keeping it centered
       currentVehicleHeaderView.widthExtra = offset
       currentVehicleHeaderView.invalidateIntrinsicContentSize()
       vehicleScrollView.layoutIfNeeded()
       vehicleScrollView.scrollToViewWithIndex(currentVehicleIndex, animated: false)
+
+      // scroll table view up to match current header view bottom
+      vehicleScrollViewBottomConstraint.constant = -min(offset, currentVehicleHeaderView.bounds.height +  NSLayoutConstraint.standardAquaSpaceConstraintFromItem) + NSLayoutConstraint.standardAquaSpaceConstraintFromItem
     }
+    
+    // Offset the header view up by max of its height
+//    vehicleScrollViewTopConstraint.constant = -min(offset, vehicleScrollView.bounds.height +  NSLayoutConstraint.standardAquaSpaceConstraintFromItem) + NSLayoutConstraint.standardAquaSpaceConstraintFromItem
+    
+//    vehicleScrollView.alpha = (vehicleScrollView.bounds.height - offset) / vehicleScrollView.bounds.height * 0.7
+
   }
 }
 
