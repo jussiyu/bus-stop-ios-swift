@@ -45,6 +45,11 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     #else
       log.setup(logLevel: .Severe, showLogLevel: true, showFileNames: true, showLineNumbers: true, writeToFile: nil, fileLogLevel: .None)
     #endif
+    
+//    // URL cache
+//    let URLCache = NSURLCache(memoryCapacity: 4 * 1024 * 1024, diskCapacity: 4 * 1024 * 1024, diskPath: "nsurlcache")
+//    NSURLCache.setSharedURLCache(URLCache)
+    
     return true
   }
 
@@ -76,6 +81,11 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
   func applicationWillTerminate(application: UIApplication) {
     // Called when the application is about to terminate. Save data if appropriate. See also applicationDidEnterBackground:.
+  }
+  
+  func applicationDidReceiveMemoryWarning(application: UIApplication) {
+    // Clean URL caches
+    NSURLCache.sharedURLCache().removeAllCachedResponses()
   }
 
   func initLocation(status: CLAuthorizationStatus) {

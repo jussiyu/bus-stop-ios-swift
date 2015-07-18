@@ -28,7 +28,7 @@ class APIController {
   }
 
   func getVehicleActivities() {
-    doGetOnPath("http://data.itsfactory.fi/journeys/api/1/vehicle-activity", delegate: vehDelegate)
+    doGetOnPath("http://data.itsfactory.fi/journeys/api/1/vehicle-activity", delegate: vehDelegate, cachingEnabled: false)
   }
 
   func getStops() {
@@ -54,13 +54,33 @@ class APIController {
     return (isReachable && !needsConnection)
   }
   
-  private func doGetOnPath(urlPath: String, delegate: APIControllerProtocol) {
+  private func doGetOnPath(urlPath: String, delegate: APIControllerProtocol, cachingEnabled: Bool = true) {
     UIApplication.sharedApplication().networkActivityIndicatorVisible = true
 
     let url = NSURL(string: urlPath)
     if let url = url {
-      let request = NSURLRequest(URL: url, cachePolicy: .UseProtocolCachePolicy, timeoutInterval: 30.0)
+      let request = NSMutableURLRequest(URL: url, cachePolicy: cachingEnabled ? .UseProtocolCachePolicy : .ReloadIgnoringLocalCacheData, timeoutInterval: 30.0)
+      if cachingEnabled {
+        if let cachedResponse = NSURLCache.sharedURLCache().cachedResponseForRequest(request) {
+          log.info("Using cached response for \(urlPath)")
+          log.verbose("Task completed successfully: " + urlPath)
+          let json = JSON(data: cachedResponse.data)
+          delegate.didReceiveAPIResults(json)
+          return
+        }
+      } else {
+        if let cachedResponse = NSURLCache.sharedURLCache().cachedResponseForRequest(request) {
+          log.warning("Cached response exists for \(urlPath). Removed!")
+          NSURLCache.sharedURLCache().removeCachedResponseForRequest(request)
+        }
+      }
       var configuration = NSURLSessionConfiguration.defaultSessionConfiguration()
+      if !cachingEnabled {
+        configuration.URLCache = nil
+        configuration.requestCachePolicy = .ReloadIgnoringLocalCacheData
+        request.addValue("no-cache", forHTTPHeaderField: "Cache-Control")
+      }
+      
       let task = NSURLSession(configuration: configuration).dataTaskWithURL(url, completionHandler: {data, response, urlError -> Void in
         UIApplication.sharedApplication().networkActivityIndicatorVisible = false
         if(urlError != nil) {
