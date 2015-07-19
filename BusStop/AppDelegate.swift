@@ -61,14 +61,14 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
   func applicationDidEnterBackground(application: UIApplication) {
     // Use this method to release shared resources, save user data, invalidate timers, and store enough application state information to restore your application to its current state in case it is terminated later.
     // If your application supports background execution, this method is called instead of applicationWillTerminate: when the user quits.
-    lm?.stopMonitoringSignificantLocationChanges()
+    lm?.stopUpdatingLocation()
   }
 
   func applicationWillEnterForeground(application: UIApplication) {
     // Called as part of the transition from the background to the inactive state; here you can undo many of the changes made on entering the background.
     lm?.requestWhenInUseAuthorization()
     if CLLocationManager.locationServicesEnabled() {
-      lm?.startMonitoringSignificantLocationChanges()
+      lm?.startUpdatingLocation()
       log.debug("start location monitoring")
     } else {
       log.debug("location monitoring disabled")
@@ -93,7 +93,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     lm?.delegate = self
     lm?.desiredAccuracy = kCLLocationAccuracyBest
     lm?.activityType = CLActivityType.Other
-    lm?.distanceFilter = 100
+    lm?.distanceFilter = 10 // meters
     switch status {
     case CLAuthorizationStatus.AuthorizedAlways:
       lm?.startUpdatingLocation()
@@ -112,7 +112,13 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 extension AppDelegate: CLLocationManagerDelegate {
   func locationManager(manager: CLLocationManager!, didUpdateLocations locations: [AnyObject]!) {
     log.debug("didUpdateLocations: \(locations[0].description)")
-    NSNotificationCenter.defaultCenter().postNotificationName("newLocationNotif", object: self, userInfo: ["newLocationResult": locations[0]])
+    if let latestLoc = locations.last as? CLLocation {
+      if latestLoc.horizontalAccuracy > 0 && latestLoc.timestamp.timeIntervalSinceNow > -30 {
+        // good enough location received
+        NSNotificationCenter.defaultCenter().postNotificationName("newLocationNotif", object: self, userInfo: ["newLocationResult": locations[0]])
+        lm?.stopUpdatingLocation()
+      }
+    }
   }
   
   func locationManager(manager: CLLocationManager!, didFailWithError error: NSError!) {

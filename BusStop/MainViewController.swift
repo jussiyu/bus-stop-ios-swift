@@ -22,7 +22,8 @@ class MainViewController: UIViewController {
   @IBOutlet weak var vehicleScrollViewTopConstraint: NSLayoutConstraint!
   @IBOutlet weak var vehicleScrollViewBottomConstraint: NSLayoutConstraint!
   @IBOutlet weak var refreshToggle: UIBarButtonItem!
-
+  @IBOutlet weak var progressLabel: UILabel!
+  
   let progressViewManager = MediumProgressViewManager.sharedInstance
   let reachability = Reachability.reachabilityForInternetConnection()
   
@@ -57,29 +58,39 @@ class MainViewController: UIViewController {
 
   private var stops = [String: Stop]()
   private var userLoc: CLLocation?
-//  var closestVehicle: VehicleActivity? {
-//    if userLoc != nil {
-//      //      log.verbose("Getting closest vehicle")
-//      return vehicles.getClosestVehicle(userLoc!)
-//    } else {
-//      //      log.verbose("Getting first vehicle")
-//      return vehicles.getFirstVehicle()
-//    }
-//  }
   
   lazy private var api: APIController = {
     
-    class VehicleDelegate: APIControllerProtocol {
+    class APIDelegateBase: APIControllerProtocol {
       let ref: MainViewController
       init(ref: MainViewController) {
         self.ref = ref
       }
+
       func didReceiveAPIResults(results: JSON) {
+      }
+      
+      func hideProgress() {
+        UIView.animateWithDuration( 0.5, animations: {self.ref.progressLabel.alpha = 0},
+          completion: {(_) in self.ref.progressLabel.hidden=true})
+      }
+
+      func didReceiveError(urlerror: NSError) {
+        dispatch_async(dispatch_get_main_queue(), {
+          self.ref.progressViewManager.hideProgress()
+        })
+      }
+    }
+  
+    class VehicleDelegate :APIDelegateBase {
+      override func didReceiveAPIResults(results: JSON) {
         if results["status"] == "success" {
           self.ref.vehicles = Vehicles(fromJSON: results["body"])
           dispatch_async(dispatch_get_main_queue(), {
+            self.ref.progressLabel.text = NSLocalizedString("All data loaded", comment: "")
             self.ref.vehicleScrollView.reloadData()
             self.ref.vehicleStopTableView.reloadData()
+            self.hideProgress()
           })
           dispatch_async(dispatch_get_main_queue()) {self.ref.progressViewManager.hideProgress()}
         } else { // status != success
@@ -91,23 +102,16 @@ class MainViewController: UIViewController {
             alertController.addAction(UIAlertAction(title: "Dismiss", style: UIAlertActionStyle.Default, handler: nil))
             self.ref.presentViewController(alertController, animated: true, completion: nil)
             self.ref.progressViewManager.hideProgress()
+            self.hideProgress()
           })
         }
       }
       
-      func didReceiveError(urlerror: NSError) {
-        dispatch_async(dispatch_get_main_queue(), {
-          self.ref.progressViewManager.hideProgress()
-        })
-      }
     }
     
-    class StopsDelegate: APIControllerProtocol {
-      let ref: MainViewController
-      init(ref: MainViewController) {
-        self.ref = ref
-      }
-      func didReceiveAPIResults(results: JSON) {
+    class StopsDelegate: APIDelegateBase {
+      
+      override func didReceiveAPIResults(results: JSON) {
         if results["status"] == "success" {
           self.ref.stops = Stop.StopsFromJSON(results["body"])
           // Load initial vehicle data after stops have been read
@@ -121,12 +125,9 @@ class MainViewController: UIViewController {
             alertController.addAction(UIAlertAction(title: "Dismiss", style: UIAlertActionStyle.Default, handler: nil))
             self.ref.presentViewController(alertController, animated: true, completion: nil)
             self.ref.progressViewManager.hideProgress()
+            self.hideProgress()
           })
         }
-      }
-
-      func didReceiveError(urlerror: NSError) {
-        self.ref.progressViewManager.hideProgress()
       }
     }
     
@@ -153,6 +154,8 @@ class MainViewController: UIViewController {
 
     // Reachability
     reachability.whenReachable = { reachability in
+      self.progressLabel.text = NSLocalizedString("Network connectivity resumed", comment: "")
+
       log.debug("Now reachable")
       if self.stops.count == 0 {
         // Do successful refresh done earlier
@@ -170,6 +173,7 @@ class MainViewController: UIViewController {
   }
 
   override func viewWillAppear(animated: Bool) {
+    progressLabel.text = NSLocalizedString("Aquiring location", comment: "")
     NSNotificationCenter.defaultCenter().addObserver(self, selector: "locationUpdated:", name: "newLocationNotif", object: nil)
   }
 
@@ -216,6 +220,7 @@ class MainViewController: UIViewController {
       } else {
         log.debug("Reachable via Cellular")
       }
+      progressLabel.text = NSLocalizedString("Refreshing bus information from network", comment: "")
       if stops.count == 0 {
         api.getStops()
       } else {
@@ -333,10 +338,16 @@ extension MainViewController: UITextFieldDelegate {
 extension MainViewController {
   @objc func locationUpdated(notification: NSNotification){
     log.verbose("locationUpdate \(notification.name)")
-    if let loc = notification.userInfo as? [String:CLLocation] {
-      userLoc = loc["newLocationResult"]
-      log.debug("new user loc:  \(self.userLoc?.description)")
-      vehicleStopTableView.reloadData()
+    if let locInfo = notification.userInfo as? [String:CLLocation], newLoc = locInfo["newLocationResult"] {
+      if userLoc == nil || userLoc!.moreAccurateThanLocation(newLoc) ||
+          !userLoc!.commonHorizontalLocationWith(newLoc) {
+        userLoc = newLoc
+        log.info("New user loc:  \(self.userLoc?.description)")
+        progressLabel.text = NSLocalizedString("Location acquired.", comment: "")
+        vehicleStopTableView.reloadData()
+      } else {
+        log.info("Existing or worse user loc notified. Ignored.")
+      }
     }
   }
 }

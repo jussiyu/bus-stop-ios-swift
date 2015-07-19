@@ -9,6 +9,7 @@
 import Foundation
 import UIKit
 import XCGLogger
+import CoreLocation
 
 extension String {
   static var f: NSNumberFormatter = {
@@ -137,4 +138,15 @@ var startTime = NSDate()
 func TICK(){ startTime =  NSDate() }
 func TOCK(function: String = __FUNCTION__, file: String = __FILE__, line: Int = __LINE__){
   log.debug("\(function) Time: \(startTime.timeIntervalSinceNow)\nLine:\(line) File: \(file)")
+}
+
+
+extension CLLocation {
+  func moreAccurateThanLocation(other: CLLocation) -> Bool {
+    return self.horizontalAccuracy < other.horizontalAccuracy
+  }
+
+  func commonHorizontalLocationWith (other: CLLocation) -> Bool {
+    return self.coordinate.longitude == other.coordinate.longitude && self.coordinate.latitude == other.coordinate.latitude
+  }
 }

@@ -7,6 +7,7 @@ target 'BusStop' do
   pod 'MediumProgressView', :git => 'file:///Users/jussi/dev/iOS/mediumprogressview/'
   pod 'ReachabilitySwift', '~> 1.1'
   pod 'XCGLogger', '~> 2.1'
+  pod 'Async', :git => 'https://github.com/duemunk/Async.git'
 end
 
 target 'BusStopTests' do
