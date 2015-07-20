@@ -12,7 +12,7 @@ import XCGLogger
 
 protocol APIControllerProtocol {
   func didReceiveAPIResults(results: JSON, next: AnyObject? -> Void)
-  func didReceiveError(urlerror: NSError)
+  func didReceiveError(urlerror: NSError, next: AnyObject? -> Void)
 }
 
 class APIController {
@@ -94,7 +94,7 @@ class APIController {
         if(urlError != nil) {
           log.error("Task completed unsuccessfully: " + urlPath)
           log.error(urlError.localizedDescription)
-          delegate.didReceiveError(urlError)
+          delegate.didReceiveError(urlError, next: next)
           return
         } else {
           log.debug("Task completed successfully: " + urlPath)
