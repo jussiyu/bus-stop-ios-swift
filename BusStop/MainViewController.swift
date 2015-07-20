@@ -90,9 +90,35 @@ class MainViewController: UIViewController {
           Async.background {
             self.ref.vehicles = Vehicles(fromJSON: results["body"])
           }.main {
-            self.ref.progressLabel.text = NSLocalizedString("All data loaded", comment: "")
+            self.ref.progressLabel.text = NSLocalizedString("Bus data loaded.", comment: "")
+            self.ref.refreshStopsForCurrentVehicle()
             self.ref.vehicleScrollView.reloadData()
+          }
+        } else { // status != success
+          Async.main {
+            let errorTitle = results["data"]["title"] ?? "unknown error"
+            let errorMessage = results["data"]["message"] ?? "unknown details"
+            let alertController = UIAlertController(title: "Network error", message:
+              "Failed to read data from network. The detailed error was:\n \"\(errorTitle): \(errorMessage)\"", preferredStyle: UIAlertControllerStyle.Alert)
+            alertController.addAction(UIAlertAction(title: "Dismiss", style: UIAlertActionStyle.Default, handler: nil))
+            self.ref.presentViewController(alertController, animated: true, completion: nil)
+            self.ref.progressViewManager.hideProgress()
+            self.hideProgress()
+          }
+        }
+      }
+      
+    }
+
+    class VehicleStopsDelegate :APIDelegateBase {
+      override func didReceiveAPIResults(results: JSON) {
+        if results["status"] == "success" {
+          Async.background {
+            self.ref.vehicles.setStopsFromJSON(results["body"])
+          }.main {
+            self.ref.progressLabel.text = NSLocalizedString("All data loaded", comment: "")
             self.ref.vehicleStopTableView.reloadData()
+            self.ref.vehicleStopTableView.hidden = false
             self.hideProgress()
             self.ref.progressViewManager.hideProgress()
           }
@@ -119,7 +145,7 @@ class MainViewController: UIViewController {
           Async.background {
             self.ref.stops = Stop.StopsFromJSON(results["body"])
             // Load initial vehicle data after stops have been read
-            self.ref.api.getVehicleActivities()
+            self.ref.api.getVehicleActivityHeaders()
           }
         } else {
           Async.main {
@@ -136,7 +162,7 @@ class MainViewController: UIViewController {
       }
     }
     
-    return APIController(vehDelegate: VehicleDelegate(ref: self), stopsDelegate: StopsDelegate(ref: self))
+    return APIController(vehDelegate: VehicleDelegate(ref: self), stopsDelegate: StopsDelegate(ref: self), vehStopsDelegate: VehicleStopsDelegate(ref:self))
   }()
   
   // MARK: - lifecycle
@@ -159,7 +185,7 @@ class MainViewController: UIViewController {
 
     // Reachability
     reachability.whenReachable = { reachability in
-      self.progressLabel.text = NSLocalizedString("Network connectivity resumed", comment: "")
+      self.progressLabel.text = NSLocalizedString("Network connectivity resumed. Refreshing data from network...", comment: "")
 
       log.debug("Now reachable")
       if self.stops.count == 0 {
@@ -178,7 +204,7 @@ class MainViewController: UIViewController {
   }
 
   override func viewWillAppear(animated: Bool) {
-    progressLabel.text = NSLocalizedString("Aquiring location", comment: "")
+    progressLabel.text = NSLocalizedString("Aquiring location...", comment: "")
     NSNotificationCenter.defaultCenter().addObserver(self, selector: "locationUpdated:", name: "newLocationNotif", object: nil)
   }
 
@@ -225,7 +251,7 @@ class MainViewController: UIViewController {
       } else {
         log.debug("Reachable via Cellular")
       }
-      progressLabel.text = NSLocalizedString("Refreshing bus information from network", comment: "")
+      progressLabel.text = NSLocalizedString("Refreshing bus information from network...", comment: "")
       if stops.count == 0 {
         api.getStops()
       } else {
@@ -242,6 +268,13 @@ class MainViewController: UIViewController {
       presentViewController(alert, animated: true, completion: nil)
     }
 
+  }
+
+  private func refreshStopsForCurrentVehicle() {
+    log.verbose("refreshStopsForVehicle")
+    if let currentVehicleRef = currentVehicle?.vehRef {
+      api.getVehicleActivityStopsForVehicle(currentVehicleRef)
+    }
   }
   
   func timedRefreshRequested(timer: NSTimer) {
@@ -350,7 +383,7 @@ extension MainViewController {
         userLoc = newLoc
         log.info("New user loc:  \(self.userLoc?.description)")
         progressLabel.text = NSLocalizedString("Location acquired.", comment: "")
-        vehicleStopTableView.reloadData()
+//        vehicleStopTableView.reloadData()
       } else {
         log.info("Existing or worse user loc notified. Ignored.")
       }

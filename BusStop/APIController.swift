@@ -16,11 +16,12 @@ protocol APIControllerProtocol {
 }
 
 class APIController {
-  let vehDelegate, stopsDelegate: APIControllerProtocol
+  let vehDelegate, stopsDelegate, vehStopsDelegate: APIControllerProtocol
   
-  init(vehDelegate: APIControllerProtocol, stopsDelegate: APIControllerProtocol) {
+  init(vehDelegate: APIControllerProtocol, stopsDelegate: APIControllerProtocol, vehStopsDelegate: APIControllerProtocol) {
     self.vehDelegate = vehDelegate
     self.stopsDelegate = stopsDelegate
+    self.vehStopsDelegate = vehStopsDelegate
   }
   
   func getVehicleActivitiesForLine(lineId: Int) {
@@ -29,6 +30,14 @@ class APIController {
 
   func getVehicleActivities() {
     doGetOnPath("http://data.itsfactory.fi/journeys/api/1/vehicle-activity", delegate: vehDelegate, cachingEnabled: false)
+  }
+
+  func getVehicleActivityStopsForVehicle(vehicleRef: String) {
+    doGetOnPath("http://data.itsfactory.fi/journeys/api/1/vehicle-activity?vehRef=\(vehicleRef)", delegate: vehStopsDelegate, cachingEnabled: false)
+  }
+
+  func getVehicleActivityHeaders() {
+    doGetOnPath("http://data.itsfactory.fi/journeys/api/1/vehicle-activity?exclude-fields=monitoredVehicleJourney.onwardCalls", delegate: vehDelegate, cachingEnabled: false)
   }
 
   func getStops() {

@@ -16,7 +16,7 @@ class VehicleActivity {
   let lineRef: String
   let vehRef: String
   var loc: CLLocation?
-  var stops: [NSURL] = [NSURL]()
+  var stops = [NSURL]()
   var description: String {
     return "vehRef: \(vehRef), loc: \(loc?.coordinate.latitude.toString(fractionDigits: 2)):\(loc?.coordinate.longitude.toString(fractionDigits: 2))"
   }
@@ -51,21 +51,31 @@ class VehicleActivity {
           loc = CLLocation(latitude: lat, longitude: lon)
         }
       }
-      let stops = monVeh["onwardCalls"]
-      for (index: String, subJson: JSON) in stops {
-        if let stopRef = subJson["stopPointRef"].string {
-          if let url = NSURL(fileURLWithPath: stopRef) {
-            self.stops.append(url)
-          }
-        }
-      }
+      
+      setStopsFromJSON(monVeh)
+      
     } else {
+      log.error("failed to parse vehicle activity from JSON")
       self.vehRef = ""
       self.lineRef = ""
       return nil
     }
   }
   
+  func setStopsFromJSON(monVeh: JSON) {
+    self.stops = [NSURL]()
+    
+    let stops = monVeh["onwardCalls"]
+    for (index: String, subJson: JSON) in stops {
+      if let stopRef = subJson["stopPointRef"].string {
+        if let url = NSURL(fileURLWithPath: stopRef) {
+          self.stops.append(url)
+        }
+      }
+    }
+//    log.info("onwardCalls count: \(stops.count)")
+  }
+
   // MARK: - methods
   func addStopAsString(stopRef: String) {
     if let url = NSURL(fileURLWithPath: stopRef) {
@@ -91,5 +101,8 @@ class VehicleActivity {
     return loc?.distanceFromLocation(userLoc)
   }
   
+  class func vehicleRefFromJSON(monVeh: JSON) -> String? {
+    return monVeh["vehicleRef"].string
+  }
 }
 
