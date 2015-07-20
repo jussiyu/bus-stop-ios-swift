@@ -93,6 +93,7 @@
                         <outlet property="progressLabel" destination="C1n-ja-70w" id="ySJ-fS-weG"/>
                         <outlet property="refreshToggle" destination="xuj-HQ-FG6" id="T4Q-tL-uid"/>
                         <outlet property="vehicleScrollView" destination="csx-9f-M92" id="7d2-bs-NA4"/>
+                        <outlet property="vehicleScrollViewBottomConstraint" destination="fcg-fj-hlh" id="k8k-1G-ml1"/>
                         <outlet property="vehicleScrollViewTopConstraint" destination="T8J-t0-g46" id="2QM-4g-t6v"/>
                         <outlet property="vehicleStopTableView" destination="gZm-hb-9Zh" id="rLf-iq-5bB"/>
                     </connections>
