@@ -90,7 +90,7 @@ class MainViewController: UIViewController {
           Async.background {
             self.ref.vehicles = Vehicles(fromJSON: results["body"])
           }.main {
-            self.ref.progressLabel.text = NSLocalizedString("Bus data loaded.", comment: "")
+            self.ref.extendProgressLabelTextWith(NSLocalizedString("Bus data loaded.", comment: ""))
             self.ref.refreshStopsForCurrentVehicle()
             self.ref.vehicleScrollView.reloadData()
           }
@@ -116,7 +116,7 @@ class MainViewController: UIViewController {
           Async.background {
             self.ref.vehicles.setStopsFromJSON(results["body"])
           }.main {
-            self.ref.progressLabel.text = NSLocalizedString("All data loaded", comment: "")
+            self.ref.extendProgressLabelTextWith(NSLocalizedString("All data loaded", comment: ""))
             self.ref.vehicleStopTableView.reloadData()
             self.ref.vehicleStopTableView.hidden = false
             self.hideProgress()
@@ -185,7 +185,7 @@ class MainViewController: UIViewController {
 
     // Reachability
     reachability.whenReachable = { reachability in
-      self.progressLabel.text = NSLocalizedString("Network connectivity resumed. Refreshing data from network...", comment: "")
+      self.extendProgressLabelTextWith(NSLocalizedString("Network connectivity resumed. Refreshing data from network...", comment: ""))
 
       log.debug("Now reachable")
       if self.stops.count == 0 {
@@ -204,7 +204,7 @@ class MainViewController: UIViewController {
   }
 
   override func viewWillAppear(animated: Bool) {
-    progressLabel.text = NSLocalizedString("Aquiring location...", comment: "")
+    extendProgressLabelTextWith(NSLocalizedString("Aquiring location...", comment: ""))
     NSNotificationCenter.defaultCenter().addObserver(self, selector: "locationUpdated:", name: "newLocationNotif", object: nil)
   }
 
@@ -251,7 +251,7 @@ class MainViewController: UIViewController {
       } else {
         log.debug("Reachable via Cellular")
       }
-      progressLabel.text = NSLocalizedString("Refreshing bus information from network...", comment: "")
+      extendProgressLabelTextWith(NSLocalizedString("Refreshing bus information from network...", comment: ""))
       if stops.count == 0 {
         api.getStops()
       } else {
@@ -279,6 +279,14 @@ class MainViewController: UIViewController {
   
   func timedRefreshRequested(timer: NSTimer) {
     refreshVehicles()
+  }
+  
+  func extendProgressLabelTextWith(text: String) {
+    if progressLabel.text == nil || progressLabel.text!.isEmpty {
+      progressLabel.text = text
+    } else {
+      progressLabel.text! += "\n\(text)"
+    }
   }
   
 }
@@ -382,7 +390,7 @@ extension MainViewController {
           !userLoc!.commonHorizontalLocationWith(newLoc) {
         userLoc = newLoc
         log.info("New user loc:  \(self.userLoc?.description)")
-        progressLabel.text = NSLocalizedString("Location acquired.", comment: "")
+        extendProgressLabelTextWith(NSLocalizedString("Location acquired.", comment: ""))
 //        vehicleStopTableView.reloadData()
       } else {
         log.info("Existing or worse user loc notified. Ignored.")
