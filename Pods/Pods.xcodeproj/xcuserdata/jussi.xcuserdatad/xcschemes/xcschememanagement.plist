@@ -4,22 +4,12 @@
 <dict>
 	<key>SchemeUserState</key>
 	<dict>
-		<key>Pods-BusStop-MediumProgressView.xcscheme</key>
+		<key>Async.xcscheme</key>
 		<dict>
 			<key>isShown</key>
 			<false/>
 		</dict>
-		<key>Pods-BusStop-ReachabilitySwift.xcscheme</key>
-		<dict>
-			<key>isShown</key>
-			<false/>
-		</dict>
-		<key>Pods-BusStop-SwiftyJSON.xcscheme</key>
-		<dict>
-			<key>isShown</key>
-			<false/>
-		</dict>
-		<key>Pods-BusStop-XCGLogger.xcscheme</key>
+		<key>MediumProgressView.xcscheme</key>
 		<dict>
 			<key>isShown</key>
 			<false/>
@@ -29,12 +19,22 @@
 			<key>isShown</key>
 			<false/>
 		</dict>
-		<key>Pods-BusStopTests-SwiftyJSON.xcscheme</key>
+		<key>Pods-BusStopTests.xcscheme</key>
 		<dict>
 			<key>isShown</key>
 			<false/>
 		</dict>
-		<key>Pods-BusStopTests.xcscheme</key>
+		<key>ReachabilitySwift.xcscheme</key>
+		<dict>
+			<key>isShown</key>
+			<false/>
+		</dict>
+		<key>SwiftyJSON.xcscheme</key>
+		<dict>
+			<key>isShown</key>
+			<false/>
+		</dict>
+		<key>XCGLogger.xcscheme</key>
 		<dict>
 			<key>isShown</key>
 			<false/>
@@ -42,67 +42,37 @@
 	</dict>
 	<key>SuppressBuildableAutocreation</key>
 	<dict>
-		<key>046E792CCD5B30262F1BCFE6</key>
+		<key>110B01C0FB6ACADD57970BF591B4F32D</key>
 		<dict>
 			<key>primary</key>
 			<true/>
 		</dict>
-		<key>31BDA1804EAB22F770693311</key>
+		<key>25E0F0AEF3D0FF9A663EBD748DD275FD</key>
 		<dict>
 			<key>primary</key>
 			<true/>
 		</dict>
-		<key>352BE8E9F51F3E09571CC132</key>
+		<key>28918769D6D243CD5C33BD316DEDEDA5</key>
 		<dict>
 			<key>primary</key>
 			<true/>
 		</dict>
-		<key>48C45AE82826F3D4CE05754F</key>
+		<key>29F0C06BA97819FF3B17FE4A4EFC83E6</key>
 		<dict>
 			<key>primary</key>
 			<true/>
 		</dict>
-		<key>58146F4C1228440B0A671355</key>
+		<key>5DE37E9EC9D035137341D5CFA5974AD9</key>
 		<dict>
 			<key>primary</key>
 			<true/>
 		</dict>
-		<key>67F5F47FDC56FC231A32DBF2</key>
+		<key>67AB112E5E5D341A949EF44ABBD4CF11</key>
 		<dict>
 			<key>primary</key>
 			<true/>
 		</dict>
-		<key>7484AE0D7860F5EB7A0CA827</key>
-		<dict>
-			<key>primary</key>
-			<true/>
-		</dict>
-		<key>7B91EFC3CB70546EA466FAD7</key>
-		<dict>
-			<key>primary</key>
-			<true/>
-		</dict>
-		<key>921A0EEB6BCC64FE7B6E430B</key>
-		<dict>
-			<key>primary</key>
-			<true/>
-		</dict>
-		<key>ADDD88BAA073519359493596</key>
-		<dict>
-			<key>primary</key>
-			<true/>
-		</dict>
-		<key>DA41E669EBD507E43697D73F</key>
-		<dict>
-			<key>primary</key>
-			<true/>
-		</dict>
-		<key>E4B0E90DB4B357AD298EB64F</key>
-		<dict>
-			<key>primary</key>
-			<true/>
-		</dict>
-		<key>FCE3F2628B38B9107EEAD3A5</key>
+		<key>8CACD1BD47F861214A2D3E0BFD600BF0</key>
 		<dict>
 			<key>primary</key>
 			<true/>

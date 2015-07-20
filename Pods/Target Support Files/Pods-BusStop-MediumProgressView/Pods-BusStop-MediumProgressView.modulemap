@@ -1,6 +1,0 @@
-framework module MediumProgressView {
-  umbrella header "Pods-BusStop-MediumProgressView-umbrella.h"
-
-  export *
-  module * { export * }
-}

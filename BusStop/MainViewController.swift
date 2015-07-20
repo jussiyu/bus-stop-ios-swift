@@ -12,6 +12,8 @@ import CoreLocation
 import MediumProgressView
 import ReachabilitySwift
 import XCGLogger
+import Async
+
 
 // MARK: - UIViewController
 class MainViewController: UIViewController {
@@ -76,25 +78,26 @@ class MainViewController: UIViewController {
       }
 
       func didReceiveError(urlerror: NSError) {
-        dispatch_async(dispatch_get_main_queue(), {
+        Async.main {
           self.ref.progressViewManager.hideProgress()
-        })
+        }
       }
     }
   
     class VehicleDelegate :APIDelegateBase {
       override func didReceiveAPIResults(results: JSON) {
         if results["status"] == "success" {
-          self.ref.vehicles = Vehicles(fromJSON: results["body"])
-          dispatch_async(dispatch_get_main_queue(), {
+          Async.background {
+            self.ref.vehicles = Vehicles(fromJSON: results["body"])
+          }.main {
             self.ref.progressLabel.text = NSLocalizedString("All data loaded", comment: "")
             self.ref.vehicleScrollView.reloadData()
             self.ref.vehicleStopTableView.reloadData()
             self.hideProgress()
-          })
-          dispatch_async(dispatch_get_main_queue()) {self.ref.progressViewManager.hideProgress()}
+            self.ref.progressViewManager.hideProgress()
+          }
         } else { // status != success
-          dispatch_async(dispatch_get_main_queue(), {
+          Async.main {
             let errorTitle = results["data"]["title"] ?? "unknown error"
             let errorMessage = results["data"]["message"] ?? "unknown details"
             let alertController = UIAlertController(title: "Network error", message:
@@ -103,7 +106,7 @@ class MainViewController: UIViewController {
             self.ref.presentViewController(alertController, animated: true, completion: nil)
             self.ref.progressViewManager.hideProgress()
             self.hideProgress()
-          })
+          }
         }
       }
       
@@ -113,11 +116,13 @@ class MainViewController: UIViewController {
       
       override func didReceiveAPIResults(results: JSON) {
         if results["status"] == "success" {
-          self.ref.stops = Stop.StopsFromJSON(results["body"])
-          // Load initial vehicle data after stops have been read
-          self.ref.api.getVehicleActivities()
+          Async.background {
+            self.ref.stops = Stop.StopsFromJSON(results["body"])
+            // Load initial vehicle data after stops have been read
+            self.ref.api.getVehicleActivities()
+          }
         } else {
-          dispatch_async(dispatch_get_main_queue(), {
+          Async.main {
             let errorTitle = results["data"]["title"] ?? "unknown error"
             let errorMessage = results["data"]["message"] ?? "unknown details"
             let alertController = UIAlertController(title: "Network error", message:
@@ -126,7 +131,7 @@ class MainViewController: UIViewController {
             self.ref.presentViewController(alertController, animated: true, completion: nil)
             self.ref.progressViewManager.hideProgress()
             self.hideProgress()
-          })
+          }
         }
       }
     }
