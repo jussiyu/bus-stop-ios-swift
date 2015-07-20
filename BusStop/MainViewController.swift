@@ -310,7 +310,8 @@ extension MainViewController: UITableViewDelegate {
         }
         
         // scroll table view up to match current header view bottom
-        vehicleScrollViewBottomConstraint.constant = -min(offset, currentVehicleHeaderView.bounds.height +  NSLayoutConstraint.standardAquaSpaceConstraintFromItem) + NSLayoutConstraint.standardAquaSpaceConstraintFromItem
+        vehicleScrollViewBottomConstraint.constant = -min(offset, currentVehicleHeaderView.bounds.height +  currentVehicleHeaderView.layoutMargins.bottom) + currentVehicleHeaderView.layoutMargins.bottom
+        
       }
     } else {
       if let currentVehicleHeaderView = vehicleScrollView.viewAtIndex(currentVehicleIndex) {

@@ -29,8 +29,14 @@
                                     </mask>
                                 </variation>
                             </view>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Progress" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="C1n-ja-70w" userLabel="Progress text">
+                                <rect key="frame" x="16" y="290" width="568" height="21"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                <color key="textColor" white="0.33333333333333331" alpha="1" colorSpace="calibratedWhite"/>
+                                <nil key="highlightedColor"/>
+                            </label>
                             <tableView clipsSubviews="YES" contentMode="scaleToFill" verticalHuggingPriority="100" verticalCompressionResistancePriority="749" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="44" sectionHeaderHeight="22" sectionFooterHeight="22" translatesAutoresizingMaskIntoConstraints="NO" id="gZm-hb-9Zh">
-                                <rect key="frame" x="6" y="219" width="586" height="381"/>
+                                <rect key="frame" x="16" y="219" width="568" height="389"/>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                 <prototypes>
                                     <tableViewCell contentMode="scaleToFill" selectionStyle="blue" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="VehicleStopCell" textLabel="kkc-YY-XNN" style="IBUITableViewCellStyleDefault" id="WMJ-Qj-ukO">
@@ -56,25 +62,19 @@
                                     <outlet property="delegate" destination="vXZ-lx-hvc" id="qIK-Jt-Jcq"/>
                                 </connections>
                             </tableView>
-                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Progress" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="C1n-ja-70w" userLabel="Progress text">
-                                <rect key="frame" x="16" y="290" width="568" height="21"/>
-                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
-                                <color key="textColor" white="0.33333333333333331" alpha="1" colorSpace="calibratedWhite"/>
-                                <nil key="highlightedColor"/>
-                            </label>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
                         <constraints>
-                            <constraint firstItem="gZm-hb-9Zh" firstAttribute="trailing" secondItem="kh9-bI-dsS" secondAttribute="trailingMargin" constant="8" id="9ia-zL-epB"/>
-                            <constraint firstItem="gZm-hb-9Zh" firstAttribute="leading" secondItem="kh9-bI-dsS" secondAttribute="leading" constant="6" id="ACn-IB-Q01"/>
-                            <constraint firstItem="gZm-hb-9Zh" firstAttribute="top" secondItem="csx-9f-M92" secondAttribute="bottom" constant="8" id="IkI-Wz-nft"/>
-                            <constraint firstAttribute="trailingMargin" secondItem="csx-9f-M92" secondAttribute="trailing" constant="-16" id="SpG-AJ-IrQ"/>
-                            <constraint firstItem="csx-9f-M92" firstAttribute="top" secondItem="jyV-Pf-zRb" secondAttribute="bottom" constant="8" id="T8J-t0-g46" userLabel="Horizontal Scroller Top constraint"/>
+                            <constraint firstItem="gZm-hb-9Zh" firstAttribute="trailing" secondItem="kh9-bI-dsS" secondAttribute="trailingMargin" id="9ia-zL-epB"/>
+                            <constraint firstItem="gZm-hb-9Zh" firstAttribute="leading" secondItem="kh9-bI-dsS" secondAttribute="leadingMargin" id="ACn-IB-Q01"/>
+                            <constraint firstAttribute="trailing" secondItem="csx-9f-M92" secondAttribute="trailing" id="SpG-AJ-IrQ"/>
+                            <constraint firstItem="csx-9f-M92" firstAttribute="top" secondItem="jyV-Pf-zRb" secondAttribute="bottom" constant="8" symbolic="YES" id="T8J-t0-g46" userLabel="Horizontal Scroller Top constraint"/>
                             <constraint firstAttribute="centerX" secondItem="C1n-ja-70w" secondAttribute="centerX" id="Tgf-OL-cnL"/>
-                            <constraint firstItem="csx-9f-M92" firstAttribute="leading" secondItem="kh9-bI-dsS" secondAttribute="leadingMargin" constant="-16" id="UaB-DX-r19"/>
+                            <constraint firstItem="csx-9f-M92" firstAttribute="leading" secondItem="kh9-bI-dsS" secondAttribute="leading" id="UaB-DX-r19"/>
                             <constraint firstAttribute="trailingMargin" secondItem="C1n-ja-70w" secondAttribute="trailing" id="aRy-nA-Bop"/>
+                            <constraint firstItem="gZm-hb-9Zh" firstAttribute="top" secondItem="csx-9f-M92" secondAttribute="bottom" constant="8" symbolic="YES" id="fcg-fj-hlh"/>
                             <constraint firstAttribute="centerY" secondItem="C1n-ja-70w" secondAttribute="centerY" id="oQq-ga-5jX"/>
-                            <constraint firstItem="gZm-hb-9Zh" firstAttribute="bottom" secondItem="2fi-mo-0CV" secondAttribute="top" id="ouA-xD-sBW"/>
+                            <constraint firstItem="gZm-hb-9Zh" firstAttribute="bottom" secondItem="2fi-mo-0CV" secondAttribute="top" constant="8" symbolic="YES" id="ouA-xD-sBW"/>
                             <constraint firstItem="C1n-ja-70w" firstAttribute="leading" secondItem="kh9-bI-dsS" secondAttribute="leadingMargin" id="rKy-QC-YUZ"/>
                         </constraints>
                     </view>
@@ -93,7 +93,6 @@
                         <outlet property="progressLabel" destination="C1n-ja-70w" id="ySJ-fS-weG"/>
                         <outlet property="refreshToggle" destination="xuj-HQ-FG6" id="T4Q-tL-uid"/>
                         <outlet property="vehicleScrollView" destination="csx-9f-M92" id="7d2-bs-NA4"/>
-                        <outlet property="vehicleScrollViewBottomConstraint" destination="IkI-Wz-nft" id="iov-Wq-1cK"/>
                         <outlet property="vehicleScrollViewTopConstraint" destination="T8J-t0-g46" id="2QM-4g-t6v"/>
                         <outlet property="vehicleStopTableView" destination="gZm-hb-9Zh" id="rLf-iq-5bB"/>
                     </connections>
@@ -103,10 +102,10 @@
             </objects>
             <point key="canvasLocation" x="-305" y="1417"/>
         </scene>
-        <!--Bus Stop-->
+        <!--Navigation Controller-->
         <scene sceneID="7IC-U7-BZf">
             <objects>
-                <navigationController title="Bus Stop" id="Faf-Pa-phc" sceneMemberID="viewController">
+                <navigationController title="Bus Stop" id="Faf-Pa-phc" userLabel="Navigation Controller" sceneMemberID="viewController">
                     <navigationBar key="navigationBar" contentMode="scaleToFill" id="Sla-3t-736">
                         <rect key="frame" x="0.0" y="0.0" width="320" height="44"/>
                         <autoresizingMask key="autoresizingMask"/>
