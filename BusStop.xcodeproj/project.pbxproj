@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		4A08E3441B5D39F400692946 /* InitialRefreshTask.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A08E3431B5D39F400692946 /* InitialRefreshTask.swift */; };
 		4A0EA35F1B21C0B000F747D0 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A0EA35E1B21C0B000F747D0 /* AppDelegate.swift */; };
 		4A0EA3661B21C0B000F747D0 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 4A0EA3651B21C0B000F747D0 /* Images.xcassets */; };
 		4A0EA3691B21C0B000F747D0 /* LaunchScreen.xib in Resources */ = {isa = PBXBuildFile; fileRef = 4A0EA3671B21C0B000F747D0 /* LaunchScreen.xib */; };
@@ -40,6 +41,7 @@
 
 /* Begin PBXFileReference section */
 		21E9CFEBB044447E7E089058 /* Pods-BusStopTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-BusStopTests.debug.xcconfig"; path = "Pods/Target Support Files/Pods-BusStopTests/Pods-BusStopTests.debug.xcconfig"; sourceTree = "<group>"; };
+		4A08E3431B5D39F400692946 /* InitialRefreshTask.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = InitialRefreshTask.swift; sourceTree = "<group>"; };
 		4A0EA3591B21C0B000F747D0 /* BusStop.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = BusStop.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		4A0EA35D1B21C0B000F747D0 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		4A0EA35E1B21C0B000F747D0 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
@@ -197,6 +199,7 @@
 		4AB26CDA1B53B6E500F3FA11 /* Controller */ = {
 			isa = PBXGroup;
 			children = (
+				4A08E3431B5D39F400692946 /* InitialRefreshTask.swift */,
 				4A0EA37E1B23234100F747D0 /* MainViewController.swift */,
 			);
 			name = Controller;
@@ -429,6 +432,7 @@
 				4ABEDB131B539FBF00C29E5C /* HorizontalScroller.swift in Sources */,
 				4A0EA37F1B23234100F747D0 /* MainViewController.swift in Sources */,
 				4A0EA35F1B21C0B000F747D0 /* AppDelegate.swift in Sources */,
+				4A08E3441B5D39F400692946 /* InitialRefreshTask.swift in Sources */,
 				4A141BA01B2B15890009DED9 /* Stop.swift in Sources */,
 				4AC2E47A1B483DB600D8F20E /* Vehicles.swift in Sources */,
 			);

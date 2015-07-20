@@ -10,6 +10,7 @@ import Foundation
 import UIKit
 import XCGLogger
 import CoreLocation
+import TaskQueue
 
 extension String {
   static var f: NSNumberFormatter = {
@@ -124,3 +125,14 @@ extension CLLocation {
     return self.coordinate.longitude == other.coordinate.longitude && self.coordinate.latitude == other.coordinate.latitude
   }
 }
+
+//
+// The task gets executed on a low prio queueu
+//
+//func +=~ (inout tasks: [TaskQueue.ClosureNoResultNext], task: TaskQueue.ClosureWithResultNext) {
+//  tasks += [{
+//    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_LOW, 0), {
+//      task(nil, next)
+//    })
+//  }]
+//}

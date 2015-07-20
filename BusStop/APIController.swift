@@ -11,7 +11,7 @@ import SystemConfiguration
 import XCGLogger
 
 protocol APIControllerProtocol {
-  func didReceiveAPIResults(results: JSON)
+  func didReceiveAPIResults(results: JSON, next: AnyObject? -> Void)
   func didReceiveError(urlerror: NSError)
 }
 
@@ -24,24 +24,24 @@ class APIController {
     self.vehStopsDelegate = vehStopsDelegate
   }
   
-  func getVehicleActivitiesForLine(lineId: Int) {
-    doGetOnPath("http://data.itsfactory.fi/journeys/api/1/vehicle-activity?lineRef=\(lineId)", delegate: vehDelegate)
+  func getVehicleActivitiesForLine(lineId: Int, next: AnyObject? -> Void) {
+    doGetOnPath("http://data.itsfactory.fi/journeys/api/1/vehicle-activity?lineRef=\(lineId)", delegate: vehDelegate, next: next)
   }
 
-  func getVehicleActivities() {
-    doGetOnPath("http://data.itsfactory.fi/journeys/api/1/vehicle-activity", delegate: vehDelegate, cachingEnabled: false)
+//  func getVehicleActivities() {
+//    doGetOnPath("http://data.itsfactory.fi/journeys/api/1/vehicle-activity", delegate: vehDelegate, cachingEnabled: false)
+//  }
+
+  func getVehicleActivityStopsForVehicle(vehicleRef: String, next: AnyObject? -> Void) {
+    doGetOnPath("http://data.itsfactory.fi/journeys/api/1/vehicle-activity?vehRef=\(vehicleRef)", delegate: vehStopsDelegate, cachingEnabled: false, next: next)
   }
 
-  func getVehicleActivityStopsForVehicle(vehicleRef: String) {
-    doGetOnPath("http://data.itsfactory.fi/journeys/api/1/vehicle-activity?vehRef=\(vehicleRef)", delegate: vehStopsDelegate, cachingEnabled: false)
+  func getVehicleActivityHeaders(#next: AnyObject? -> Void) {
+    doGetOnPath("http://data.itsfactory.fi/journeys/api/1/vehicle-activity?exclude-fields=monitoredVehicleJourney.onwardCalls", delegate: vehDelegate, cachingEnabled: false, next: next)
   }
 
-  func getVehicleActivityHeaders() {
-    doGetOnPath("http://data.itsfactory.fi/journeys/api/1/vehicle-activity?exclude-fields=monitoredVehicleJourney.onwardCalls", delegate: vehDelegate, cachingEnabled: false)
-  }
-
-  func getStops() {
-    doGetOnPath("http://data.itsfactory.fi/journeys/api/1/stop-points", delegate: stopsDelegate)
+  func getStops(next: AnyObject? -> Void) {
+    doGetOnPath("http://data.itsfactory.fi/journeys/api/1/stop-points", delegate: stopsDelegate, next: next)
   }
 
   func connectedToNetwork() -> Bool {
@@ -63,7 +63,7 @@ class APIController {
     return (isReachable && !needsConnection)
   }
   
-  private func doGetOnPath(urlPath: String, delegate: APIControllerProtocol, cachingEnabled: Bool = true) {
+  private func doGetOnPath(urlPath: String, delegate: APIControllerProtocol, cachingEnabled: Bool = true, next: AnyObject? -> Void) {
     UIApplication.sharedApplication().networkActivityIndicatorVisible = true
 
     let url = NSURL(string: urlPath)
@@ -71,10 +71,9 @@ class APIController {
       let request = NSMutableURLRequest(URL: url, cachePolicy: cachingEnabled ? .UseProtocolCachePolicy : .ReloadIgnoringLocalCacheData, timeoutInterval: 30.0)
       if cachingEnabled {
         if let cachedResponse = NSURLCache.sharedURLCache().cachedResponseForRequest(request) {
-          log.info("Using cached response for \(urlPath)")
-          log.verbose("Task completed successfully: " + urlPath)
+          log.debug("Using cached response for \(urlPath)")
           let json = JSON(data: cachedResponse.data)
-          delegate.didReceiveAPIResults(json)
+          delegate.didReceiveAPIResults(json, next: next)
           return
         }
       } else {
@@ -98,9 +97,9 @@ class APIController {
           delegate.didReceiveError(urlError)
           return
         } else {
-          log.verbose("Task completed successfully: " + urlPath)
+          log.debug("Task completed successfully: " + urlPath)
           let json = JSON(data: data)
-          delegate.didReceiveAPIResults(json)
+          delegate.didReceiveAPIResults(json, next: next)
         }
       })
       

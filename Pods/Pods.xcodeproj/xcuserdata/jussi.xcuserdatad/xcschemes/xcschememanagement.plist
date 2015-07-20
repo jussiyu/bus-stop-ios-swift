@@ -34,6 +34,11 @@
 			<key>isShown</key>
 			<false/>
 		</dict>
+		<key>TaskQueue.xcscheme</key>
+		<dict>
+			<key>isShown</key>
+			<false/>
+		</dict>
 		<key>XCGLogger.xcscheme</key>
 		<dict>
 			<key>isShown</key>
@@ -42,7 +47,7 @@
 	</dict>
 	<key>SuppressBuildableAutocreation</key>
 	<dict>
-		<key>110B01C0FB6ACADD57970BF591B4F32D</key>
+		<key>17B0539B66C609E7D1FA6E4999D7FA51</key>
 		<dict>
 			<key>primary</key>
 			<true/>
@@ -57,22 +62,27 @@
 			<key>primary</key>
 			<true/>
 		</dict>
-		<key>29F0C06BA97819FF3B17FE4A4EFC83E6</key>
-		<dict>
-			<key>primary</key>
-			<true/>
-		</dict>
 		<key>5DE37E9EC9D035137341D5CFA5974AD9</key>
 		<dict>
 			<key>primary</key>
 			<true/>
 		</dict>
-		<key>67AB112E5E5D341A949EF44ABBD4CF11</key>
+		<key>68E2F3A8A202E797FA7C035B3228437C</key>
 		<dict>
 			<key>primary</key>
 			<true/>
 		</dict>
 		<key>8CACD1BD47F861214A2D3E0BFD600BF0</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>BE6CBAFA78523608C155B844CBC02382</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>EB6A4C421475F997E3BA3114481F9629</key>
 		<dict>
 			<key>primary</key>
 			<true/>

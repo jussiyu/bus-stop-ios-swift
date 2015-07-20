@@ -36,12 +36,13 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
     // Logger configuration
     #if DEBUG
-      log.setup(logLevel: .Info, showLogLevel: true, showFileNames: true, showLineNumbers: true, writeToFile: nil, fileLogLevel: .None)
+      log.setup(logLevel: .Verbose, showLogLevel: true, showFileNames: true, showLineNumbers: true, writeToFile: nil, fileLogLevel: .None)
       let shortLogDateFormatter = NSDateFormatter()
       shortLogDateFormatter.locale = NSLocale.currentLocale()
       shortLogDateFormatter.dateFormat = "HH:mm:ss.SSS"
       log.dateFormatter = shortLogDateFormatter
       log.xcodeColorsEnabled = true
+      log.xcodeColors[XCGLogger.LogLevel.Info] = XCGLogger.XcodeColor(fg: (147, 147, 255))
     #else
       log.setup(logLevel: .Severe, showLogLevel: true, showFileNames: true, showLineNumbers: true, writeToFile: nil, fileLogLevel: .None)
     #endif

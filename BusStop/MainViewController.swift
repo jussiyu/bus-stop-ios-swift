@@ -13,6 +13,7 @@ import MediumProgressView
 import ReachabilitySwift
 import XCGLogger
 import Async
+import TaskQueue
 
 
 // MARK: - UIViewController
@@ -69,14 +70,9 @@ class MainViewController: UIViewController {
         self.ref = ref
       }
 
-      func didReceiveAPIResults(results: JSON) {
+      func didReceiveAPIResults(results: JSON, next: AnyObject? -> Void) {
       }
       
-      func hideProgress() {
-        UIView.animateWithDuration( 0.5, animations: {self.ref.progressLabel.alpha = 0},
-          completion: {(_) in self.ref.progressLabel.hidden=true})
-      }
-
       func didReceiveError(urlerror: NSError) {
         Async.main {
           self.ref.progressViewManager.hideProgress()
@@ -85,14 +81,13 @@ class MainViewController: UIViewController {
     }
   
     class VehicleDelegate :APIDelegateBase {
-      override func didReceiveAPIResults(results: JSON) {
+      override func didReceiveAPIResults(results: JSON, next: AnyObject? -> Void) {
         if results["status"] == "success" {
           Async.background {
             self.ref.vehicles = Vehicles(fromJSON: results["body"])
           }.main {
             self.ref.extendProgressLabelTextWith(NSLocalizedString("Bus data loaded.", comment: ""))
-            self.ref.refreshStopsForCurrentVehicle()
-            self.ref.vehicleScrollView.reloadData()
+            next(nil)
           }
         } else { // status != success
           Async.main {
@@ -103,7 +98,7 @@ class MainViewController: UIViewController {
             alertController.addAction(UIAlertAction(title: "Dismiss", style: UIAlertActionStyle.Default, handler: nil))
             self.ref.presentViewController(alertController, animated: true, completion: nil)
             self.ref.progressViewManager.hideProgress()
-            self.hideProgress()
+            self.ref.hideProgressLabel()
           }
         }
       }
@@ -111,7 +106,7 @@ class MainViewController: UIViewController {
     }
 
     class VehicleStopsDelegate :APIDelegateBase {
-      override func didReceiveAPIResults(results: JSON) {
+      override func didReceiveAPIResults(results: JSON, next: AnyObject? -> Void) {
         if results["status"] == "success" {
           Async.background {
             self.ref.vehicles.setStopsFromJSON(results["body"])
@@ -119,7 +114,7 @@ class MainViewController: UIViewController {
             self.ref.extendProgressLabelTextWith(NSLocalizedString("All data loaded", comment: ""))
             self.ref.vehicleStopTableView.reloadData()
             self.ref.vehicleStopTableView.hidden = false
-            self.hideProgress()
+            self.ref.hideProgressLabel()
             self.ref.progressViewManager.hideProgress()
           }
         } else { // status != success
@@ -131,7 +126,7 @@ class MainViewController: UIViewController {
             alertController.addAction(UIAlertAction(title: "Dismiss", style: UIAlertActionStyle.Default, handler: nil))
             self.ref.presentViewController(alertController, animated: true, completion: nil)
             self.ref.progressViewManager.hideProgress()
-            self.hideProgress()
+            self.ref.hideProgressLabel()
           }
         }
       }
@@ -140,12 +135,13 @@ class MainViewController: UIViewController {
     
     class StopsDelegate: APIDelegateBase {
       
-      override func didReceiveAPIResults(results: JSON) {
+      override func didReceiveAPIResults(results: JSON, next: AnyObject? -> Void) {
         if results["status"] == "success" {
           Async.background {
             self.ref.stops = Stop.StopsFromJSON(results["body"])
             // Load initial vehicle data after stops have been read
-            self.ref.api.getVehicleActivityHeaders()
+//            self.ref.api.getVehicleActivityHeaders()
+            next(nil)
           }
         } else {
           Async.main {
@@ -155,8 +151,7 @@ class MainViewController: UIViewController {
               "Failed to read data from network. The detailed error was:\n \"\(errorTitle): \(errorMessage)\"", preferredStyle: UIAlertControllerStyle.Alert)
             alertController.addAction(UIAlertAction(title: "Dismiss", style: UIAlertActionStyle.Default, handler: nil))
             self.ref.presentViewController(alertController, animated: true, completion: nil)
-            self.ref.progressViewManager.hideProgress()
-            self.hideProgress()
+            self.ref.initialRefreshTaskQueue.cancel()
           }
         }
       }
@@ -165,18 +160,78 @@ class MainViewController: UIViewController {
     return APIController(vehDelegate: VehicleDelegate(ref: self), stopsDelegate: StopsDelegate(ref: self), vehStopsDelegate: VehicleStopsDelegate(ref:self))
   }()
   
+  lazy var initialRefreshTaskQueue: TaskQueue = {
+    let q = TaskQueue()
+    
+    q.tasks +=! {
+      log.info("Task: show progress")
+      self.progressViewManager.showProgress()
+    }
+    
+    q.tasks +=~ { result, next in
+      log.info("Task: load stop data") 
+      self.refreshStops(next)
+//      self.api.getStops( next )
+    }
+    
+    q.tasks +=~ { result, next in
+      log.info("Task: load vehicle headers")
+      self.refreshVehicles(next: next)
+//      self.api.getVehicleActivityHeaders( next )
+    }
+    
+//    q.tasks +=! {
+//      self.vehicleHeaderScroll
+//      log.info("Task: show vehicle headers")
+//      
+//    }
+    
+    q.tasks +=~ {[weak q] result, next in
+      log.info("Task: wait for location")
+      // get closes vehicle
+      if self.userLoc == nil {
+        q!.retry(delay: 0.5)
+      } else {
+        next(nil)
+      }
+    }
+    
+    q.tasks +=! {
+      log.info("Task: show closest vehicle headers")
+      //      self.api.getVehicleActivityStopsForVehicle("")
+      self.vehicleScrollView.reloadData()
+    }
+    
+    q.tasks +=~ {
+      log.info("load stops for the current vehicle")
+      self.refreshStopsForCurrentVehicle()
+    }
+    
+    q.tasks +=! {
+      log.info("Task: show closest vehicle headers => load stops for the current vehicle")
+      self.progressViewManager.hideProgress()
+      self.hideProgressLabel()
+
+    }
+    
+    return q
+  }()
+
+  
+  
+  
   // MARK: - lifecycle
   override func viewDidLayoutSubviews() {
   }
 
   override func viewDidAppear(animated: Bool) {
     log.verbose("Initial refresh")
-    refreshVehicles()
+//    refreshVehicles()
   }
   
   override func viewDidLoad() {
     super.viewDidLoad()
-
+    
     vehicleScrollView.delegate = self
 //    scrollView.reload()
     
@@ -195,12 +250,12 @@ class MainViewController: UIViewController {
     }
     reachability.startNotifier()
 
-    initAutoRefreshTimer()
-
     NSNotificationCenter.defaultCenter().addObserver(self,
       selector: "preferredContentSizeChanged:",
       name: UIContentSizeCategoryDidChangeNotification,
       object: nil)
+
+    initialRefreshTaskQueue.run {log.info("intial refresh done")}
   }
 
   override func viewWillAppear(animated: Bool) {
@@ -240,23 +295,17 @@ class MainViewController: UIViewController {
     }
   }
 
-  
-  private func refreshVehicles() {
-    log.verbose("RefreshVehicles")
-    progressViewManager.showProgress()
-    
+  private func refreshStops(next: AnyObject? -> Void) {
+    log.verbose("RefreshStops")
+
     if reachability.isReachable() {
       if reachability.isReachableViaWiFi() {
         log.debug("Reachable via WiFi")
       } else {
         log.debug("Reachable via Cellular")
       }
-      extendProgressLabelTextWith(NSLocalizedString("Refreshing bus information from network...", comment: ""))
-      if stops.count == 0 {
-        api.getStops()
-      } else {
-        api.getVehicleActivities()
-      }
+      extendProgressLabelTextWith(NSLocalizedString("Refreshing stop information from network...", comment: ""))
+      api.getStops(next)
     } else {
       log.debug("Not reachable")
       progressViewManager.hideProgress()
@@ -270,10 +319,27 @@ class MainViewController: UIViewController {
 
   }
 
+  private func refreshVehicles(next: AnyObject? -> Void = {_ in 0}) {
+    log.verbose("RefreshVehicles")
+    
+    if reachability.isReachable() {
+      if reachability.isReachableViaWiFi() {
+        log.debug("Reachable via WiFi")
+      } else {
+        log.debug("Reachable via Cellular")
+      }
+      extendProgressLabelTextWith(NSLocalizedString("Refreshing bus information from network...", comment: ""))
+      api.getVehicleActivityHeaders(next: next)
+    } else {
+      log.debug("Not reachable")
+      progressViewManager.hideProgress()
+    }
+  }
+
   private func refreshStopsForCurrentVehicle() {
     log.verbose("refreshStopsForVehicle")
     if let currentVehicleRef = currentVehicle?.vehRef {
-      api.getVehicleActivityStopsForVehicle(currentVehicleRef)
+      api.getVehicleActivityStopsForVehicle(currentVehicleRef, next: {_ in 0})
     }
   }
   
@@ -288,7 +354,12 @@ class MainViewController: UIViewController {
       progressLabel.text! += "\n\(text)"
     }
   }
-  
+
+  func hideProgressLabel() {
+    UIView.animateWithDuration( 0.5, animations: {self.progressLabel.alpha = 0},
+      completion: {(_) in self.progressLabel.hidden=true})
+  }
+
 }
 
 // MARK: - UITableViewDataSource

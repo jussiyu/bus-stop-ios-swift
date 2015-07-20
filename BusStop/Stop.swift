@@ -8,6 +8,7 @@
 
 import Foundation
 import SwiftyJSON
+import XCGLogger
 
 
 class Stop {
@@ -32,6 +33,7 @@ class Stop {
         stops[id] = s
       }
     }
+    log.debug("Parsed \(stops.count) stops")
     return stops
   }
 

@@ -56,6 +56,7 @@ if [[ "$CONFIGURATION" == "Debug" ]]; then
   install_framework 'Pods-BusStop/MediumProgressView.framework'
   install_framework 'Pods-BusStop/ReachabilitySwift.framework'
   install_framework 'Pods-BusStop/SwiftyJSON.framework'
+  install_framework 'Pods-BusStop/TaskQueue.framework'
   install_framework 'Pods-BusStop/XCGLogger.framework'
 fi
 if [[ "$CONFIGURATION" == "Release" ]]; then
@@ -63,5 +64,6 @@ if [[ "$CONFIGURATION" == "Release" ]]; then
   install_framework 'Pods-BusStop/MediumProgressView.framework'
   install_framework 'Pods-BusStop/ReachabilitySwift.framework'
   install_framework 'Pods-BusStop/SwiftyJSON.framework'
+  install_framework 'Pods-BusStop/TaskQueue.framework'
   install_framework 'Pods-BusStop/XCGLogger.framework'
 fi
