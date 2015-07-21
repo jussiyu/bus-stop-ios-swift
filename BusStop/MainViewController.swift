@@ -117,7 +117,6 @@ class MainViewController: UIViewController {
             self.ref.vehicles.setStopsFromJSON(results["body"])
           }.main {
             self.ref.vehicleStopTableView.reloadData()
-            self.ref.vehicleStopTableView.hidden = false
             next?(nil)
           }
         } else { // status != success
@@ -184,14 +183,15 @@ class MainViewController: UIViewController {
       self.vehicleScrollView.reloadData()
     }
     
-    q.tasks +=~ {
+    q.tasks +=~ {results, next in
       log.info("load stops for the current vehicle")
-      self.refreshStopsForCurrentVehicle()
+      self.refreshStopsForCurrentVehicle(next: next)
     }
     
     q.tasks +=! {
-      self.extendProgressLabelTextWith(NSLocalizedString("All data loaded", comment: ""))
       log.info("Task: show closest vehicle headers => load stops for the current vehicle")
+      self.vehicleStopTableView.hidden = false
+      self.extendProgressLabelTextWith(NSLocalizedString("All data loaded", comment: ""))
       self.hideProgressLabel()
     }
     
@@ -304,10 +304,10 @@ class MainViewController: UIViewController {
     }
   }
 
-  private func refreshStopsForCurrentVehicle() {
+  private func refreshStopsForCurrentVehicle(#next: APIController.NextTask?) {
     log.verbose("refreshStopsForVehicle")
     if let currentVehicleRef = currentVehicle?.vehRef {
-      api.getVehicleActivityStopsForVehicle(currentVehicleRef) {_ in Async.main {self.progressViewManager.hideProgress()} }
+      api.getVehicleActivityStopsForVehicle(currentVehicleRef, next: next)
     }
   }
   
@@ -499,7 +499,7 @@ extension MainViewController: HorizontalScrollerDelegate {
   func horizontalScroller(horizontalScroller: HorizontalScroller, didScrollToViewAtIndex: Int) {
     log.verbose("horizontalScroller(_:didScrollToViewAtIndex: \(didScrollToViewAtIndex))")
     currentVehicleIndex = didScrollToViewAtIndex
-    refreshStopsForCurrentVehicle()
+    refreshStopsForCurrentVehicle {_ in Async.main {self.progressViewManager.hideProgress()} }
   }
   
   func horizontalScrollerWillBeginDragging(horizontalScroller: HorizontalScroller) {
