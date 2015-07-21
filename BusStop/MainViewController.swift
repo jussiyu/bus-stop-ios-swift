@@ -97,7 +97,6 @@ class MainViewController: UIViewController {
         if results["status"] == "success" {
           Async.background {
             self.ref.vehicles = Vehicles(fromJSON: results["body"])
-          }.main {
             next(nil)
           }
         } else { // status != success
@@ -133,7 +132,7 @@ class MainViewController: UIViewController {
             self.ref.stops = Stop.StopsFromJSON(results["body"])
             next(nil)
           }
-        } else {
+        } else { // status != success
           handleError(results, next: next)
         }
       }
