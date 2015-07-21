@@ -9,13 +9,18 @@ import Foundation
 import SwiftyJSON
 import SystemConfiguration
 import XCGLogger
+import TaskQueue
+
 
 protocol APIControllerProtocol {
-  func didReceiveAPIResults(results: JSON, next: AnyObject? -> Void)
-  func didReceiveError(urlerror: NSError, next: AnyObject? -> Void)
+
+  func didReceiveAPIResults(results: JSON, next: APIController.NextTask?)
+  func didReceiveError(urlerror: NSError, next: APIController.NextTask?)
 }
 
 class APIController {
+  typealias NextTask = (AnyObject?) -> Void
+
   let vehDelegate, stopsDelegate, vehStopsDelegate: APIControllerProtocol
   
   init(vehDelegate: APIControllerProtocol, stopsDelegate: APIControllerProtocol, vehStopsDelegate: APIControllerProtocol) {
@@ -24,7 +29,7 @@ class APIController {
     self.vehStopsDelegate = vehStopsDelegate
   }
   
-  func getVehicleActivitiesForLine(lineId: Int, next: AnyObject? -> Void) {
+  func getVehicleActivitiesForLine(lineId: Int, next: NextTask?) {
     doGetOnPath("http://data.itsfactory.fi/journeys/api/1/vehicle-activity?lineRef=\(lineId)", delegate: vehDelegate, next: next)
   }
 
@@ -32,15 +37,15 @@ class APIController {
 //    doGetOnPath("http://data.itsfactory.fi/journeys/api/1/vehicle-activity", delegate: vehDelegate, cachingEnabled: false)
 //  }
 
-  func getVehicleActivityStopsForVehicle(vehicleRef: String, next: AnyObject? -> Void) {
+  func getVehicleActivityStopsForVehicle(vehicleRef: String, next: NextTask?) {
     doGetOnPath("http://data.itsfactory.fi/journeys/api/1/vehicle-activity?vehRef=\(vehicleRef)", delegate: vehStopsDelegate, cachingEnabled: false, next: next)
   }
 
-  func getVehicleActivityHeaders(#next: AnyObject? -> Void) {
+  func getVehicleActivityHeaders(#next: NextTask?) {
     doGetOnPath("http://data.itsfactory.fi/journeys/api/1/vehicle-activity?exclude-fields=monitoredVehicleJourney.onwardCalls", delegate: vehDelegate, cachingEnabled: false, next: next)
   }
 
-  func getStops(next: AnyObject? -> Void) {
+  func getStops(next: NextTask?) {
     doGetOnPath("http://data.itsfactory.fi/journeys/api/1/stop-points", delegate: stopsDelegate, next: next)
   }
 
@@ -63,7 +68,7 @@ class APIController {
     return (isReachable && !needsConnection)
   }
   
-  private func doGetOnPath(urlPath: String, delegate: APIControllerProtocol, cachingEnabled: Bool = true, next: AnyObject? -> Void) {
+  private func doGetOnPath(urlPath: String, delegate: APIControllerProtocol, cachingEnabled: Bool = true, next: NextTask?) {
     UIApplication.sharedApplication().networkActivityIndicatorVisible = true
 
     let url = NSURL(string: urlPath)

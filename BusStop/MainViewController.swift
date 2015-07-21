@@ -70,15 +70,15 @@ class MainViewController: UIViewController {
         self.ref = ref
       }
 
-      func didReceiveAPIResults(results: JSON, next: AnyObject? -> Void) {
+      func didReceiveAPIResults(results: JSON, next: APIController.NextTask?) {
       }
       
-      func didReceiveError(urlerror: NSError, next: AnyObject? -> Void) {
+      func didReceiveError(urlerror: NSError, next: APIController.NextTask?) {
         self.ref.initialRefreshTaskQueue.removeAll()
-        next(nil)
+        next?(nil)
       }
       
-      func handleError(results: JSON, next: AnyObject? -> Void) {
+      func handleError(results: JSON, next: APIController.NextTask?) {
         Async.main {
           let errorTitle = results["data"]["title"] ?? "unknown error"
           let errorMessage = results["data"]["message"] ?? "unknown details"
@@ -87,17 +87,21 @@ class MainViewController: UIViewController {
           alertController.addAction(UIAlertAction(title: "Dismiss", style: UIAlertActionStyle.Default, handler: nil))
           self.ref.presentViewController(alertController, animated: true, completion: nil)
           self.ref.initialRefreshTaskQueue.removeAll()
-          next(nil)
+          next?(nil)
         }
       }
     }
     
     class VehicleDelegate :APIDelegateBase {
-      override func didReceiveAPIResults(results: JSON, next: AnyObject? -> Void) {
+      override func didReceiveAPIResults(results: JSON, next: APIController.NextTask?) {
         if results["status"] == "success" {
           Async.background {
             self.ref.vehicles = Vehicles(fromJSON: results["body"])
-            next(nil)
+            if let next = next {
+              next(nil)
+            } else {
+              
+            }
           }
         } else { // status != success
           handleError(results, next: next)
@@ -107,15 +111,14 @@ class MainViewController: UIViewController {
     }
 
     class VehicleStopsDelegate :APIDelegateBase {
-      override func didReceiveAPIResults(results: JSON, next: AnyObject? -> Void) {
+      override func didReceiveAPIResults(results: JSON, next: APIController.NextTask?) {
         if results["status"] == "success" {
           Async.background {
             self.ref.vehicles.setStopsFromJSON(results["body"])
           }.main {
             self.ref.vehicleStopTableView.reloadData()
             self.ref.vehicleStopTableView.hidden = false
-            self.ref.hideProgressLabel()
-            self.ref.progressViewManager.hideProgress()
+            next?(nil)
           }
         } else { // status != success
           handleError(results, next: next)
@@ -126,11 +129,11 @@ class MainViewController: UIViewController {
     
     class StopsDelegate: APIDelegateBase {
       
-      override func didReceiveAPIResults(results: JSON, next: AnyObject? -> Void) {
+      override func didReceiveAPIResults(results: JSON, next: APIController.NextTask?) {
         if results["status"] == "success" {
           Async.background {
             self.ref.stops = Stop.StopsFromJSON(results["body"])
-            next(nil)
+            next?(nil)
           }
         } else { // status != success
           handleError(results, next: next)
@@ -140,7 +143,7 @@ class MainViewController: UIViewController {
     
     return APIController(vehDelegate: VehicleDelegate(ref: self), stopsDelegate: StopsDelegate(ref: self), vehStopsDelegate: VehicleStopsDelegate(ref:self))
   }()
-  
+
   lazy var initialRefreshTaskQueue: TaskQueue = {
     let q = TaskQueue()
     
@@ -152,7 +155,7 @@ class MainViewController: UIViewController {
     q.tasks +=~ { result, next in
       log.info("Task: load stop data")
       self.extendProgressLabelTextWith(NSLocalizedString("Refreshing stop information from network...", comment: ""))
-      self.refreshStops(next)
+      self.refreshStops(next: next)
     }
     
     q.tasks +=~ { result, next in
@@ -203,8 +206,6 @@ class MainViewController: UIViewController {
   }
 
   override func viewDidAppear(animated: Bool) {
-    log.verbose("Initial refresh")
-//    refreshVehicles()
   }
   
   override func viewDidLoad() {
@@ -221,8 +222,10 @@ class MainViewController: UIViewController {
 
       log.debug("Now reachable")
       if self.stops.count == 0 {
-        // Do successful refresh done earlier
-        self.refreshVehicles()
+        self.initialRefreshTaskQueue.run {
+          self.progressViewManager.hideProgress()
+          log.info("Intial refresh done successfully!")
+        }
       }
     }
     reachability.startNotifier()
@@ -263,7 +266,7 @@ class MainViewController: UIViewController {
 
   // MARK: - utility functions
   
-  private func refreshStops(next: AnyObject? -> Void) {
+  private func refreshStops(#next: APIController.NextTask?) {
     log.verbose("RefreshStops")
     
     if reachability.isReachable() {
@@ -283,22 +286,9 @@ class MainViewController: UIViewController {
       alert.addAction(UIAlertAction(title: NSLocalizedString("OK", comment: ""), style: UIAlertActionStyle.Default, handler: nil))
       presentViewController(alert, animated: true, completion: nil)
     }
-    
   }
 
-  private func initAutoRefreshTimer(andFire: Bool = false) {
-    autoRefreshTimer?.invalidate()
-    if autoRefresh {
-      autoRefreshTimer = NSTimer.scheduledTimerWithTimeInterval(10, target: self, selector: "timedRefreshRequested:", userInfo: nil, repeats: true)
-      if andFire {autoRefreshTimer?.fire()}
-      autoRefreshTimer?.tolerance = 2
-      log.debug("Refresh enabled")
-    } else {
-      log.debug("Refresh disabled")
-    }
-  }
-
-  private func refreshVehicles(next: AnyObject? -> Void = {_ in 0}) {
+  private func refreshVehicles(#next: APIController.NextTask?) {
     log.verbose("RefreshVehicles")
     
     if reachability.isReachable() {
@@ -317,12 +307,25 @@ class MainViewController: UIViewController {
   private func refreshStopsForCurrentVehicle() {
     log.verbose("refreshStopsForVehicle")
     if let currentVehicleRef = currentVehicle?.vehRef {
-      api.getVehicleActivityStopsForVehicle(currentVehicleRef, next: {_ in 0})
+      api.getVehicleActivityStopsForVehicle(currentVehicleRef) {_ in Async.main {self.progressViewManager.hideProgress()} }
     }
   }
   
+  
+  private func initAutoRefreshTimer(andFire: Bool = false) {
+    autoRefreshTimer?.invalidate()
+    if autoRefresh {
+      autoRefreshTimer = NSTimer.scheduledTimerWithTimeInterval(10, target: self, selector: "timedRefreshRequested:", userInfo: nil, repeats: true)
+      if andFire {autoRefreshTimer?.fire()}
+      autoRefreshTimer?.tolerance = 2
+      log.debug("Refresh enabled")
+    } else {
+      log.debug("Refresh disabled")
+    }
+  }
+
   func timedRefreshRequested(timer: NSTimer) {
-    refreshVehicles()
+    refreshVehicles {_ in Async.main {self.progressViewManager.hideProgress()} }
   }
   
   func extendProgressLabelTextWith(text: String) {
@@ -496,7 +499,7 @@ extension MainViewController: HorizontalScrollerDelegate {
   func horizontalScroller(horizontalScroller: HorizontalScroller, didScrollToViewAtIndex: Int) {
     log.verbose("horizontalScroller(_:didScrollToViewAtIndex: \(didScrollToViewAtIndex))")
     currentVehicleIndex = didScrollToViewAtIndex
-    vehicleStopTableView.reloadData()
+    refreshStopsForCurrentVehicle()
   }
   
   func horizontalScrollerWillBeginDragging(horizontalScroller: HorizontalScroller) {
