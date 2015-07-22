@@ -392,12 +392,6 @@ extension MainViewController: UITableViewDelegate {
     
     tableView.deselectRowAtIndexPath(indexPath, animated: true)
     
-    // was already selected so restore all cells
-//    if selectedStopIndex != nil {
-//      selectedStopIndex = nil
-//      tableView.reloadData()
-//      return
-//    }
     enum OperationType { case RemoveOtherRows, AddOtherRowsBack}
     var operation: OperationType?
     if selectedStopIndex == nil {
