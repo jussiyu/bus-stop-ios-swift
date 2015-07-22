@@ -22,6 +22,7 @@ class APIController {
   typealias NextTask = (AnyObject?) -> Void
 
   let vehDelegate, stopsDelegate, vehStopsDelegate: APIControllerProtocol
+  let journeysAPIbaseURL = "http://data.itsfactory.fi/journeys/api/1/"
   
   init(vehDelegate: APIControllerProtocol, stopsDelegate: APIControllerProtocol, vehStopsDelegate: APIControllerProtocol) {
     self.vehDelegate = vehDelegate
@@ -30,23 +31,23 @@ class APIController {
   }
   
   func getVehicleActivitiesForLine(lineId: Int, next: NextTask?) {
-    doGetOnPath("http://data.itsfactory.fi/journeys/api/1/vehicle-activity?lineRef=\(lineId)", delegate: vehDelegate, next: next)
+    doGetOnPath("journeysAPIbaseURL?lineRef=\(lineId)", delegate: vehDelegate, next: next)
   }
 
 //  func getVehicleActivities() {
-//    doGetOnPath("http://data.itsfactory.fi/journeys/api/1/vehicle-activity", delegate: vehDelegate, cachingEnabled: false)
+//    doGetOnPath("journeysAPIbaseURL", delegate: vehDelegate, cachingEnabled: false)
 //  }
 
   func getVehicleActivityStopsForVehicle(vehicleRef: String, next: NextTask?) {
-    doGetOnPath("http://data.itsfactory.fi/journeys/api/1/vehicle-activity?vehRef=\(vehicleRef)", delegate: vehStopsDelegate, cachingEnabled: false, next: next)
+    doGetOnPath("\(journeysAPIbaseURL)vehicle-activity?vehicleRef=\(vehicleRef)", delegate: vehStopsDelegate, cachingEnabled: false, next: next)
   }
 
   func getVehicleActivityHeaders(#next: NextTask?) {
-    doGetOnPath("http://data.itsfactory.fi/journeys/api/1/vehicle-activity?exclude-fields=monitoredVehicleJourney.onwardCalls", delegate: vehDelegate, cachingEnabled: false, next: next)
+    doGetOnPath("\(journeysAPIbaseURL)vehicle-activity?exclude-fields=monitoredVehicleJourney.onwardCalls", delegate: vehDelegate, cachingEnabled: false, next: next)
   }
 
   func getStops(next: NextTask?) {
-    doGetOnPath("http://data.itsfactory.fi/journeys/api/1/stop-points", delegate: stopsDelegate, next: next)
+    doGetOnPath("\(journeysAPIbaseURL)stop-points", delegate: stopsDelegate, next: next)
   }
 
   func connectedToNetwork() -> Bool {
