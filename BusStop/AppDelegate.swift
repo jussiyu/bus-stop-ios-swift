@@ -36,7 +36,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
     // Logger configuration
     #if DEBUG
-      log.setup(logLevel: .Verbose, showLogLevel: true, showFileNames: true, showLineNumbers: true, writeToFile: nil, fileLogLevel: .None)
+      log.setup(logLevel: .Debug, showLogLevel: true, showFileNames: true, showLineNumbers: true, writeToFile: nil, fileLogLevel: .None)
       let shortLogDateFormatter = NSDateFormatter()
       shortLogDateFormatter.locale = NSLocale.currentLocale()
       shortLogDateFormatter.dateFormat = "HH:mm:ss.SSS"

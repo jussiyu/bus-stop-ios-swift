@@ -31,7 +31,6 @@ class MainViewController: UIViewController {
   let reachability = Reachability.reachabilityForInternetConnection()
   
   // MARK: - properties
-  var currentVehicleIndex = 0
   let kCellIdentifier: String = "VehicleStopCell"
   var autoRefresh:Bool = false
   var autoRefreshTimer: NSTimer?
@@ -60,6 +59,13 @@ class MainViewController: UIViewController {
   }
 
   private var stops = [String: Stop]()
+
+  private var currentVehicleIndex = 0 {
+    didSet {
+      selectedStopIndex = nil
+    }
+  }
+  private var selectedStopIndex: Int?
   private var userLoc: CLLocation?
   
   lazy private var api: APIController = {
@@ -347,7 +353,13 @@ class MainViewController: UIViewController {
 extension MainViewController: UITableViewDataSource {
   
   func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-    return currentVehicle?.stops.count ?? 0
+
+    // if a stop is selected then only it will be shown
+    if let selectedStopIndex = selectedStopIndex {
+      return 1
+    } else {
+      return currentVehicle?.stops.count ?? 0
+    }
   }
   
   func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
@@ -355,10 +367,15 @@ extension MainViewController: UITableViewDataSource {
     
     let currentVehicle = self.currentVehicle
     if currentVehicle != nil {
-      if let lastPath = currentVehicle?.stops[indexPath.item].lastPathComponent, stop = stops[lastPath] {
+
+      // Return the currently selected row if one is selected
+      // Otherwise return the requested row
+      let rowToBeReturned = selectedStopIndex != nil ? selectedStopIndex! : indexPath.row
+        
+      if let lastPath = currentVehicle?.stops[rowToBeReturned].lastPathComponent, stop = stops[lastPath] {
         cell.textLabel?.text = "\(stop.name) (\(stop.id))"
       } else {
-        cell.textLabel?.text = "Unknown stop (\(currentVehicle?.stops[indexPath.item].lastPathComponent))"
+        cell.textLabel?.text = "Unknown stop (\(currentVehicle?.stops[rowToBeReturned].lastPathComponent))"
       }
     } else {
     }
@@ -371,7 +388,56 @@ extension MainViewController: UITableViewDataSource {
 // MARK: - UITableViewDelegate
 extension MainViewController: UITableViewDelegate {
   func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
-    log.verbose("vehicleScrollView:didSelectRowAtIndexPath: \(indexPath.item)")
+    log.verbose("vehicleScrollView:didSelectRowAtIndexPath: \(indexPath.row)")
+    
+    tableView.deselectRowAtIndexPath(indexPath, animated: true)
+    
+    // was already selected so restore all cells
+//    if selectedStopIndex != nil {
+//      selectedStopIndex = nil
+//      tableView.reloadData()
+//      return
+//    }
+    enum OperationType { case RemoveOtherRows, AddOtherRowsBack}
+    var operation: OperationType?
+    if selectedStopIndex == nil {
+      // no row was selected when the row was tapped => remove other rows
+      operation = .RemoveOtherRows
+      // the current row is the selected one
+      selectedStopIndex = indexPath.row
+    } else {
+      // the tapped (and only) row was already selected => add other rows back
+      operation = .AddOtherRowsBack
+      // don't reset the selectedStopIndex yet because we use it to 
+      // calculate the rows to be added back
+    }
+
+    // pick all the rows but the currently selected one
+    var indexPathsOnTop = [NSIndexPath]()
+    for row in 0 ..< selectedStopIndex! {
+      let indexPath = NSIndexPath(forRow: row, inSection: 0)
+      indexPathsOnTop.append(indexPath)
+    }
+    var indexPathsOnBottom = [NSIndexPath]()
+    let rowCount = currentVehicle?.stops.count ?? 0
+    for row in (selectedStopIndex! + 1) ..< rowCount {
+      let indexPath = NSIndexPath(forRow: row, inSection: 0)
+      indexPathsOnBottom.append(indexPath)
+    }
+    
+    // perform the correct update operation
+    tableView.beginUpdates()
+    switch operation! {
+    case .RemoveOtherRows:
+      tableView.deleteRowsAtIndexPaths(indexPathsOnTop, withRowAnimation: UITableViewRowAnimation.Top)
+      tableView.deleteRowsAtIndexPaths(indexPathsOnBottom, withRowAnimation: UITableViewRowAnimation.Bottom)
+    case .AddOtherRowsBack:
+      selectedStopIndex = nil
+      // safe to forget now which row was selected
+      tableView.insertRowsAtIndexPaths(indexPathsOnTop, withRowAnimation: UITableViewRowAnimation.Top)
+      tableView.insertRowsAtIndexPaths(indexPathsOnBottom, withRowAnimation: UITableViewRowAnimation.Bottom)
+    }
+    tableView.endUpdates()
   }
   
   func scrollViewDidScroll(scrollView: UIScrollView) {

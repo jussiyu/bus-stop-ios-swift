@@ -86,13 +86,13 @@ class VehicleHeaderView: UIView {
     var amount = min(1, 1 - (bounds.height - offset) / bounds.height)
     amount = amount < 0.01 ? 0 : amount
     
-    shrinkView(lineLabel, constraint: &lineLabelHeightConstraint, byAmount: amount)
-    shrinkView(vehicleDistanceLabel, constraint: &vehicleDistanceLabelHeightConstraint, byAmount: amount)
+    minimizeView(lineLabel, constraint: &lineLabelHeightConstraint, byAmount: amount)
+    minimizeView(vehicleDistanceLabel, constraint: &vehicleDistanceLabelHeightConstraint, byAmount: amount)
     
     layoutIfNeeded()
   }
   
-  private func shrinkView(view: UIView, inout constraint: NSLayoutConstraint?, byAmount: CGFloat) {
+  private func minimizeView(view: UIView, inout constraint: NSLayoutConstraint?, byAmount: CGFloat) {
     log.verbose("shink amount: \(byAmount * 100)%, constraint.constant: \(constraint?.constant)")
     
     view.alpha =  max(0, 1 - byAmount*4)
