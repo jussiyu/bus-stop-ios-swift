@@ -102,7 +102,7 @@ class VehicleHeaderView: UIView {
     
     // initialize constraint with intrinsic height constant if not done already
     if constraint == nil {
-      constraint = NSLayoutConstraint.constraintsWithVisualFormatForSwift("V:[v(intrinsic@250)]", metrics: ["intrinsic":intrinsicHeight], views: ["v":view]).first
+      constraint = NSLayoutConstraint.constraintsWithVisualFormat("V:[v(intrinsic@250)]", metrics: ["intrinsic":intrinsicHeight], views: ["v":view], active: false).first
       constraint?.active = true
     }
     

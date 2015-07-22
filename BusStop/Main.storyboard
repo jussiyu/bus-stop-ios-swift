@@ -50,6 +50,26 @@
                                             </subviews>
                                         </tableViewCellContentView>
                                     </tableViewCell>
+                                    <tableViewCell contentMode="scaleToFill" selectionStyle="blue" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="SelectedVehicleStopCell" rowHeight="200" id="Bpu-8t-O9I">
+                                        <autoresizingMask key="autoresizingMask"/>
+                                        <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="Bpu-8t-O9I" id="6dr-5Q-vdJ">
+                                            <autoresizingMask key="autoresizingMask"/>
+                                            <subviews>
+                                                <label opaque="NO" userInteractionEnabled="NO" tag="1" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="kfY-uu-hrM">
+                                                    <rect key="frame" x="1" y="8" width="566" height="183"/>
+                                                    <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                                    <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
+                                                    <nil key="highlightedColor"/>
+                                                </label>
+                                            </subviews>
+                                            <constraints>
+                                                <constraint firstItem="kfY-uu-hrM" firstAttribute="top" secondItem="6dr-5Q-vdJ" secondAttribute="topMargin" id="Fdh-fF-HvC"/>
+                                                <constraint firstItem="kfY-uu-hrM" firstAttribute="leading" secondItem="6dr-5Q-vdJ" secondAttribute="leadingMargin" constant="-7" id="GkP-vk-zo3"/>
+                                                <constraint firstItem="kfY-uu-hrM" firstAttribute="bottom" secondItem="6dr-5Q-vdJ" secondAttribute="bottomMargin" id="SZW-2s-EhP"/>
+                                                <constraint firstAttribute="trailingMargin" secondItem="kfY-uu-hrM" secondAttribute="trailing" constant="-7" id="ffb-Tl-JEy"/>
+                                            </constraints>
+                                        </tableViewCellContentView>
+                                    </tableViewCell>
                                 </prototypes>
                                 <connections>
                                     <outlet property="dataSource" destination="vXZ-lx-hvc" id="OhV-Mh-och"/>

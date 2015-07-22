@@ -31,9 +31,12 @@ class MainViewController: UIViewController {
   let reachability = Reachability.reachabilityForInternetConnection()
   
   // MARK: - properties
-  let kCellIdentifier: String = "VehicleStopCell"
+  let defaultCellIdentifier: String = "VehicleStopCell"
+  let selectedCellIdentifier: String = "SelectedVehicleStopCell"
   var autoRefresh:Bool = false
   var autoRefreshTimer: NSTimer?
+  
+  var vehicleStopTableViewHeader: UILabel?
   
   let maxVisibleVehicleCount = 10
   var vehicles = Vehicles()
@@ -363,30 +366,86 @@ extension MainViewController: UITableViewDataSource {
   }
   
   func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
-    let cell = tableView.dequeueReusableCellWithIdentifier(kCellIdentifier, forIndexPath:indexPath) as! UITableViewCell
-    
-    let currentVehicle = self.currentVehicle
-    if currentVehicle != nil {
-
-      // Return the currently selected row if one is selected
-      // Otherwise return the requested row
-      let rowToBeReturned = selectedStopIndex != nil ? selectedStopIndex! : indexPath.row
+    if selectedStopIndex == nil {
+      let cell = tableView.dequeueReusableCellWithIdentifier(defaultCellIdentifier, forIndexPath:indexPath) as! UITableViewCell
+      
+      let currentVehicle = self.currentVehicle
+      if currentVehicle != nil {
         
-      if let lastPath = currentVehicle?.stops[rowToBeReturned].lastPathComponent, stop = stops[lastPath] {
-        cell.textLabel?.text = "\(stop.name) (\(stop.id))"
-      } else {
-        cell.textLabel?.text = "Unknown stop (\(currentVehicle?.stops[rowToBeReturned].lastPathComponent))"
+        // Return the currently selected row if one is selected
+        // Otherwise return the requested row
+        let rowToBeReturned = indexPath.row
+        
+        if let lastPath = currentVehicle?.stops[rowToBeReturned].lastPathComponent, stop = stops[lastPath] {
+          cell.textLabel?.text = "\(stop.name) (\(stop.id))"
+        } else {
+          cell.textLabel?.text = "Unknown stop (\(currentVehicle?.stops[rowToBeReturned].lastPathComponent))"
+        }
       }
+  
+      return cell
+      
     } else {
-    }
+      let cell = tableView.dequeueReusableCellWithIdentifier(selectedCellIdentifier, forIndexPath:indexPath) as! UITableViewCell
+      
+      let currentVehicle = self.currentVehicle
+      if currentVehicle != nil {
+        
+        // Return the currently selected row if one is selected
+        // Otherwise return the requested row
+        let rowToBeReturned = selectedStopIndex
+        
+        let label = cell.viewWithTag(1)
+        if let label = label as? UILabel, selectedPath = currentVehicle?.stops[selectedStopIndex!].lastPathComponent,
+            stop = stops[selectedPath] {
+          label.text = "\(stop.name) (\(stop.id))"
+        }
+      }
     
-    return cell
+      return cell
+    }
   }
   
 }
 
 // MARK: - UITableViewDelegate
 extension MainViewController: UITableViewDelegate {
+  
+  func tableView(tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
+//    let header = UIView()
+    vehicleStopTableViewHeader = UILabel()
+    if selectedStopIndex == nil {
+      vehicleStopTableViewHeader!.text = NSLocalizedString("Select your stop", comment: "")
+    } else {
+      vehicleStopTableViewHeader!.text = NSLocalizedString("Stop selected", comment: "")
+    }
+    vehicleStopTableViewHeader!.textAlignment = .Center
+    vehicleStopTableViewHeader!.backgroundColor = UIColor.whiteColor()
+//    let blurEffect = UIBlurEffect(style: .Light)
+//    let blurView = UIVisualEffectView(effect: blurEffect)
+//    blurView.setTranslatesAutoresizingMaskIntoConstraints(false)
+//    labelView.setTranslatesAutoresizingMaskIntoConstraints(false)
+//    header.addSubview(blurView)
+//    header.addSubview(labelView)
+//    NSLayoutConstraint.constraintsWithVisualFormat("V:|[v]|", views: ["v":blurView], active: true)
+//    NSLayoutConstraint.constraintsWithVisualFormat("H:|[v]|", views: ["v":blurView], active: true)
+//    NSLayoutConstraint.constraintsWithVisualFormat("V:|[v]|", views: ["v":labelView], active: true)
+//    NSLayoutConstraint.constraintsWithVisualFormat("H:|[v]|", views: ["v":labelView], active: true)
+    return vehicleStopTableViewHeader
+  }
+  
+  func tableView(tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
+    return 22
+  }
+  
+  func tableView(tableView: UITableView, heightForRowAtIndexPath indexPath: NSIndexPath) -> CGFloat {
+    if selectedStopIndex == nil {
+      return tableView.rowHeight
+    } else {
+      return tableView.bounds.height - (vehicleStopTableViewHeader?.bounds.height ?? 0)
+    }
+  }
+
   func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
     log.verbose("vehicleScrollView:didSelectRowAtIndexPath: \(indexPath.row)")
     
@@ -423,14 +482,21 @@ extension MainViewController: UITableViewDelegate {
     tableView.beginUpdates()
     switch operation! {
     case .RemoveOtherRows:
+      if let header = vehicleStopTableViewHeader {
+        header.text = NSLocalizedString("Stop selected", comment: "")
+      }
       tableView.deleteRowsAtIndexPaths(indexPathsOnTop, withRowAnimation: UITableViewRowAnimation.Top)
       tableView.deleteRowsAtIndexPaths(indexPathsOnBottom, withRowAnimation: UITableViewRowAnimation.Bottom)
     case .AddOtherRowsBack:
       selectedStopIndex = nil
+      if let header = vehicleStopTableViewHeader {
+        header.text = NSLocalizedString("Select your stop", comment: "")
+      }
       // safe to forget now which row was selected
       tableView.insertRowsAtIndexPaths(indexPathsOnTop, withRowAnimation: UITableViewRowAnimation.Top)
       tableView.insertRowsAtIndexPaths(indexPathsOnBottom, withRowAnimation: UITableViewRowAnimation.Bottom)
     }
+    tableView.reloadRowsAtIndexPaths([indexPath], withRowAnimation: .Fade)
     tableView.endUpdates()
   }
   

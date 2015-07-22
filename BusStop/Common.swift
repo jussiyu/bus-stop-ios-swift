@@ -79,10 +79,13 @@ public extension NSObject{
 }
 
 extension NSLayoutConstraint {  
-  class func constraintsWithVisualFormatForSwift(format: String, options opts: NSLayoutFormatOptions = nil, metrics: [String : AnyObject] = [:], views: [String : AnyObject] = [:]) -> [NSLayoutConstraint] {
-      return NSLayoutConstraint.constraintsWithVisualFormat(format, options: opts, metrics: metrics, views: views) as! [NSLayoutConstraint]
+  class func constraintsWithVisualFormat(format: String, options opts: NSLayoutFormatOptions = nil, metrics: [String : AnyObject] = [:], views: [String : AnyObject] = [:], active: Bool) -> [NSLayoutConstraint] {
+    let constraints = NSLayoutConstraint.constraintsWithVisualFormat(format, options: opts, metrics: metrics, views: views) as! [NSLayoutConstraint]
+    if active {
+      NSLayoutConstraint.activateConstraints(constraints)
+    }
+    return constraints
   }
-
 }
 
 extension UIView {
