@@ -50,12 +50,12 @@
                                             </subviews>
                                         </tableViewCellContentView>
                                     </tableViewCell>
-                                    <tableViewCell contentMode="scaleToFill" selectionStyle="none" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="SelectedVehicleStopCell" rowHeight="200" id="Bpu-8t-O9I">
+                                    <tableViewCell contentMode="scaleToFill" selectionStyle="none" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="SelectedVehicleStopCell" rowHeight="200" id="Bpu-8t-O9I" customClass="SelectedStopTableViewCell" customModule="BusStop" customModuleProvider="target">
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="Bpu-8t-O9I" id="6dr-5Q-vdJ">
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
-                                                <label opaque="NO" userInteractionEnabled="NO" tag="1" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="2" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="kfY-uu-hrM" userLabel="lineNameLabel">
+                                                <label opaque="NO" userInteractionEnabled="NO" tag="1" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="2" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="kfY-uu-hrM" userLabel="stopNameLabel">
                                                     <rect key="frame" x="8" y="8" width="552" height="88"/>
                                                     <fontDescription key="fontDescription" style="UICTFontTextStyleHeadline"/>
                                                     <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
@@ -79,6 +79,10 @@
                                                 <constraint firstItem="nLM-hV-c62" firstAttribute="leading" secondItem="6dr-5Q-vdJ" secondAttribute="leadingMargin" id="sdl-Dh-2MR"/>
                                             </constraints>
                                         </tableViewCellContentView>
+                                        <connections>
+                                            <outlet property="distanceHintLabel" destination="nLM-hV-c62" id="QfF-cS-M0X"/>
+                                            <outlet property="stopNameLabel" destination="kfY-uu-hrM" id="YhA-An-yTZ"/>
+                                        </connections>
                                     </tableViewCell>
                                 </prototypes>
                                 <connections>
@@ -110,18 +114,18 @@
                     </view>
                     <navigationItem key="navigationItem" title="Bus Stop" id="0w6-WA-eo3">
                         <barButtonItem key="rightBarButtonItem" id="xuj-HQ-FG6">
-                            <switch key="customView" opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" contentHorizontalAlignment="center" contentVerticalAlignment="center" id="CeP-SP-SJ7" userLabel="refreshToggle">
+                            <switch key="customView" opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" contentHorizontalAlignment="center" contentVerticalAlignment="center" id="CeP-SP-SJ7" userLabel="autoRefreshToggle">
                                 <rect key="frame" x="-25" y="-15" width="51" height="31"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <connections>
-                                    <action selector="refreshToggled:" destination="vXZ-lx-hvc" eventType="valueChanged" id="uql-ka-x86"/>
+                                    <action selector="autoRefreshToggled:" destination="vXZ-lx-hvc" eventType="valueChanged" id="pZq-ge-l3x"/>
                                 </connections>
                             </switch>
                         </barButtonItem>
                     </navigationItem>
                     <connections>
+                        <outlet property="autoRefreshSwitch" destination="xuj-HQ-FG6" id="oRe-It-4QW"/>
                         <outlet property="progressLabel" destination="C1n-ja-70w" id="ySJ-fS-weG"/>
-                        <outlet property="refreshToggle" destination="xuj-HQ-FG6" id="T4Q-tL-uid"/>
                         <outlet property="vehicleScrollView" destination="csx-9f-M92" id="7d2-bs-NA4"/>
                         <outlet property="vehicleScrollViewBottomConstraint" destination="fcg-fj-hlh" id="k8k-1G-ml1"/>
                         <outlet property="vehicleScrollViewTopConstraint" destination="T8J-t0-g46" id="2QM-4g-t6v"/>

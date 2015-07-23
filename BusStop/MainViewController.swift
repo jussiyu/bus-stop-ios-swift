@@ -24,7 +24,7 @@ class MainViewController: UIViewController {
   @IBOutlet weak var vehicleScrollView: HorizontalScroller!
   @IBOutlet weak var vehicleScrollViewTopConstraint: NSLayoutConstraint!
   @IBOutlet weak var vehicleScrollViewBottomConstraint: NSLayoutConstraint!
-  @IBOutlet weak var refreshToggle: UIBarButtonItem!
+  @IBOutlet weak var autoRefreshSwitch: UIBarButtonItem!
   @IBOutlet weak var progressLabel: UILabel!
   
   let progressViewManager = MediumProgressViewManager.sharedInstance
@@ -223,7 +223,7 @@ class MainViewController: UIViewController {
     vehicleScrollView.delegate = self
     
     // Autorefresh
-    autoRefresh = (refreshToggle.customView as! UISwitch).on
+    autoRefresh = (autoRefreshSwitch.customView as! UISwitch).on
 
     // Reachability
     reachability.whenReachable = { reachability in
@@ -266,8 +266,8 @@ class MainViewController: UIViewController {
 
   
   // MARK: - actions
-  @IBAction func refreshToggled(sender: AnyObject) {
-    if let toggle = refreshToggle.customView as? UISwitch {
+  @IBAction func autoRefreshToggled(sender: AnyObject) {
+    if let toggle = autoRefreshSwitch.customView as? UISwitch {
       autoRefresh = toggle.on
       initAutoRefreshTimer(andFire: true)
     }
@@ -290,7 +290,7 @@ class MainViewController: UIViewController {
       progressViewManager.hideProgress()
       
       // Disable autorefresh
-      (refreshToggle.customView as! UISwitch).on = false
+      (autoRefreshSwitch.customView as! UISwitch).on = false
       let alert = UIAlertController(title: NSLocalizedString("Cannot connect to network", comment:""), message: NSLocalizedString("Please check that you have network connection.", comment: ""), preferredStyle: UIAlertControllerStyle.Alert)
       alert.addAction(UIAlertAction(title: NSLocalizedString("OK", comment: ""), style: UIAlertActionStyle.Default, handler: nil))
       presentViewController(alert, animated: true, completion: nil)
@@ -322,6 +322,8 @@ class MainViewController: UIViewController {
   
   
   private func initAutoRefreshTimer(andFire: Bool = false) {
+    (autoRefreshSwitch.customView as! UISwitch).on = autoRefresh
+    
     autoRefreshTimer?.invalidate()
     if autoRefresh {
       autoRefreshTimer = NSTimer.scheduledTimerWithTimeInterval(10, target: self, selector: "timedRefreshRequested:", userInfo: nil, repeats: true)
@@ -388,7 +390,7 @@ extension MainViewController: UITableViewDataSource {
     } else {
       
       // selected cell
-      let cell = tableView.dequeueReusableCellWithIdentifier(selectedCellIdentifier, forIndexPath:indexPath) as! UITableViewCell
+      let cell = tableView.dequeueReusableCellWithIdentifier(selectedCellIdentifier, forIndexPath:indexPath) as! SelectedStopTableViewCell
       
       let currentVehicle = self.currentVehicle
       if currentVehicle != nil {
@@ -398,16 +400,14 @@ extension MainViewController: UITableViewDataSource {
         let rowToBeReturned = selectedStopIndex
         
         let stopNameLabel = cell.viewWithTag(1)
-        if let stopNameLabel = stopNameLabel as? UILabel, selectedPath = currentVehicle?.stops[selectedStopIndex!].lastPathComponent,
+        if let selectedPath = currentVehicle?.stops[selectedStopIndex!].lastPathComponent,
           stop = stops[selectedPath] {
-            stopNameLabel.text = "\(stop.name)\n(\(stop.id))"
+            cell.stopNameLabel.text = "\(stop.name)\n(\(stop.id))"
             let stopNameLabelFont = UIFont(descriptor: UIFontDescriptor.preferredDescriptorWithStyle(UIFontTextStyleHeadline, oversizedBy: 16), size: 0)
-            stopNameLabel.font = stopNameLabelFont
+            cell.stopNameLabel.font = stopNameLabelFont
               
         }
-        if let label2 = cell.viewWithTag(2) as? UILabel {
-          label2.text = String(format: NSLocalizedString("%d stop(s) before your stop", comment: ""), selectedStopIndex!)
-        }
+        cell.distanceHintLabel.text = String(format: NSLocalizedString("%d stop(s) before your stop", comment: ""), selectedStopIndex!)
       }
     
       return cell
@@ -459,16 +459,16 @@ extension MainViewController: UITableViewDelegate {
     
     tableView.deselectRowAtIndexPath(indexPath, animated: true)
     
-    enum OperationType { case RemoveOtherRows, AddOtherRowsBack}
+    enum OperationType { case MaximizeSelectedRow, ShowAllRows}
     var operation: OperationType?
     if selectedStopIndex == nil {
       // no row was selected when the row was tapped => remove other rows
-      operation = .RemoveOtherRows
+      operation = .MaximizeSelectedRow
       // the current row is the selected one
       selectedStopIndex = indexPath.row
     } else {
       // the tapped (and only) row was already selected => add other rows back
-      operation = .AddOtherRowsBack
+      operation = .ShowAllRows
       // don't reset the selectedStopIndex yet because we use it to 
       // calculate the rows to be added back
     }
@@ -489,13 +489,22 @@ extension MainViewController: UITableViewDelegate {
     // perform the correct update operation
     tableView.beginUpdates()
     switch operation! {
-    case .RemoveOtherRows:
+    case .MaximizeSelectedRow:
       if let header = vehicleStopTableViewHeader {
         header.text = NSLocalizedString("Stop selected", comment: "")
       }
       tableView.deleteRowsAtIndexPaths(indexPathsOnTop, withRowAnimation: UITableViewRowAnimation.Top)
       tableView.deleteRowsAtIndexPaths(indexPathsOnBottom, withRowAnimation: UITableViewRowAnimation.Bottom)
-    case .AddOtherRowsBack:
+      
+      // Maximize the table view
+      if let currentVehicleHeaderView = vehicleScrollView.viewAtIndex(currentVehicleIndex) as? VehicleHeaderView {
+        let maxOffset = currentVehicleHeaderView.bounds.height + currentVehicleHeaderView.layoutMargins.bottom
+        vehicleStopTableView.setContentOffset(CGPoint(x: 0, y: maxOffset), animated: false)
+      }
+      
+      autoRefresh = true
+      
+    case .ShowAllRows:
       selectedStopIndex = nil
       if let header = vehicleStopTableViewHeader {
         header.text = NSLocalizedString("Select your stop", comment: "")
@@ -503,9 +512,18 @@ extension MainViewController: UITableViewDelegate {
       // safe to forget now which row was selected
       tableView.insertRowsAtIndexPaths(indexPathsOnTop, withRowAnimation: UITableViewRowAnimation.Top)
       tableView.insertRowsAtIndexPaths(indexPathsOnBottom, withRowAnimation: UITableViewRowAnimation.Bottom)
+
+      // Reset the size of the table view
+      vehicleStopTableView.setContentOffset(CGPoint(x: 0, y: 0), animated: false)
+      
+      autoRefresh = false
+    
     }
     tableView.reloadRowsAtIndexPaths([indexPath], withRowAnimation: .Fade)
     tableView.endUpdates()
+    
+    initAutoRefreshTimer()
+
   }
   
   func scrollViewDidScroll(scrollView: UIScrollView) {
