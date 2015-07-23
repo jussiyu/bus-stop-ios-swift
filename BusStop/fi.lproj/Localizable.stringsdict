@@ -18,7 +18,8 @@
 			<string>%.1f kilometriä sinusta</string>
 		</dict>
 	</dict>
-	<key>%d meter(s) from your location</key>
+
+  <key>%d meter(s) from your location</key>
 	<dict>
 		<key>NSStringLocalizedFormatKey</key>
 		<string>%#@meters@</string>
@@ -34,5 +35,27 @@
 			<string>%d metriä sinusta</string>
 		</dict>
 	</dict>
+  
+  <key>"%d stop(s) before your stop</key>
+  <dict>
+    <key>NSStringLocalizedFormatKey</key>
+    <string>%#@stops@</string>
+    <key>stops</key>
+    <dict>
+      <key>NSStringFormatSpecTypeKey</key>
+      <string>NSStringPluralRuleType</string>
+      <key>NSStringFormatValueTypeKey</key>
+      <string>d</string>
+      <key>zero</key>
+      <string>Seuraava pysäkki on sinun pysäkkisi!</string>
+      <key>one</key>
+      <string>Vain yksi pysäkki ennen sinun pysäkkiäsi</string>
+      <key>two</key>
+      <string>Kaksi pysäkkiä ennen sinun pysäkkiäsi</string>
+      <key>other</key>
+      <string>%d pysäkkiä ennen sinun pysäkkiäsi</string>
+    </dict>
+  </dict>
+
 </dict>
 </plist>

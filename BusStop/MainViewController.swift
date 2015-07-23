@@ -386,6 +386,8 @@ extension MainViewController: UITableViewDataSource {
       return cell
       
     } else {
+      
+      // selected cell
       let cell = tableView.dequeueReusableCellWithIdentifier(selectedCellIdentifier, forIndexPath:indexPath) as! UITableViewCell
       
       let currentVehicle = self.currentVehicle
@@ -395,10 +397,16 @@ extension MainViewController: UITableViewDataSource {
         // Otherwise return the requested row
         let rowToBeReturned = selectedStopIndex
         
-        let label = cell.viewWithTag(1)
-        if let label = label as? UILabel, selectedPath = currentVehicle?.stops[selectedStopIndex!].lastPathComponent,
-            stop = stops[selectedPath] {
-          label.text = "\(stop.name) (\(stop.id))"
+        let stopNameLabel = cell.viewWithTag(1)
+        if let stopNameLabel = stopNameLabel as? UILabel, selectedPath = currentVehicle?.stops[selectedStopIndex!].lastPathComponent,
+          stop = stops[selectedPath] {
+            stopNameLabel.text = "\(stop.name)\n(\(stop.id))"
+            let stopNameLabelFont = UIFont(descriptor: UIFontDescriptor.preferredDescriptorWithStyle(UIFontTextStyleHeadline, oversizedBy: 16), size: 0)
+            stopNameLabel.font = stopNameLabelFont
+              
+        }
+        if let label2 = cell.viewWithTag(2) as? UILabel {
+          label2.text = String(format: NSLocalizedString("%d stop(s) before your stop", comment: ""), selectedStopIndex!)
         }
       }
     
