@@ -11,7 +11,7 @@ DEPENDENCIES:
   - MediumProgressView (from `file:///Users/jussi/dev/iOS/mediumprogressview/`)
   - ReachabilitySwift (~> 1.1)
   - SwiftyJSON (~> 2.2)
-  - TaskQueue (from `https://github.com/tamanyan/TaskQueue.git`)
+  - TaskQueue (from `file:///Users/jussi/dev/iOS/TaskQueue`, branch `accesscontrol`)
   - XCGLogger (~> 2.1)
 
 EXTERNAL SOURCES:
@@ -20,7 +20,8 @@ EXTERNAL SOURCES:
   MediumProgressView:
     :git: file:///Users/jussi/dev/iOS/mediumprogressview/
   TaskQueue:
-    :git: https://github.com/tamanyan/TaskQueue.git
+    :branch: accesscontrol
+    :git: file:///Users/jussi/dev/iOS/TaskQueue
 
 CHECKOUT OPTIONS:
   Async:
@@ -30,8 +31,8 @@ CHECKOUT OPTIONS:
     :commit: 90355f260172301fa2e6caf55760896794da6d5c
     :git: file:///Users/jussi/dev/iOS/mediumprogressview/
   TaskQueue:
-    :commit: c16860272afd898b7fd365c4e05fdfb93c56252b
-    :git: https://github.com/tamanyan/TaskQueue.git
+    :commit: 864632d6ce40b1bb7da3dd1c633332841b6730cb
+    :git: file:///Users/jussi/dev/iOS/TaskQueue
 
 SPEC CHECKSUMS:
   Async: edb15b1e34181d7c9873ce6b5d6eabc1c99e638b

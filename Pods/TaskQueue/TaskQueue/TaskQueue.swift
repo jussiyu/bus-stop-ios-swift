@@ -16,203 +16,203 @@ import Foundation
 // MARK: TaskQueue class
 
 public class TaskQueue: Printable {
-
-    //
-    // types used by the TaskQueue
-    //
-    public typealias ClosureNoResultNext = () -> Void
-    public typealias ClosureWithResult = (AnyObject?) -> Void
-    public typealias ClosureWithResultNext = (AnyObject? , AnyObject? -> Void) -> Void
-    
-    //
-    // tasks and completions storage
-    //
-    public var tasks: [ClosureWithResultNext] = []
-    public lazy var completions: [ClosureNoResultNext] = []
-    
-    //
-    // concurrency
-    //
-    public private(set) var numberOfActiveTasks: Int = 0
-    public var maximumNumberOfActiveTasks: Int = 1 {
-        willSet {
-            assert(maximumNumberOfActiveTasks>0, "Setting less than 1 task at a time not allowed")
-        }
+  
+  //
+  // types used by the TaskQueue
+  //
+  public typealias ClosureNoResultNext = () -> Void
+  public typealias ClosureWithResult = (AnyObject?) -> Void
+  public typealias ClosureWithResultNext = (AnyObject? , AnyObject? -> Void) -> Void
+  
+  //
+  // tasks and completions storage
+  //
+  public var tasks: [ClosureWithResultNext] = []
+  public lazy var completions: [ClosureNoResultNext] = []
+  
+  //
+  // concurrency
+  //
+  public private(set) var numberOfActiveTasks: Int = 0
+  public var maximumNumberOfActiveTasks: Int = 1 {
+    willSet {
+      assert(maximumNumberOfActiveTasks>0, "Setting less than 1 task at a time not allowed")
+    }
+  }
+  
+  private var currentTask: ClosureWithResultNext? = nil
+  public private(set) var lastResult: AnyObject! = nil
+  
+  //
+  // queue state
+  //
+  public private(set) var running = false
+  
+  public var paused: Bool = false {
+    didSet {
+      running = !paused
+    }
+  }
+  
+  private var cancelled = false
+  public func cancel() {
+    cancelled = true
+  }
+  
+  private var hasCompletions = false
+  
+  public init() {}
+  
+  //
+  // start or resume the queue
+  //
+  public func run(completion: ClosureNoResultNext? = nil) {
+    if completion != nil {
+      hasCompletions = true
+      completions += [completion!]
     }
     
-    private var currentTask: ClosureWithResultNext? = nil
-    public private(set) var lastResult: AnyObject! = nil
-    
-    //
-    // queue state
-    //
-    public private(set) var running = false
-    
-    public var paused: Bool = false {
-        didSet {
-            running = !paused
-        }
+    if (paused) {
+      paused = false
+      _runNextTask()
+      return
     }
     
-    private var cancelled = false
-    public func cancel() {
-        cancelled = true
+    if running {
+      return
     }
     
-    private var hasCompletions = false
-
-    public init() {}
-
-    //
-    // start or resume the queue
-    //
-    public func run(completion: ClosureNoResultNext? = nil) {
-        if completion != nil {
-            hasCompletions = true
-            completions += [completion!]
-        }
-      
-        if (paused) {
-            paused = false
-            _runNextTask()
-            return
-        }
-        
-        if running {
-            return
-        }
-        
-        running = true
-        _runNextTask()
+    running = true
+    _runNextTask()
+  }
+  
+  private func _runNextTask(result: AnyObject? = nil) {
+    if (cancelled) {
+      tasks.removeAll(keepCapacity: false)
+      completions.removeAll(keepCapacity: false)
     }
     
-    private func _runNextTask(result: AnyObject? = nil) {
-        if (cancelled) {
-            tasks.removeAll(keepCapacity: false)
-            completions.removeAll(keepCapacity: false)
-        }
-        
-        if (numberOfActiveTasks >= maximumNumberOfActiveTasks) {
-            return
-        }
-        
-        lastResult = result
-        
-        if paused {
-            return
-        }
-        
-        var task: ClosureWithResultNext? = nil
-        
-        //fetch one task synchronized
-        objc_sync_enter(self)
-        if self.tasks.count > 0 {
-            task = self.tasks.removeAtIndex(0)
-            self.numberOfActiveTasks++
-        }
-        objc_sync_exit(self)
-
-        if task == nil {
-            if self.numberOfActiveTasks == 0 {
-                self._complete()
-            }
-            return
-        }
-        
-        currentTask = task
-        
-        let executeTask = {
-            task!(self.maximumNumberOfActiveTasks>1 ? nil: result) { (nextResult: AnyObject?) in
-                self.numberOfActiveTasks--
-                self._runNextTask(result: nextResult)
-            }
-        }
-
-        if maximumNumberOfActiveTasks>1 {
-            //parallel queue
-            _delay(seconds: 0.001) {
-                self._runNextTask(result: nil)
-            }
-            _delay(seconds: 0, completion: executeTask)
-        } else {
-            //serial queue
-            executeTask()
-        }
+    if (numberOfActiveTasks >= maximumNumberOfActiveTasks) {
+      return
     }
     
-    private func _complete() {
-        paused = false
-        running = false
-      
-        if hasCompletions {
-            //synchronized remove completions
-            objc_sync_enter(self)
-            while completions.count > 0 {
-                (completions.removeAtIndex(0) as ClosureNoResultNext)()
-            }
-            objc_sync_exit(self)
-        }
+    lastResult = result
+    
+    if paused {
+      return
     }
     
-    //
-    // skip the next task
-    //
-    public func skip() {
-        if tasks.count>0 {
-            _ = tasks.removeAtIndex(0) //better way?
-        }
+    var task: ClosureWithResultNext? = nil
+    
+    //fetch one task synchronized
+    objc_sync_enter(self)
+    if self.tasks.count > 0 {
+      task = self.tasks.removeAtIndex(0)
+      self.numberOfActiveTasks++
+    }
+    objc_sync_exit(self)
+    
+    if task == nil {
+      if self.numberOfActiveTasks == 0 {
+        self._complete()
+      }
+      return
     }
     
-    //
-    // remove all remaining tasks
-    //
-    public func removeAll() {
-        tasks.removeAll(keepCapacity: false)
+    currentTask = task
+    
+    let executeTask = {
+      task!(self.maximumNumberOfActiveTasks>1 ? nil: result) { (nextResult: AnyObject?) in
+        self.numberOfActiveTasks--
+        self._runNextTask(result: nextResult)
+      }
     }
     
-    //
-    // count of the tasks left to execute
-    //
-    public var count: Int {
-        return tasks.count
+    if maximumNumberOfActiveTasks>1 {
+      //parallel queue
+      _delay(seconds: 0.001) {
+        self._runNextTask(result: nil)
+      }
+      _delay(seconds: 0, completion: executeTask)
+    } else {
+      //serial queue
+      executeTask()
     }
+  }
+  
+  private func _complete() {
+    paused = false
+    running = false
     
-    //
-    // re-run the current task
-    //
-    public func retry(delay: Double = 0) {
-        assert(maximumNumberOfActiveTasks==1, "You can call retry() only on serial queues")
-        
-        tasks.insert(currentTask!, atIndex: 0)
-        currentTask = nil
-        
-        self._delay(seconds: delay) {
-            self.numberOfActiveTasks--
-            self._runNextTask(result: self.lastResult)
-        }
+    if hasCompletions {
+      //synchronized remove completions
+      objc_sync_enter(self)
+      while completions.count > 0 {
+        (completions.removeAtIndex(0) as ClosureNoResultNext)()
+      }
+      objc_sync_exit(self)
     }
-
-    //
-    // Provide description when printed
-    //
-    public var description: String {
-        let state = running ? "runing " : (paused ? "paused ": "stopped")
-        let type = maximumNumberOfActiveTasks==1 ? "serial": "parallel"
-        return "[TaskQueue] type=\(type) state=\(state) \(tasks.count) tasks"
+  }
+  
+  //
+  // skip the next task
+  //
+  public func skip() {
+    if tasks.count>0 {
+      _ = tasks.removeAtIndex(0) //better way?
     }
-
-    deinit {
-        //println("queue deinit")
-    }
+  }
+  
+  //
+  // remove all remaining tasks
+  //
+  public func removeAll() {
+    tasks.removeAll(keepCapacity: false)
+  }
+  
+  //
+  // count of the tasks left to execute
+  //
+  public var count: Int {
+    return tasks.count
+  }
+  
+  //
+  // re-run the current task
+  //
+  public func retry(delay: Double = 0) {
+    assert(maximumNumberOfActiveTasks==1, "You can call retry() only on serial queues")
     
-    private func _delay(#seconds:Double, completion:()->()) {
-        let popTime = dispatch_time(DISPATCH_TIME_NOW, Int64( Double(NSEC_PER_SEC) * seconds ))
-        
-        dispatch_after(popTime, dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_LOW, 0)) {
-            completion()
-        }
-    }
+    tasks.insert(currentTask!, atIndex: 0)
+    currentTask = nil
     
+    self._delay(seconds: delay) {
+      self.numberOfActiveTasks--
+      self._runNextTask(result: self.lastResult)
+    }
+  }
+  
+  //
+  // Provide description when printed
+  //
+  public var description: String {
+    let state = running ? "runing " : (paused ? "paused ": "stopped")
+    let type = maximumNumberOfActiveTasks==1 ? "serial": "parallel"
+    return "[TaskQueue] type=\(type) state=\(state) \(tasks.count) tasks"
+  }
+  
+  deinit {
+    //println("queue deinit")
+  }
+  
+  private func _delay(#seconds:Double, completion:()->()) {
+    let popTime = dispatch_time(DISPATCH_TIME_NOW, Int64( Double(NSEC_PER_SEC) * seconds ))
+    
+    dispatch_after(popTime, dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_LOW, 0)) {
+      completion()
+    }
+  }
+  
 }
 
 //
@@ -231,18 +231,18 @@ infix operator  +=! {}
 // Add a task closure with result and next params
 //
 public func += (inout tasks: [TaskQueue.ClosureWithResultNext], task: TaskQueue.ClosureWithResultNext) {
-    tasks += [task]
+  tasks += [task]
 }
 
 //
 // Add a task closure that doesn't take result/next params
 //
 public func += (inout tasks: [TaskQueue.ClosureWithResultNext], task: TaskQueue.ClosureNoResultNext) {
-    tasks += [{
-        _, next in
-        task()
-        next(nil)
-    }]
+  tasks += [{
+    _, next in
+    task()
+    next(nil)
+  }]
 }
 
 // MARK: Add tasks on a background queueu
@@ -252,24 +252,24 @@ public func += (inout tasks: [TaskQueue.ClosureWithResultNext], task: TaskQueue.
 // The task gets executed on a low prio queueu
 //
 public func +=~ (inout tasks: [TaskQueue.ClosureWithResultNext], task: TaskQueue.ClosureNoResultNext) {
-    tasks += [{
-        _, next in
-        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_LOW, 0), {
-            task()
-            next(nil)
-        })
-    }]
+  tasks += [{
+    _, next in
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_LOW, 0), {
+      task()
+      next(nil)
+    })
+  }]
 }
 
 //
 // The task gets executed on a low prio queueu
 //
 public func +=~ (inout tasks: [TaskQueue.ClosureWithResultNext], task: TaskQueue.ClosureWithResultNext) {
-    tasks += [{result, next in
-        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_LOW, 0), {
-            task(result, next)
-        })
-    }]
+  tasks += [{result, next in
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_LOW, 0), {
+      task(result, next)
+    })
+  }]
 }
 
 // MARK: Add tasks on the main queue
@@ -279,25 +279,25 @@ public func +=~ (inout tasks: [TaskQueue.ClosureWithResultNext], task: TaskQueue
 // The task gets executed on the main queue - update UI, etc.
 //
 public func +=! (inout tasks: [TaskQueue.ClosureWithResultNext], task: TaskQueue.ClosureNoResultNext) {
-    tasks += [{
-        _, next in
-        dispatch_async(dispatch_get_main_queue(), {
-            task()
-            next(nil)
-        })
-    }]
+  tasks += [{
+    _, next in
+    dispatch_async(dispatch_get_main_queue(), {
+      task()
+      next(nil)
+    })
+  }]
 }
 
 //
 // The task gets executed on the main queue - update UI, etc.
 //
 public func +=! (inout tasks: [TaskQueue.ClosureWithResultNext], task: TaskQueue.ClosureWithResultNext) {
-    tasks += [{
-        result, next in
-        dispatch_async(dispatch_get_main_queue(), {
-            task(result, next)
-        })
-    }]
+  tasks += [{
+    result, next in
+    dispatch_async(dispatch_get_main_queue(), {
+      task(result, next)
+    })
+  }]
 }
 
 // MARK: Adding sub-queues
@@ -306,11 +306,11 @@ public func +=! (inout tasks: [TaskQueue.ClosureWithResultNext], task: TaskQueue
 // Add a queue to the task list
 //
 public func += (inout tasks: [TaskQueue.ClosureWithResultNext], queue: TaskQueue) {
-    tasks += [{
-        _, next in
-        queue.run {
-            next(queue.lastResult)
-        }
-    }]
+  tasks += [{
+    _, next in
+    queue.run {
+      next(queue.lastResult)
+    }
+  }]
 }
 
