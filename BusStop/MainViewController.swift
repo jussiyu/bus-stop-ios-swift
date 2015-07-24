@@ -106,11 +106,7 @@ class MainViewController: UIViewController {
         if results["status"] == "success" {
           Async.background {
             self.ref.vehicles = Vehicles(fromJSON: results["body"])
-            if let next = next {
-              next(nil)
-            } else {
-              
-            }
+            next?(nil)
           }
         } else { // status != success
           handleError(results, next: next)
@@ -317,6 +313,9 @@ class MainViewController: UIViewController {
     log.verbose("refreshStopsForVehicle")
     if let currentVehicleRef = currentVehicle?.vehRef {
       api.getVehicleActivityStopsForVehicle(currentVehicleRef, next: next)
+    } else {
+      log.warning("no current vehicle found")
+      next?(nil)
     }
   }
   
@@ -403,9 +402,9 @@ extension MainViewController: UITableViewDataSource {
         if let selectedPath = currentVehicle?.stops[selectedStopIndex!].lastPathComponent,
           stop = stops[selectedPath] {
             cell.stopNameLabel.text = "\(stop.name)\n(\(stop.id))"
-            let stopNameLabelFont = UIFont(descriptor: UIFontDescriptor.preferredDescriptorWithStyle(UIFontTextStyleHeadline, oversizedBy: 16), size: 0)
-            cell.stopNameLabel.font = stopNameLabelFont
-              
+      let stopNameLabelFont = UIFont(descriptor: UIFontDescriptor.preferredDescriptorWithStyle(UIFontTextStyleHeadline, oversizedBy: 16), size: 0)
+      cell.stopNameLabel.font = stopNameLabelFont
+      
         }
         cell.distanceHintLabel.text = String(format: NSLocalizedString("%d stop(s) before your stop", comment: ""), selectedStopIndex!)
       }
@@ -456,7 +455,7 @@ extension MainViewController: UITableViewDelegate {
 
   func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
     log.verbose("vehicleScrollView:didSelectRowAtIndexPath: \(indexPath.row)")
-    
+
     tableView.deselectRowAtIndexPath(indexPath, animated: true)
     
     enum OperationType { case MaximizeSelectedRow, ShowAllRows}
