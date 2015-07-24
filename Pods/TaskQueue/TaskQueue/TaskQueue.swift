@@ -28,25 +28,25 @@ public class TaskQueue: Printable {
     // tasks and completions storage
     //
     public var tasks: [ClosureWithResultNext] = []
-    lazy var completions: [ClosureNoResultNext] = []
+    public lazy var completions: [ClosureNoResultNext] = []
     
     //
     // concurrency
     //
-    private(set) var numberOfActiveTasks: Int = 0
-    var maximumNumberOfActiveTasks: Int = 1 {
+    public private(set) var numberOfActiveTasks: Int = 0
+    public var maximumNumberOfActiveTasks: Int = 1 {
         willSet {
             assert(maximumNumberOfActiveTasks>0, "Setting less than 1 task at a time not allowed")
         }
     }
     
     private var currentTask: ClosureWithResultNext? = nil
-    private(set) var lastResult: AnyObject! = nil
+    public private(set) var lastResult: AnyObject! = nil
     
     //
     // queue state
     //
-    private(set) var running = false
+    public private(set) var running = false
     
     public var paused: Bool = false {
         didSet {
@@ -71,7 +71,7 @@ public class TaskQueue: Printable {
             hasCompletions = true
             completions += [completion!]
         }
-        
+      
         if (paused) {
             paused = false
             _runNextTask()
@@ -143,7 +143,7 @@ public class TaskQueue: Printable {
     private func _complete() {
         paused = false
         running = false
-        
+      
         if hasCompletions {
             //synchronized remove completions
             objc_sync_enter(self)

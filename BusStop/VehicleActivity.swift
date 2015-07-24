@@ -37,6 +37,15 @@ class VehicleActivity {
       return nil
     }
   }
+  
+  func stopIndexByRef(ref: NSURL) -> Int? {
+    for i in 0..<stops.count {
+      if stops[i] == ref {
+        return i
+      }
+    }
+    return nil
+  }
 
   // MARK: - initialization
   init?(fromJSON monVeh: JSON) {
@@ -76,13 +85,6 @@ class VehicleActivity {
 //    log.info("onwardCalls count: \(stops.count)")
   }
 
-  // MARK: - methods
-  func addStopAsString(stopRef: String) {
-    if let url = NSURL(fileURLWithPath: stopRef) {
-      stops.append(url)
-    }
-  }
-  
   func distanceFromUserLocation(userLoc: CLLocation) -> String {
     if let dist = loc?.distanceFromLocation(userLoc) {
       if dist < 1000 {

@@ -8,7 +8,7 @@ target 'BusStop' do
   pod 'ReachabilitySwift', '~> 1.1'
   pod 'XCGLogger', '~> 2.1'
   pod 'Async', :git => 'https://github.com/duemunk/Async.git'
-  pod 'TaskQueue', :git => 'https://github.com/tamanyan/TaskQueue.git'
+  pod 'TaskQueue', :git => 'file:///Users/jussi/dev/iOS/TaskQueue', :branch => 'accesscontrol'
 end
 
 target 'BusStopTests' do
