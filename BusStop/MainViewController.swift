@@ -374,7 +374,7 @@ class MainViewController: UIViewController {
   }
 
   func timedRefreshRequested(timer: NSTimer) {
-    self.progressViewManager.showProgress()
+    Async.main {self.progressViewManager.showProgress() }
     refreshStopsForCurrentVehicle { _ in Async.main {self.progressViewManager.hideProgress()} }
   }
   
@@ -602,27 +602,28 @@ extension MainViewController: UITableViewDelegate {
     // reset the selection
     selectedStop = nil
     
-    // pick all the rows but the currently selected one (assume moved to the new row)
+    // pick all the rows but the currently selected one (assume as already moved to the new row)
     var indexPathsOnAbove = [NSIndexPath]()
-    if let rowForSelectedStop = newRowForSelectedStop {
+    if let rowForSelectedStop = newRowForSelectedStop { // skip if the stop does not exist anymore
       for row in 0 ..< rowForSelectedStop {
         let indexPath = NSIndexPath(forRow: row, inSection: 0)
         indexPathsOnAbove.append(indexPath)
       }
     }
+    log.debug("About to insert \(indexPathsOnAbove.count) stop(s) above")
     
     var indexPathsOnBelow = [NSIndexPath]()
     let rowCount = currentVehicle?.stops.count ?? 0
-    if newRowForSelectedStop == nil {
-      // row for selected stop does not exist anymore so add all rows as "below-rows"
-      newRowForSelectedStop = -1
-    }
-    if newRowForSelectedStop! + 1 < rowCount {
-      for row in (newRowForSelectedStop! + 1) ..< rowCount {
+
+    // If the selected stop does not exist anymore so add *all* rows from row #0 onwards
+    let insertNewRowsFromThisRow = newRowForSelectedStop != nil ? newRowForSelectedStop! + 1 : 0
+    if insertNewRowsFromThisRow < rowCount {
+      for row in insertNewRowsFromThisRow ..< rowCount {
         let indexPath = NSIndexPath(forRow: row, inSection: 0)
         indexPathsOnBelow.append(indexPath)
       }
     }
+    log.debug("About to insert \(indexPathsOnBelow.count) stop(s) below")
 
     // perform the correct update operation
     stopTableView.beginUpdates()
@@ -635,6 +636,7 @@ extension MainViewController: UITableViewDelegate {
     let currentSelectedRowIndexPath = NSIndexPath(forRow: 0, inSection: 0)
     if let newRowForSelectedStop = newRowForSelectedStop {
       // the selected row will exist on the same row (#0) in the restored list so update it
+      log.debug("new row for the selected stop is \(newRowForSelectedStop)")
       if newRowForSelectedStop == 0 {
         stopTableView.reloadRowsAtIndexPaths([currentSelectedRowIndexPath], withRowAnimation: .Fade)
       } else {
@@ -645,6 +647,7 @@ extension MainViewController: UITableViewDelegate {
       
     } else { // newRowForSelectedStop == nil
       
+      log.debug("the selected stop not visible anymore")
       // row does not exist anymore so delete it
       stopTableView.deleteRowsAtIndexPaths([currentSelectedRowIndexPath], withRowAnimation: .Fade)
     }
