@@ -27,7 +27,7 @@ class HorizontalScroller: UIView {
   
   weak var delegate: HorizontalScrollerDelegate?
   
-  var scroller: UIScrollView!
+  private var scroller: UIScrollView!
   private var scrollerSubviews = [UIView]()
   
   var viewCount: Int {
@@ -53,6 +53,7 @@ class HorizontalScroller: UIView {
     NSLayoutConstraint.activateConstraints(NSLayoutConstraint.constraintsWithVisualFormat("H:|[scroller]|", options: nil, metrics: [:], views: ["scroller":scroller]))
     
     addGestureRecognizer(UITapGestureRecognizer(target: self, action: "viewTapped:"))
+    scroller.scrollsToTop = false
   }
   
   func viewAtIndex(index: Int) -> UIView? {
