@@ -374,14 +374,20 @@ class MainViewController: UIViewController {
   }
 
   func timedRefreshRequested(timer: NSTimer) {
+    self.progressViewManager.showProgress()
     refreshStopsForCurrentVehicle { _ in Async.main {self.progressViewManager.hideProgress()} }
   }
   
   func extendProgressLabelTextWith(text: String) {
     if progressLabel.text == nil || progressLabel.text!.isEmpty {
-      progressLabel.text = text
+      progressLabel.attributedText = NSMutableAttributedString(string: text)
     } else {
-      progressLabel.text! += "\n\(text)"
+      let newString = NSMutableAttributedString(string: progressLabel.text!,
+        attributes: [NSForegroundColorAttributeName: UIColor.lightGrayColor()])
+      let newText = NSAttributedString(string: "\n\(text)",
+        attributes: [NSForegroundColorAttributeName: UIColor.darkGrayColor()])
+      newString.appendAttributedString(newText)
+      progressLabel.attributedText = newString
     }
   }
 
