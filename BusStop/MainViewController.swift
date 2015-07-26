@@ -421,6 +421,7 @@ class MainViewController: UIViewController {
   }
 }
 
+
 //
 // MARK: - UITableViewDataSource
 //
@@ -480,6 +481,7 @@ extension MainViewController: UITableViewDataSource {
   }
   
 }
+
 
 //
 // MARK: - UITableViewDelegate
@@ -589,6 +591,55 @@ extension MainViewController: UITableViewDelegate {
     }
   }
   
+  private func expandStopAtIndexPath(indexPath: NSIndexPath) {
+    stopTableView.deselectRowAtIndexPath(indexPath, animated: true)
+    
+    // no row was selected when the row was tapped => remove other rows
+    
+    // store the stop for the selected row
+    selectedStop = stopForRow(indexPath.row)
+    if selectedStop == nil {
+      // Ignore unknown stops
+      return
+    }
+    
+    // we know the row
+    let rowForSelectedStop = indexPath.row
+    
+    // pick all the rows but the currently selected one
+    var indexPathsOnAbove = [NSIndexPath]()
+    for row in 0 ..< rowForSelectedStop {
+      let indexPath = NSIndexPath(forRow: row, inSection: 0)
+      indexPathsOnAbove.append(indexPath)
+    }
+    var indexPathsOnBelow = [NSIndexPath]()
+    let rowCount = currentVehicle?.stops.count ?? 0
+    if rowForSelectedStop + 1 < rowCount {
+      for row in (rowForSelectedStop + 1) ..< rowCount {
+        let indexPath = NSIndexPath(forRow: row, inSection: 0)
+        indexPathsOnBelow.append(indexPath)
+      }
+    }
+    
+    // Maximize the table view
+    expandStopTableView()
+    
+    // perform the correct update operation
+    stopTableView.beginUpdates()
+    if let header = stopTableViewHeader {
+      header.text = NSLocalizedString("Stop selected", comment: "")
+    }
+    stopTableView.deleteRowsAtIndexPaths(indexPathsOnAbove, withRowAnimation: .Fade)
+    stopTableView.deleteRowsAtIndexPaths(indexPathsOnBelow, withRowAnimation: .Fade)
+        
+    stopTableView.endUpdates()
+    stopTableView.reloadRowsAtIndexPaths([NSIndexPath(forRow: 0, inSection: 0)], withRowAnimation: .Fade)
+    
+    autoRefresh = true
+    initAutoRefreshTimer()
+    
+  }
+
   private func unexpandSelectedStop() {
     autoUnexpandTaskQueue?.cancel()
     autoUnexpandTaskQueue = initAutoUnexpandTaskQueue()
@@ -669,58 +720,12 @@ extension MainViewController: UITableViewDelegate {
 
   }
   
-  private func expandStopAtIndexPath(indexPath: NSIndexPath) {
-    stopTableView.deselectRowAtIndexPath(indexPath, animated: true)
-    
-    // no row was selected when the row was tapped => remove other rows
-    
-    // store the stop for the selected row
-    selectedStop = stopForRow(indexPath.row)
-    if selectedStop == nil {
-      // Ignore unknown stops
-      return
-    }
-    
-    // we know the row
-    let rowForSelectedStop = indexPath.row
-    
-    // pick all the rows but the currently selected one
-    var indexPathsOnAbove = [NSIndexPath]()
-    for row in 0 ..< rowForSelectedStop {
-      let indexPath = NSIndexPath(forRow: row, inSection: 0)
-      indexPathsOnAbove.append(indexPath)
-    }
-    var indexPathsOnBelow = [NSIndexPath]()
-    let rowCount = currentVehicle?.stops.count ?? 0
-    if rowForSelectedStop + 1 < rowCount {
-      for row in (rowForSelectedStop + 1) ..< rowCount {
-        let indexPath = NSIndexPath(forRow: row, inSection: 0)
-        indexPathsOnBelow.append(indexPath)
-      }
-    }
-    
-    // Maximize the table view
-    expandStopTableView()
-    
-    // perform the correct update operation
-    stopTableView.beginUpdates()
-    if let header = stopTableViewHeader {
-      header.text = NSLocalizedString("Stop selected", comment: "")
-    }
-    stopTableView.deleteRowsAtIndexPaths(indexPathsOnAbove, withRowAnimation: .Top)
-    stopTableView.deleteRowsAtIndexPaths(indexPathsOnBelow, withRowAnimation: .Bottom)
-    
-    autoRefresh = true
-    
-    stopTableView.endUpdates()
-    stopTableView.reloadRowsAtIndexPaths([NSIndexPath(forRow: 0, inSection: 0)], withRowAnimation: .Fade)
-    
-    initAutoRefreshTimer()
-
-  }
 }
 
+
+//
 // MARK: - UITextFieldDelegate
+//
 extension MainViewController: UITextFieldDelegate {
   func textFieldShouldReturn(textField: UITextField) -> Bool {
     textField.resignFirstResponder()
@@ -728,7 +733,10 @@ extension MainViewController: UITextFieldDelegate {
   }
 }
 
+
+//
 // MARK: - locationUpdate notification handler
+//
 extension MainViewController {
   @objc func locationUpdated(notification: NSNotification){
     log.verbose("locationUpdate \(notification.name)")
@@ -746,7 +754,10 @@ extension MainViewController {
   }
 }
 
+
+//
 // MARK: - preferredContentSizeChanged notification handler
+//
 extension MainViewController {
   func preferredContentSizeChanged(notification: NSNotification) {
     log.verbose("preferredContentSizeChanged")
@@ -755,7 +766,10 @@ extension MainViewController {
   }
 }
 
+
+//
 // MARK: - HorizontalScrollerDelegate
+//
 extension MainViewController: HorizontalScrollerDelegate {
   
   // MARK: - Data source functions
