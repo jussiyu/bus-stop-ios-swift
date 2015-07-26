@@ -122,9 +122,10 @@ class MainViewController: UIViewController {
             self.ref.vehicles.setStopsFromJSON(results["body"])
           }.main {
             self.ref.stopTableView.reloadData()
-            
+
+            // Check if the selected stop is still on the stop list
             if self.ref.selectedStop != nil && self.ref.rowForStop(self.ref.selectedStop!) == nil {
-              log.debug("Selected stop passed")
+              log.debug("Selected stop \(self.ref.selectedStop!.name) passed")
               if let queue = self.ref.autoUnexpandTaskQueue where !queue.running {
                 log.debug("Launching auto unexpand")
                 queue.run()
@@ -137,7 +138,6 @@ class MainViewController: UIViewController {
           handleError(results, next: next)
         }
       }
-      
     }
     
     class StopsDelegate: APIDelegateBase {
@@ -254,7 +254,7 @@ class MainViewController: UIViewController {
     super.viewDidLoad()
     
     vehicleScrollView.delegate = self
-    
+
     // Autorefresh
     autoRefresh = (autoRefreshSwitch.customView as! UISwitch).on
 
@@ -486,16 +486,6 @@ extension MainViewController: UITableViewDelegate {
     }
     stopTableViewHeader!.textAlignment = .Center
     stopTableViewHeader!.backgroundColor = UIColor.whiteColor()
-//    let blurEffect = UIBlurEffect(style: .Light)
-//    let blurView = UIVisualEffectView(effect: blurEffect)
-//    blurView.setTranslatesAutoresizingMaskIntoConstraints(false)
-//    labelView.setTranslatesAutoresizingMaskIntoConstraints(false)
-//    header.addSubview(blurView)
-//    header.addSubview(labelView)
-//    NSLayoutConstraint.constraintsWithVisualFormat("V:|[v]|", views: ["v":blurView], active: true)
-//    NSLayoutConstraint.constraintsWithVisualFormat("H:|[v]|", views: ["v":blurView], active: true)
-//    NSLayoutConstraint.constraintsWithVisualFormat("V:|[v]|", views: ["v":labelView], active: true)
-//    NSLayoutConstraint.constraintsWithVisualFormat("H:|[v]|", views: ["v":labelView], active: true)
     return stopTableViewHeader
   }
   
@@ -528,38 +518,61 @@ extension MainViewController: UITableViewDelegate {
    
     // Do nothing if all rows fit so that bouncing does nothing
     if scrollView.bounds.height < scrollView.contentSize.height {
-      
+
+      // scroll stop table view up and minimize vehicle scroller
       // Use the positive value of the table scroll offset to animate other views
       let offset = max(scrollView.contentOffset.y, 0)
       //    log.debug("vehicleScrollView vertical offset: \(offset)")
+      expandStopTableViewByOffset(offset)
+
+    } else {
       
-      if let currentVehicleHeaderView = vehicleScrollView.viewAtIndex(currentVehicleIndex) as? VehicleHeaderView {
-        // shink and hide not needed info
-        currentVehicleHeaderView.fadeOutByOffset(offset)
-        
-        // Move adjacent headers to side and him them
-        for viewIndex in 0..<vehicleScrollView.viewCount {
-          if let view = vehicleScrollView.viewAtIndex(viewIndex) {
-            if viewIndex != currentVehicleIndex {
-              view.alpha = 1 - offset / 10
-              view.transform = CGAffineTransformMakeTranslation(viewIndex > currentVehicleIndex ? offset : -offset, 0)
-            } else {
-              view.alpha = 1
-              view.transform = CGAffineTransformIdentity
-            }
+      // ensure that everything is reset to normal
+      resetVehicleScrollView()
+    }
+  }
+  
+  private func expandStopTableView() {
+    if let currentVehicleHeaderView = vehicleScrollView.viewAtIndex(currentVehicleIndex) as? VehicleHeaderView {
+      expandStopTableViewByOffset(currentVehicleHeaderView.bounds.height +
+        currentVehicleHeaderView.layoutMargins.bottom)
+      stopTableView.layoutIfNeeded()
+    }
+  }
+  
+  private func expandStopTableViewByOffset(offset: CGFloat) {
+    
+    if let currentVehicleHeaderView = vehicleScrollView.viewAtIndex(currentVehicleIndex) as? VehicleHeaderView {
+      // shink and hide not needed info
+      currentVehicleHeaderView.fadeOutByOffset(offset)
+      
+      // Move adjacent headers to side and him them
+      for viewIndex in 0..<vehicleScrollView.viewCount {
+        if let view = vehicleScrollView.viewAtIndex(viewIndex) {
+          if viewIndex != currentVehicleIndex {
+            view.alpha = 1 - offset / 10
+            view.transform = CGAffineTransformMakeTranslation(viewIndex > currentVehicleIndex ? offset : -offset, 0)
+          } else {
+            view.alpha = 1
+            view.transform = CGAffineTransformIdentity
           }
         }
-        
-        // scroll table view up to match current header view bottom
-        vehicleScrollViewBottomConstraint.constant = -min(offset, currentVehicleHeaderView.bounds.height +  currentVehicleHeaderView.layoutMargins.bottom) + currentVehicleHeaderView.layoutMargins.bottom
-        
       }
-    } else {
-      if let currentVehicleHeaderView = vehicleScrollView.viewAtIndex(currentVehicleIndex) {
-        currentVehicleHeaderView.alpha = 1
-        currentVehicleHeaderView.transform = CGAffineTransformIdentity
-      }
+      
+      // scroll table view up to match current header view bottom
+      vehicleScrollViewBottomConstraint.constant = -min(offset, currentVehicleHeaderView.bounds.height +  currentVehicleHeaderView.layoutMargins.bottom) + currentVehicleHeaderView.layoutMargins.bottom
+      
     }
+  }
+  
+  private func unexpandStopTableView() {
+    expandStopTableViewByOffset(0)
+
+//    if let currentVehicleHeaderView = vehicleScrollView.viewAtIndex(currentVehicleIndex) {
+//      currentVehicleHeaderView.alpha = 1
+//      currentVehicleHeaderView.transform = CGAffineTransformIdentity
+//    }
+
   }
   
   private func resetVehicleScrollView() {
@@ -607,9 +620,6 @@ extension MainViewController: UITableViewDelegate {
       }
     }
 
-    // Reset the size of the table view
-    stopTableView.setContentOffset(CGPoint(x: 0, y: 0), animated: false)
-    
     // perform the correct update operation
     stopTableView.beginUpdates()
 
@@ -619,7 +629,7 @@ extension MainViewController: UITableViewDelegate {
 
     // decide what to do with the current row (on row #0)
     let currentSelectedRowIndexPath = NSIndexPath(forRow: 0, inSection: 0)
-    if let newRowForSelectedStop = newRowForSelectedStop where newRowForSelectedStop >= 0 {
+    if let newRowForSelectedStop = newRowForSelectedStop {
       // the selected row will exist on the same row (#0) in the restored list so update it
       if newRowForSelectedStop == 0 {
         stopTableView.reloadRowsAtIndexPaths([currentSelectedRowIndexPath], withRowAnimation: .Fade)
@@ -628,7 +638,9 @@ extension MainViewController: UITableViewDelegate {
 //        stopTableView.moveRowAtIndexPath(currentSelectedRowIndexPath, toIndexPath: NSIndexPath(forRow: newRowForSelectedStop, inSection: 0))
         stopTableView.reloadRowsAtIndexPaths([currentSelectedRowIndexPath], withRowAnimation: .None)
       }
-    } else {
+      
+    } else { // newRowForSelectedStop == nil
+      
       // row does not exist anymore so delete it
       stopTableView.deleteRowsAtIndexPaths([currentSelectedRowIndexPath], withRowAnimation: .Fade)
     }
@@ -637,10 +649,15 @@ extension MainViewController: UITableViewDelegate {
     stopTableView.insertRowsAtIndexPaths(indexPathsOnAbove, withRowAnimation: UITableViewRowAnimation.Top)
     stopTableView.insertRowsAtIndexPaths(indexPathsOnBelow, withRowAnimation: UITableViewRowAnimation.Bottom)
     
-    autoRefresh = false
-    
     stopTableView.endUpdates()
 
+    // Reset the size of the table view
+    unexpandStopTableView()
+    if let newRowForSelectedStop = newRowForSelectedStop {
+      stopTableView.scrollToRowAtIndexPath(NSIndexPath(forRow: newRowForSelectedStop, inSection: 0), atScrollPosition: .None, animated: true)
+    }
+    
+    autoRefresh = false
     initAutoRefreshTimer()
 
   }
@@ -671,6 +688,9 @@ extension MainViewController: UITableViewDelegate {
       }
     }
     
+    // Maximize the table view
+    expandStopTableView()
+    
     // perform the correct update operation
     stopTableView.beginUpdates()
     if let header = stopTableViewHeader {
@@ -678,12 +698,6 @@ extension MainViewController: UITableViewDelegate {
     }
     stopTableView.deleteRowsAtIndexPaths(indexPathsOnAbove, withRowAnimation: .Top)
     stopTableView.deleteRowsAtIndexPaths(indexPathsOnBelow, withRowAnimation: .Bottom)
-    
-    // Maximize the table view
-    if let currentVehicleHeaderView = vehicleScrollView.viewAtIndex(currentVehicleIndex) as? VehicleHeaderView {
-      let maxOffset = currentVehicleHeaderView.bounds.height + currentVehicleHeaderView.layoutMargins.bottom
-      stopTableView.setContentOffset(CGPoint(x: 0, y: maxOffset), animated: false)
-    }
     
     autoRefresh = true
     
@@ -773,13 +787,12 @@ extension MainViewController: HorizontalScrollerDelegate {
   }
   
   func horizontalScrollerWillBeginDragging(horizontalScroller: HorizontalScroller) {
-    // User dragged vehicle header so scroll the stop table to top
-    stopTableView.scrollToRowAtIndexPath(NSIndexPath(indexes: [0,0], length: 2), atScrollPosition: UITableViewScrollPosition.Top, animated: true)
+    stopTableView.scrollToTop(animated: true)
     resetVehicleScrollView()
   }
   
   func horizontalScrollerTapped(horizontalScroller: HorizontalScroller) {
-    stopTableView.scrollToRowAtIndexPath(NSIndexPath(indexes: [0,0], length: 2), atScrollPosition: UITableViewScrollPosition.Top, animated: true)
+    stopTableView.scrollToTop(animated: true)
     resetVehicleScrollView()
   }
 }
