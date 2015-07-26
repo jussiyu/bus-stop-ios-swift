@@ -392,7 +392,6 @@ class MainViewController: UIViewController {
 
   
   func stopForRow(row: Int) -> Stop? {
-    // TODO check row overflow?
     if let currentVehicle = currentVehicle where currentVehicle.stops.count > row {
       if let lastPath = currentVehicle.stops[row].lastPathComponent, stop = stops[lastPath] {
         return stop
@@ -410,12 +409,15 @@ class MainViewController: UIViewController {
     if let ref = selectedStop?.ref {
       return currentVehicle?.stopIndexByRef(ref)
     } else {
+      log.warning("Current vehicle does not currenly have this stop")
       return nil
     }
   }
 }
 
+//
 // MARK: - UITableViewDataSource
+//
 extension MainViewController: UITableViewDataSource {
   
   func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
@@ -441,11 +443,11 @@ extension MainViewController: UITableViewDataSource {
         if let stop = stopForRow(rowToBeReturned) {
           cell.textLabel?.text = "\(stop.name) (\(stop.id))"
         } else {
-          cell.textLabel?.text = "Unknown stop"
-          log.error("Unknown stop")
+          cell.textLabel?.text = NSLocalizedString("Unknown stop", comment: "")
+          log.error("Unknown stop at row \(rowToBeReturned)")
         }
       }
-  
+      
       return cell
       
     } else { // selectedStop != nil
@@ -473,11 +475,12 @@ extension MainViewController: UITableViewDataSource {
   
 }
 
+//
 // MARK: - UITableViewDelegate
+//
 extension MainViewController: UITableViewDelegate {
   
   func tableView(tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
-//    let header = UIView()
     stopTableViewHeader = UILabel()
     if selectedStop == nil {
       stopTableViewHeader!.text = NSLocalizedString("Choose your stop", comment: "")
@@ -567,11 +570,6 @@ extension MainViewController: UITableViewDelegate {
   
   private func unexpandStopTableView() {
     expandStopTableViewByOffset(0)
-
-//    if let currentVehicleHeaderView = vehicleScrollView.viewAtIndex(currentVehicleIndex) {
-//      currentVehicleHeaderView.alpha = 1
-//      currentVehicleHeaderView.transform = CGAffineTransformIdentity
-//    }
 
   }
   
@@ -669,6 +667,10 @@ extension MainViewController: UITableViewDelegate {
     
     // store the stop for the selected row
     selectedStop = stopForRow(indexPath.row)
+    if selectedStop == nil {
+      // Ignore unknown stops
+      return
+    }
     
     // we know the row
     let rowForSelectedStop = indexPath.row
