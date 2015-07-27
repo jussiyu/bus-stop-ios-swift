@@ -3,7 +3,7 @@ PODS:
   - MediumProgressView (1.0.6)
   - ReachabilitySwift (1.1)
   - SwiftyJSON (2.2.0)
-  - TaskQueue (0.9.6)
+  - TaskQueue (0.9.7)
   - XCGLogger (2.1.1)
 
 DEPENDENCIES:
@@ -31,7 +31,7 @@ CHECKOUT OPTIONS:
     :commit: 90355f260172301fa2e6caf55760896794da6d5c
     :git: file:///Users/jussi/dev/iOS/mediumprogressview/
   TaskQueue:
-    :commit: 864632d6ce40b1bb7da3dd1c633332841b6730cb
+    :commit: ffcc587eabbe29dc0bc3680bb8adb4bc41b294e2
     :git: file:///Users/jussi/dev/iOS/TaskQueue
 
 SPEC CHECKSUMS:
@@ -39,7 +39,7 @@ SPEC CHECKSUMS:
   MediumProgressView: 96911061f6f1843ca7512fd4a7950c6c5d1dc543
   ReachabilitySwift: 1e53abddb01111deac0d229dabdb8bb043567b18
   SwiftyJSON: 0b3e6c07af17ff745e77e8e9984097b55c956e5c
-  TaskQueue: d98cf6caa4b4b20f7c2f3142d7f57c7fbeb93683
+  TaskQueue: cc6c56e2868b8eeff36d012b5bb8c739651c4042
   XCGLogger: 8df921bcf88abbd511b887c8febde8163d624d81
 
-COCOAPODS: 0.38.0
+COCOAPODS: 0.38.2

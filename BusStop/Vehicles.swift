@@ -27,7 +27,7 @@ class Vehicles {
     var vehicleCount = 0
     for (index: String, subJson: JSON) in result {
       let monVeh = subJson["monitoredVehicleJourney"]
-      if var v = VehicleActivity(fromJSON: monVeh) {
+      if let v = VehicleActivity(fromJSON: monVeh) {
         vehicles[v.vehRef] = v
         ++vehicleCount
         if vehicleCount >= maxVehiclesToRead {

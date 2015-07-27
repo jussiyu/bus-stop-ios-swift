@@ -47,6 +47,7 @@ public class TaskQueue: Printable {
   // queue state
   //
   public private(set) var running = false
+  public private(set) var completed = false
   
   public var paused: Bool = false {
     didSet {
@@ -54,12 +55,14 @@ public class TaskQueue: Printable {
     }
   }
   
-  private var cancelled = false
+  public private(set) var cancelled = false
   public func cancel() {
     cancelled = true
   }
   
-  private var hasCompletions = false
+  public var hasCompletions: Bool {
+    return completions.count > 0
+  }
   
   public init() {}
   
@@ -68,7 +71,6 @@ public class TaskQueue: Printable {
   //
   public func run(completion: ClosureNoResultNext? = nil) {
     if completion != nil {
-      hasCompletions = true
       completions += [completion!]
     }
     
@@ -152,6 +154,7 @@ public class TaskQueue: Printable {
       }
       objc_sync_exit(self)
     }
+    completed = true
   }
   
   //

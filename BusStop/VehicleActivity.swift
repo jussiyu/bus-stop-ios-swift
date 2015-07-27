@@ -64,7 +64,7 @@ class VehicleActivity {
       setStopsFromJSON(monVeh)
       
     } else {
-      log.error("failed to parse vehicle activity from JSON")
+      log.error("failed to parse vehicle activity from JSON: \(monVeh)")
       self.vehRef = ""
       self.lineRef = ""
       return nil

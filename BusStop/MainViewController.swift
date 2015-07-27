@@ -83,8 +83,8 @@ class MainViewController: UIViewController {
       }
       
       func didReceiveError(urlerror: NSError, next: APIController.NextTask?) {
-        self.ref.initialRefreshTaskQueue.removeAll()
-        next?(nil)
+        self.ref.initialRefreshTaskQueue?.removeAll()
+        next?("URL error \(urlerror)")
       }
       
       func handleError(results: JSON, next: APIController.NextTask?) {
@@ -95,8 +95,8 @@ class MainViewController: UIViewController {
             "Failed to read data from network. The detailed error was:\n \"\(errorTitle): \(errorMessage)\"", preferredStyle: UIAlertControllerStyle.Alert)
           alertController.addAction(UIAlertAction(title: "Dismiss", style: UIAlertActionStyle.Default, handler: nil))
           self.ref.presentViewController(alertController, animated: true, completion: nil)
-          self.ref.initialRefreshTaskQueue.removeAll()
-          next?(nil)
+          self.ref.initialRefreshTaskQueue?.removeAll()
+          next?("JSON error")
         }
       }
     }
@@ -157,7 +157,9 @@ class MainViewController: UIViewController {
     return APIController(vehDelegate: VehicleDelegate(ref: self), stopsDelegate: StopsDelegate(ref: self), vehStopsDelegate: VehicleStopsDelegate(ref:self))
   }()
 
-  lazy var initialRefreshTaskQueue: TaskQueue = {
+  var initialRefreshTaskQueue: TaskQueue?
+  
+  func initInitialRefreshTaskQueue() -> TaskQueue {
     let q = TaskQueue()
     
     q.tasks +=! {
@@ -168,24 +170,35 @@ class MainViewController: UIViewController {
     q.tasks +=~ { result, next in
       log.info("Task: load stop data")
       self.extendProgressLabelTextWith(NSLocalizedString("Refreshing stop information from network...", comment: ""))
-      self.refreshStops(next: next)
+      self.refreshStops(queue: q, next: next)
     }
     
     q.tasks +=~ { result, next in
       log.info("Task: load vehicle headers")
       self.extendProgressLabelTextWith(NSLocalizedString("Refreshing bus information from network...", comment: ""))
-      self.refreshVehicles(next: next)
+      self.refreshVehicles(queue: q, next: next)
     }
 
     q.tasks +=! {
       self.extendProgressLabelTextWith(NSLocalizedString("Bus data loaded.", comment: ""))
     }
     
+    var locationCheckCounter = 0
     q.tasks +=~ {[weak q] result, next in
-      log.info("Task: wait for location")
+      log.info("Task: waiting for location")
       // get closes vehicle
       if self.userLoc == nil {
-        q!.retry(delay: 0.5)
+        if locationCheckCounter++ < 10 {
+          q!.retry(delay: 0.5)
+        } else {
+          q?.removeAll()
+          Async.main {
+            let alert = UIAlertController(title: NSLocalizedString("Cannot acquire your location", comment:""), message: NSLocalizedString("", comment: ""), preferredStyle: UIAlertControllerStyle.Alert)
+            alert.addAction(UIAlertAction(title: NSLocalizedString("OK", comment: ""), style: UIAlertActionStyle.Default, handler: nil))
+            self.presentViewController(alert, animated: true, completion: nil)
+          }
+          next("No location")
+        }
       } else {
         next(nil)
       }
@@ -198,7 +211,7 @@ class MainViewController: UIViewController {
     
     q.tasks +=~ {results, next in
       log.info("Task: load stops for the current vehicle")
-      self.refreshStopsForCurrentVehicle(next: next)
+      self.refreshStopsForCurrentVehicle(queue: q, next: next)
     }
     
     q.tasks +=! {
@@ -209,7 +222,7 @@ class MainViewController: UIViewController {
     }
     
     return q
-  }()
+  }
 
   var autoUnexpandTaskQueue: TaskQueue?
   
@@ -260,40 +273,55 @@ class MainViewController: UIViewController {
 
     autoUnexpandTaskQueue = initAutoUnexpandTaskQueue()
     
-    // Reachability
-    reachability.whenReachable = { reachability in
-      self.extendProgressLabelTextWith(NSLocalizedString("Network connectivity resumed. Refreshing data from network...", comment: ""))
-
-      log.debug("Now reachable")
-      if self.stops.count == 0 {
-        self.initialRefreshTaskQueue.run {
-          self.progressViewManager.hideProgress()
-          log.info("Intial refresh done successfully!")
-        }
-      }
-    }
-    reachability.startNotifier()
-
     NSNotificationCenter.defaultCenter().addObserver(self,
       selector: "preferredContentSizeChanged:",
       name: UIContentSizeCategoryDidChangeNotification,
       object: nil)
 
-    initialRefreshTaskQueue.run {
-      self.progressViewManager.hideProgress()
-      log.info("Intial refresh done successfully!")
+    NSNotificationCenter.defaultCenter().addObserver(self,
+      selector: "applicationWillResignActive:",
+      name: UIApplicationWillResignActiveNotification,
+      object: nil)
+    NSNotificationCenter.defaultCenter().addObserver(self,
+      selector: "applicationDidBecomeActive:",
+      name: UIApplicationDidBecomeActiveNotification,
+      object: nil)
+
+    // Reachability
+    reachability.whenReachable = { reachability in
+      self.extendProgressLabelTextWith(NSLocalizedString("Network connectivity resumed. Refreshing data from network...", comment: ""))
+      
+      log.debug("Now reachable")
+      if self.initialRefreshTaskQueue == nil || !self.initialRefreshTaskQueue!.running {
+        self.initialRefreshTaskQueue = self.initInitialRefreshTaskQueue()
+      }
+      if let q = self.initialRefreshTaskQueue where !q.running  {
+        q.run {
+          Async.main {
+            if let q = self.initialRefreshTaskQueue, result = q.lastResult as? String where !result.isBlank {
+              self.extendProgressLabelTextWith(NSLocalizedString("Failed to initialize the application", comment: ""))
+              log.error("Intial refresh failed: \(result)")
+            } else {
+              log.info("Intial refresh done successfully by reachability!")
+              self.extendProgressLabelTextWith(NSLocalizedString("All data loaded", comment: ""))
+              self.stopTableView.hidden = false
+              self.hideProgressLabel()
+            }
+            self.progressViewManager.hideProgress()
+          }
+        }
+      }
     }
+    reachability.startNotifier()
+
   }
 
   override func viewWillAppear(animated: Bool) {
+    super.viewWillAppear(animated)
     extendProgressLabelTextWith(NSLocalizedString("Aquiring location...", comment: ""))
     NSNotificationCenter.defaultCenter().addObserver(self, selector: "locationUpdated:", name: "newLocationNotif", object: nil)
   }
 
-  override func viewWillDisappear(animated: Bool) {
-    NSNotificationCenter.defaultCenter().removeObserver(self)
-  }
-  
   override func didReceiveMemoryWarning() {
     super.didReceiveMemoryWarning()
     // Dispose of any resources that can be recreated.
@@ -310,54 +338,58 @@ class MainViewController: UIViewController {
 
   // MARK: - utility functions
   
-  private func refreshStops(#next: APIController.NextTask?) {
+  private func refreshStops(#queue: TaskQueue?, next: APIController.NextTask?) {
     log.verbose("RefreshStops")
     
     if reachability.isReachable() {
-      if reachability.isReachableViaWiFi() {
-        log.debug("Reachable via WiFi")
-      } else {
-        log.debug("Reachable via Cellular")
-      }
       api.getStops(next)
     } else {
-      log.debug("Not reachable")
-      progressViewManager.hideProgress()
-      
-      // Disable autorefresh
-      (autoRefreshSwitch.customView as! UISwitch).on = false
-      let alert = UIAlertController(title: NSLocalizedString("Cannot connect to network", comment:""), message: NSLocalizedString("Please check that you have network connection.", comment: ""), preferredStyle: UIAlertControllerStyle.Alert)
-      alert.addAction(UIAlertAction(title: NSLocalizedString("OK", comment: ""), style: UIAlertActionStyle.Default, handler: nil))
-      presentViewController(alert, animated: true, completion: nil)
+      showNetworkReachabilityError()
+
+      queue?.removeAll()
+      next?("no network connection")
     }
   }
 
-  private func refreshVehicles(#next: APIController.NextTask?) {
+  private func refreshVehicles(#queue: TaskQueue?, next: APIController.NextTask?) {
     log.verbose("RefreshVehicles")
     
     if reachability.isReachable() {
-      if reachability.isReachableViaWiFi() {
-        log.debug("Reachable via WiFi")
-      } else {
-        log.debug("Reachable via Cellular")
-      }
       api.getVehicleActivityHeaders(next: next)
     } else {
-      log.debug("Not reachable")
-      progressViewManager.hideProgress()
+      showNetworkReachabilityError()
+
+      queue?.removeAll()
+      next?("no network connection")
     }
   }
 
-  private func refreshStopsForCurrentVehicle(#next: APIController.NextTask?) {
+  private func refreshStopsForCurrentVehicle(#queue: TaskQueue?, next: APIController.NextTask?) {
     log.verbose("refreshStopsForVehicle")
+    
     if let currentVehicleRef = currentVehicle?.vehRef {
-      api.getVehicleActivityStopsForVehicle(currentVehicleRef, next: next)
+      if reachability.isReachable() {
+        api.getVehicleActivityStopsForVehicle(currentVehicleRef, next: next)
+      } else {
+        showNetworkReachabilityError()
+
+        queue?.removeAll()
+        next?("no network connection")
+      }
     } else {
       log.warning("no current vehicle found")
+      queue?.removeAll()
       next?(nil)
     }
   }
   
+  private func showNetworkReachabilityError() {
+    log.warning("Not reachable")
+    
+    let alert = UIAlertController(title: NSLocalizedString("Cannot connect to network", comment:""), message: NSLocalizedString("Please check that you have network connection.", comment: ""), preferredStyle: UIAlertControllerStyle.Alert)
+    alert.addAction(UIAlertAction(title: NSLocalizedString("OK", comment: ""), style: UIAlertActionStyle.Default, handler: nil))
+    presentViewController(alert, animated: true, completion: nil)
+  }
   
   private func initAutoRefreshTimer(andFire: Bool = false) {
     (autoRefreshSwitch.customView as! UISwitch).on = autoRefresh
@@ -375,12 +407,13 @@ class MainViewController: UIViewController {
 
   func timedRefreshRequested(timer: NSTimer) {
     Async.main {self.progressViewManager.showProgress() }
-    refreshStopsForCurrentVehicle { _ in Async.main {self.progressViewManager.hideProgress()} }
+    refreshStopsForCurrentVehicle(queue: nil) { _ in Async.main {self.progressViewManager.hideProgress()} }
   }
   
   func extendProgressLabelTextWith(text: String) {
     if progressLabel.text == nil || progressLabel.text!.isEmpty {
-      progressLabel.attributedText = NSMutableAttributedString(string: text)
+      progressLabel.attributedText = NSMutableAttributedString(string: text,
+        attributes: [NSForegroundColorAttributeName: UIColor.darkGrayColor()])
     } else {
       let newString = NSMutableAttributedString(string: progressLabel.text!,
         attributes: [NSForegroundColorAttributeName: UIColor.lightGrayColor()])
@@ -464,7 +497,13 @@ extension MainViewController: UITableViewDataSource {
       
       let currentVehicle = self.currentVehicle
       // Return the currently selected stop
-      cell.stopNameLabel.text = "\(selectedStop!.name)\n(\(selectedStop!.id))"
+      let style = NSParagraphStyle.defaultParagraphStyle().mutableCopy() as! NSMutableParagraphStyle
+      style.hyphenationFactor = 1.0
+      style.alignment = .Center
+      
+      let string = NSAttributedString(string: "\(selectedStop!.name)\n(\(selectedStop!.id))", attributes: [NSParagraphStyleAttributeName:style])
+//      cell.stopNameLabel.text = "\(selectedStop!.name)\n(\(selectedStop!.id))"
+      cell.stopNameLabel.attributedText = string
       let stopNameLabelFont = UIFont(descriptor: UIFontDescriptor.preferredDescriptorWithStyle(UIFontTextStyleHeadline, oversizedBy: 16), size: 0)
       cell.stopNameLabel.font = stopNameLabelFont
       
@@ -631,7 +670,7 @@ extension MainViewController: UITableViewDelegate {
     }
     stopTableView.deleteRowsAtIndexPaths(indexPathsOnAbove, withRowAnimation: .Fade)
     stopTableView.deleteRowsAtIndexPaths(indexPathsOnBelow, withRowAnimation: .Fade)
-        
+    
     stopTableView.endUpdates()
     stopTableView.reloadRowsAtIndexPaths([NSIndexPath(forRow: 0, inSection: 0)], withRowAnimation: .Fade)
     
@@ -764,6 +803,32 @@ extension MainViewController {
     //    vehicleStopTableView takes care of itself
     vehicleScrollView.reloadData()
   }
+  
+  func applicationWillResignActive(notification: NSNotification) {
+    log.verbose("applicationWillResignActive:")
+    NSNotificationCenter.defaultCenter().removeObserver(self)
+    initialRefreshTaskQueue?.cancel()
+  }
+
+  func applicationDidBecomeActive(notification: NSNotification) {
+    log.verbose("applicationDidBecomeActive:")
+    initialRefreshTaskQueue = initInitialRefreshTaskQueue()
+    initialRefreshTaskQueue?.run {
+      Async.main {
+        if let q = self.initialRefreshTaskQueue, result = q.lastResult as? String where !result.isBlank {
+          self.extendProgressLabelTextWith(NSLocalizedString("Failed to initialize the application", comment: ""))
+          log.error("Intial refresh failed: \(result)")
+        } else {
+          log.info("Intial refresh done successfully!")
+          self.extendProgressLabelTextWith(NSLocalizedString("All data loaded", comment: ""))
+          self.stopTableView.hidden = false
+          self.hideProgressLabel()
+        }
+        self.progressViewManager.hideProgress()
+      }
+    }
+
+  }
 }
 
 
@@ -808,7 +873,7 @@ extension MainViewController: HorizontalScrollerDelegate {
   func horizontalScroller(horizontalScroller: HorizontalScroller, didScrollToViewAtIndex: Int) {
     log.verbose("horizontalScroller(_:didScrollToViewAtIndex: \(didScrollToViewAtIndex))")
     currentVehicleIndex = didScrollToViewAtIndex
-    refreshStopsForCurrentVehicle {_ in Async.main {self.progressViewManager.hideProgress()} }
+    refreshStopsForCurrentVehicle(queue: nil) {_ in Async.main {self.progressViewManager.hideProgress()} }
   }
   
   func horizontalScrollerWillBeginDragging(horizontalScroller: HorizontalScroller) {
