@@ -15,10 +15,10 @@ class VehicleActivity {
   // MARK: - properties
   let lineRef: String
   let vehRef: String
-  var loc: CLLocation?
+  var location: CLLocation?
   var stops = [NSURL]()
   var description: String {
-    return "vehRef: \(vehRef), loc: \(loc?.coordinate.latitude.toString(fractionDigits: 2)):\(loc?.coordinate.longitude.toString(fractionDigits: 2))"
+    return "vehRef: \(vehRef), loc: \(location?.coordinate.latitude.toString(fractionDigits: 2)):\(location?.coordinate.longitude.toString(fractionDigits: 2))"
   }
  
   var formattedVehicleRef: String {
@@ -57,7 +57,7 @@ class VehicleActivity {
       if let lat = locJson["latitude"].string?.fromPOSIXStringtoDouble(), lon = locJson["longitude"].string?.fromPOSIXStringtoDouble() {
         let locTest = CLLocationCoordinate2DMake(lat, lon)
         if CLLocationCoordinate2DIsValid(locTest) {
-          loc = CLLocation(latitude: lat, longitude: lon)
+          location = CLLocation(latitude: lat, longitude: lon)
         }
       }
       
@@ -85,22 +85,20 @@ class VehicleActivity {
 //    log.info("onwardCalls count: \(stops.count)")
   }
 
-  func distanceFromUserLocation(userLoc: CLLocation) -> String {
-    if let dist = loc?.distanceFromLocation(userLoc) {
+  func distanceFromUserLocation(userLocation: CLLocation) -> String {
+    if let dist = location?.distanceFromLocation(userLocation) {
       if dist < 1000 {
         return NSString.localizedStringWithFormat(NSLocalizedString("%d meter(s) from your location", comment: "distance in meters"), lround(dist)) as String
       } else {
         return NSString.localizedStringWithFormat(NSLocalizedString("%d km(s) from your location", comment: "distance in km"), dist/1000) as String
-//        return "\((dist/1000).toString(fractionDigits: 1)) km".localizedWithComment("distance in km")
       }
     } else {
       return "--".localizedWithComment("unknown distance between user and the vehicle")
     }
-    
   }
   
   func distanceFromUserLocation(userLoc: CLLocation) -> CLLocationDistance? {
-    return loc?.distanceFromLocation(userLoc)
+    return location?.distanceFromLocation(userLoc)
   }
   
   class func vehicleRefFromJSON(monVeh: JSON) -> String? {
