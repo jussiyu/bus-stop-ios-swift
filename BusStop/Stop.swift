@@ -7,19 +7,22 @@
 //
 
 import Foundation
+import CoreLocation
 import SwiftyJSON
 import XCGLogger
 
 
-class Stop {
+struct Stop {
   let id: String
   let ref: NSURL?
   let name: String
+  let location: CLLocation?
   
-  init(id: String, name: String, ref: String = "") {
+  init(id: String, name: String, ref: String = "", location: CLLocation?) {
     self.id = id
     self.ref = NSURL(fileURLWithPath: ref)
     self.name = name
+    self.location = location
   }
   
   static func StopsFromJSON(result: JSON) -> [String: Stop]{
@@ -27,14 +30,40 @@ class Stop {
     
     for (index: String, subJson: JSON) in result {
 //      let mun = subJson["municipality"]
-      if let id = subJson["shortName"].string,
-          stopRef = subJson["url"].string, name = subJson["name"].string where !stopRef.isEmpty {
-        var s = Stop(id: id, name: name, ref: stopRef)
-        stops[id] = s
+      if let id = subJson["shortName"].string, stopRef = subJson["url"].string,
+        name = subJson["name"].string where !stopRef.isEmpty {
+          let locString = subJson["location"].string
+          let coordinates = locString?.componentsSeparatedByString(",")
+          var location: CLLocation? = nil
+          if let coordinates = coordinates where coordinates.count == 2 {
+            if let lat = coordinates[0].fromPOSIXStringtoDouble(),
+              lon = coordinates[1].fromPOSIXStringtoDouble() {
+                let locTest = CLLocationCoordinate2DMake(lat, lon)
+                if CLLocationCoordinate2DIsValid(locTest) {
+                  location = CLLocation(latitude: lat, longitude: lon)
+                }
+            }
+          }
+          var s = Stop(id: id, name: name, ref: stopRef, location: location)
+          stops[id] = s
       }
     }
     log.debug("Parsed \(stops.count) stops")
     return stops
+  }
+
+  func distanceFromUserLocation(userLocation: CLLocation) -> String {
+    if let dist = location?.distanceFromLocation(userLocation) {
+      if dist < 1000 {
+        return NSString.localizedStringWithFormat(NSLocalizedString("%d meter(s) from your location", comment: "distance in meters"), lround(dist)) as String
+      } else {
+        return NSString.localizedStringWithFormat(NSLocalizedString("%d km(s) from your location", comment: "distance in km"), dist/1000) as String
+        //        return "\((dist/1000).toString(fractionDigits: 1)) km".localizedWithComment("distance in km")
+      }
+    } else {
+      return NSLocalizedString("--", comment: "unknown distance between user and the vehicle")
+    }
+    
   }
 
 }
