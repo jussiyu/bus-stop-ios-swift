@@ -14,6 +14,7 @@ import ReachabilitySwift
 import XCGLogger
 import Async
 import TaskQueue
+import AudioToolbox
 
 
 // MARK: - UIViewController
@@ -39,19 +40,18 @@ class MainViewController: UIViewController {
   var stopTableViewHeader: UILabel?
   
   let maxVisibleVehicleCount = 10
-  var vehicles = Vehicles()
-  var closestVehicles: [VehicleActivity] {
-    if userLoc != nil {
-      //      log.verbose("Getting closest vehicle")
-      //      return lineVehicles.getClosestVehicles(userLoc!)
-      return vehicles.getClosestVehicles(userLoc!)
-    } else if let firstVeh = vehicles.getFirstVehicle() {
-      //      log.verbose("Getting first vehicle")
-      return [firstVeh]
-    } else {
-      return []
+  var vehicles = Vehicles() {
+    didSet {
+      if let userLocation = userLocation {
+        closestVehicles = vehicles.getClosestVehicles(userLocation, maxCount: maxVisibleVehicleCount)
+      } else  {
+        closestVehicles = []
+      }
     }
   }
+  
+  var closestVehicles: [VehicleActivity] = []
+  
   var currentVehicle: VehicleActivity? {
     let closestVehicles = self.closestVehicles
     if closestVehicles.count > currentVehicleIndex {
@@ -61,15 +61,30 @@ class MainViewController: UIViewController {
     }
   }
 
-  private var stops = [String: Stop]()
+  private var stops: [String: Stop] = [:]
 
   private var currentVehicleIndex = 0 {
     didSet {
       selectedStop = nil
     }
   }
-  private var selectedStop: Stop?
-  private var userLoc: CLLocation?
+  private var selectedStop: Stop? {
+    didSet {
+      systemSoundPlayedForSelectedStop = false
+    }
+  }
+  private var userLocation: CLLocation? {
+    didSet {
+      if let userLocation = userLocation {
+        closestVehicles = vehicles.getClosestVehicles(userLocation, maxCount: maxVisibleVehicleCount)
+      } else  {
+        closestVehicles = []
+      }
+    }
+  }
+  
+  private var systemSoundID: SystemSoundID?
+  private var systemSoundPlayedForSelectedStop = false
   
   lazy private var api: APIController = {
     
@@ -124,11 +139,16 @@ class MainViewController: UIViewController {
             self.ref.stopTableView.reloadData()
 
             // Check if the selected stop is still on the stop list
-            if self.ref.selectedStop != nil && self.ref.rowForStop(self.ref.selectedStop!) == nil {
-              log.debug("Selected stop \(self.ref.selectedStop!.name) passed")
-              if let queue = self.ref.autoUnexpandTaskQueue where !queue.running {
-                log.debug("Launching auto unexpand")
-                queue.run()
+            if self.ref.selectedStop != nil {
+              let selectedStopRow = self.ref.rowForStop(self.ref.selectedStop!)
+              if selectedStopRow == nil {
+                log.debug("Selected stop \(self.ref.selectedStop!.name) passed")
+                if let queue = self.ref.autoUnexpandTaskQueue where !queue.running {
+                  log.debug("Launching auto unexpand")
+                  queue.run()
+                }
+              } else if selectedStopRow == 0 {
+                self.ref.playSelectedStopReachedAlert()
               }
             }
             
@@ -187,7 +207,7 @@ class MainViewController: UIViewController {
     q.tasks +=~ {[weak q] result, next in
       log.info("Task: waiting for location")
       // get closes vehicle
-      if self.userLoc == nil {
+      if self.userLocation == nil {
         if locationCheckCounter++ < 10 {
           q!.retry(delay: 0.5)
         } else {
@@ -262,12 +282,12 @@ class MainViewController: UIViewController {
 
   override func viewDidAppear(animated: Bool) {
   }
-  
+
   override func viewDidLoad() {
     super.viewDidLoad()
     
     vehicleScrollView.delegate = self
-
+  
     // Autorefresh
     autoRefresh = (autoRefreshSwitch.customView as! UISwitch).on
 
@@ -324,6 +344,10 @@ class MainViewController: UIViewController {
 
   override func didReceiveMemoryWarning() {
     super.didReceiveMemoryWarning()
+    if systemSoundID != nil {
+      AudioServicesDisposeSystemSoundID(systemSoundID!)
+      systemSoundID = nil
+    }
     // Dispose of any resources that can be recreated.
   }
 
@@ -452,6 +476,27 @@ class MainViewController: UIViewController {
       return nil
     }
   }
+
+  private func playSelectedStopReachedAlert() {
+    if systemSoundID  == nil {
+      systemSoundID = SystemSoundID(kSystemSoundID_Vibrate)
+//      let alertSound = NSURL(fileURLWithPath: NSBundle.mainBundle().pathForResource("pulse", ofType: "m4r")!)
+//      if let alertSound = alertSound {
+//        AudioServicesCreateSystemSoundID(alertSound, &systemSoundID!)
+//      } else {
+//        log.debug("failed to find alertSound")
+//        return
+//      }
+    }
+    
+    // Play only once per stop
+    if let systemSoundID = systemSoundID where !systemSoundPlayedForSelectedStop {
+      AudioServicesPlayAlertSound(systemSoundID)
+      systemSoundPlayedForSelectedStop = true
+    }
+  }
+  
+
 }
 
 
@@ -502,14 +547,21 @@ extension MainViewController: UITableViewDataSource {
       style.alignment = .Center
       
       let string = NSAttributedString(string: "\(selectedStop!.name)\n(\(selectedStop!.id))", attributes: [NSParagraphStyleAttributeName:style])
-//      cell.stopNameLabel.text = "\(selectedStop!.name)\n(\(selectedStop!.id))"
       cell.stopNameLabel.attributedText = string
       let stopNameLabelFont = UIFont(descriptor: UIFontDescriptor.preferredDescriptorWithStyle(UIFontTextStyleHeadline, oversizedBy: 16), size: 0)
       cell.stopNameLabel.font = stopNameLabelFont
       
       if let ref = selectedStop!.ref {
         if let stopsBeforeSelectedStop = currentVehicle?.stopIndexByRef(ref) {
-          cell.distanceHintLabel.text = String(format: NSLocalizedString("%d stop(s) before your stop", comment: ""), stopsBeforeSelectedStop)
+          var stopDistance: String?
+          if let userLocation = userLocation {
+            stopDistance = selectedStop!.distanceFromUserLocation(userLocation)
+          }
+          var distanceHintText = String(format: NSLocalizedString("%d stop(s) before your stop", comment: ""), stopsBeforeSelectedStop)
+          if let stopDistance = stopDistance {
+            distanceHintText += "\n\(stopDistance)"
+          }
+          cell.distanceHintLabel.text = distanceHintText.stringByReplacingOccurrencesOfString("\\n", withString: "\n", options: nil)
         } else {
           cell.distanceHintLabel.text = autoUnexpandTaskQueueProgress ?? ""
         }
@@ -780,12 +832,11 @@ extension MainViewController {
   @objc func locationUpdated(notification: NSNotification){
     log.verbose("locationUpdate \(notification.name)")
     if let locInfo = notification.userInfo as? [String:CLLocation], newLoc = locInfo["newLocationResult"] {
-      if userLoc == nil || userLoc!.moreAccurateThanLocation(newLoc) ||
-          !userLoc!.commonHorizontalLocationWith(newLoc) {
-        userLoc = newLoc
-        log.info("New user loc:  \(self.userLoc?.description)")
+      if userLocation == nil || userLocation!.moreAccurateThanLocation(newLoc) ||
+          !userLocation!.commonHorizontalLocationWith(newLoc) {
+        userLocation = newLoc
+        log.info("New user loc:  \(self.userLocation?.description)")
         extendProgressLabelTextWith(NSLocalizedString("Location acquired.", comment: ""))
-//        vehicleStopTableView.reloadData()
       } else {
         log.info("Existing or worse user loc notified. Ignored.")
       }
@@ -839,14 +890,13 @@ extension MainViewController: HorizontalScrollerDelegate {
   
   // MARK: - Data source functions
   func horizontalScroller(horizontalScroller: HorizontalScroller, viewAtIndexPath indexPath: Int) -> UIView {
-    let closestVehicles = self.closestVehicles
     var subView: UIView = UIView()
-    if let userLoc = userLoc where closestVehicles.count > indexPath {
+    if let userLocation = userLocation where closestVehicles.count > indexPath {
       let veh = closestVehicles[indexPath]
       subView = VehicleHeaderView(
         lineRef: String(format: NSLocalizedString("Line %@", comment: "Line name header"), veh.lineRef),
         vehicleRef: veh.formattedVehicleRef,
-        distance: veh.distanceFromUserLocation(userLoc))
+        distance: veh.distanceFromUserLocation(userLocation))
     } else {
       subView = UIView()
     }
