@@ -55,6 +55,19 @@ class Vehicles {
     sortedVehicles.removeRange(min(maxCount,sortedVehicles.count)..<sortedVehicles.endIndex)
     return sortedVehicles
   }
+
+  func setLocationsFromJSON(result: JSON) {
+    var vehicleCount = 0
+    for (index: String, subJson: JSON) in result {
+      let monVeh = subJson["monitoredVehicleJourney"]
+      if let vehRef = VehicleActivity.vehicleRefFromJSON(monVeh),
+        v = vehicles[vehRef] {
+          v.setLocationFromJSON(monVeh)
+      }
+      ++vehicleCount
+    }
+    log.debug("Location for vehicles read: \(vehicleCount)")
+  }
   
   func setStopsFromJSON(result: JSON) {
     var vehicleCount = 0

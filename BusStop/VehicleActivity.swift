@@ -53,14 +53,7 @@ class VehicleActivity {
       self.vehRef = vehRef
       self.lineRef = lineRef
       
-      let locJson = monVeh["vehicleLocation"]
-      if let lat = locJson["latitude"].string?.fromPOSIXStringtoDouble(), lon = locJson["longitude"].string?.fromPOSIXStringtoDouble() {
-        let locTest = CLLocationCoordinate2DMake(lat, lon)
-        if CLLocationCoordinate2DIsValid(locTest) {
-          location = CLLocation(latitude: lat, longitude: lon)
-        }
-      }
-      
+      setLocationFromJSON(monVeh)
       setStopsFromJSON(monVeh)
       
     } else {
@@ -83,6 +76,16 @@ class VehicleActivity {
       }
     }
 //    log.info("onwardCalls count: \(stops.count)")
+  }
+
+  func setLocationFromJSON(monVeh: JSON) {
+    let locJson = monVeh["vehicleLocation"]
+    if let lat = locJson["latitude"].string?.fromPOSIXStringtoDouble(), lon = locJson["longitude"].string?.fromPOSIXStringtoDouble() {
+      let locTest = CLLocationCoordinate2DMake(lat, lon)
+      if CLLocationCoordinate2DIsValid(locTest) {
+        self.location = CLLocation(latitude: lat, longitude: lon)
+      }
+    }
   }
 
   func distanceFromUserLocation(userLocation: CLLocation) -> String {

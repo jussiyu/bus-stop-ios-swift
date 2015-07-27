@@ -135,6 +135,7 @@ class MainViewController: UIViewController {
         if results["status"] == "success" {
           Async.background {
             self.ref.vehicles.setStopsFromJSON(results["body"])
+            self.ref.vehicles.setLocationsFromJSON(results["body"])
           }.main {
             self.ref.stopTableView.reloadSections(NSIndexSet(index: 0), withRowAnimation: .Fade)
 
@@ -554,12 +555,12 @@ extension MainViewController: UITableViewDataSource {
       if let ref = selectedStop!.ref {
         if let stopsBeforeSelectedStop = currentVehicle?.stopIndexByRef(ref) {
           var stopDistance: String?
-          if let userLocation = userLocation {
-            stopDistance = selectedStop!.distanceFromUserLocation(userLocation)
+          if let userLocationInVehicle = currentVehicle?.location {
+            stopDistance = selectedStop!.distanceFromUserLocation(userLocationInVehicle)
           }
           var distanceHintText = String(format: NSLocalizedString("%d stop(s) before your stop", comment: ""), stopsBeforeSelectedStop)
           if let stopDistance = stopDistance {
-            distanceHintText += "\n\(stopDistance)"
+            distanceHintText += ".\n\(stopDistance)"
           }
           cell.distanceHintLabel.text = distanceHintText.stringByReplacingOccurrencesOfString("\\n", withString: "\n", options: nil)
         } else {
