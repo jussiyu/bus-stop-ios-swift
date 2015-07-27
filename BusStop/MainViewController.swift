@@ -136,7 +136,7 @@ class MainViewController: UIViewController {
           Async.background {
             self.ref.vehicles.setStopsFromJSON(results["body"])
           }.main {
-            self.ref.stopTableView.reloadData()
+            self.ref.stopTableView.reloadSections(NSIndexSet(index: 0), withRowAnimation: .Fade)
 
             // Check if the selected stop is still on the stop list
             if self.ref.selectedStop != nil {
@@ -390,7 +390,7 @@ class MainViewController: UIViewController {
 
   private func refreshStopsForCurrentVehicle(#queue: TaskQueue?, next: APIController.NextTask?) {
     log.verbose("refreshStopsForVehicle")
-    
+
     if let currentVehicleRef = currentVehicle?.vehRef {
       if reachability.isReachable() {
         api.getVehicleActivityStopsForVehicle(currentVehicleRef, next: next)
