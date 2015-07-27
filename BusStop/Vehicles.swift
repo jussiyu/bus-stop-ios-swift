@@ -44,14 +44,14 @@ class Vehicles {
   }
 
   func getClosestVehicle(userLocation: CLLocation) -> VehicleActivity? {
-    let sortedMatchingVehicles = sorted(vehicles.values) {$0.loc != nil && $1 != nil ? (userLocation.distanceFromLocation($0.loc!) < userLocation.distanceFromLocation($1.loc!)) : false}
+    let sortedMatchingVehicles = sorted(vehicles.values) {isLeftVehicleActivityCloserToUserLocation(userLocation, left: $0, right: $1)}
     let closest = sortedMatchingVehicles.reduce("") { "\($0), \($1.description), "}
 //    log.debug("Closest matching vehicles: \(self.closest)")
     return sortedMatchingVehicles.first
   }
 
   func getClosestVehicles(userLocation: CLLocation, maxCount: Int = 10) -> [VehicleActivity] {
-    var sortedVehicles = sorted(vehicles.values) {userLocation.distanceFromLocation($0.loc!) < userLocation.distanceFromLocation($1.loc!)}
+    var sortedVehicles = sorted(vehicles.values) {isLeftVehicleActivityCloserToUserLocation(userLocation, left: $0, right: $1)}
     sortedVehicles.removeRange(min(maxCount,sortedVehicles.count)..<sortedVehicles.endIndex)
     return sortedVehicles
   }
@@ -70,3 +70,6 @@ class Vehicles {
   }
 }
 
+private func isLeftVehicleActivityCloserToUserLocation(userLocation: CLLocation, #left: VehicleActivity, #right: VehicleActivity) -> Bool {
+  return left.location != nil && right.location != nil ? (userLocation.distanceFromLocation(left.location!) < userLocation.distanceFromLocation(right.location!)) : false
+}
