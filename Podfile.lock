@@ -31,7 +31,7 @@ CHECKOUT OPTIONS:
     :commit: 90355f260172301fa2e6caf55760896794da6d5c
     :git: file:///Users/jussi/dev/iOS/mediumprogressview/
   TaskQueue:
-    :commit: ffcc587eabbe29dc0bc3680bb8adb4bc41b294e2
+    :commit: 56994a32d6d7945fb86d297e0a2076abb84409c7
     :git: file:///Users/jussi/dev/iOS/TaskQueue
 
 SPEC CHECKSUMS:

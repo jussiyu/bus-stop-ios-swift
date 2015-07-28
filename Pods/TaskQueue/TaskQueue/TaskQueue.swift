@@ -24,6 +24,25 @@ public class TaskQueue: Printable {
   public typealias ClosureWithResult = (AnyObject?) -> Void
   public typealias ClosureWithResultNext = (AnyObject? , AnyObject? -> Void) -> Void
   
+  public enum State {
+    case NotStarted, Running, Paused, Completed, Cancelled
+    
+    func description() -> String {
+      switch self {
+      case .NotStarted:
+        return "NotStarted"
+      case .Running:
+        return "Running"
+      case .Paused:
+        return "Paused"
+      case .Completed:
+        return "Completed"
+      case .Cancelled:
+        return "Cancelled"
+      }
+    }
+  }
+  
   //
   // tasks and completions storage
   //
@@ -46,18 +65,28 @@ public class TaskQueue: Printable {
   //
   // queue state
   //
-  public private(set) var running = false
-  public private(set) var completed = false
+  public private(set) var state = State.NotStarted
   
-  public var paused: Bool = false {
-    didSet {
-      running = !paused
-    }
+  public func cancel() {
+    state = .Cancelled
   }
   
-  public private(set) var cancelled = false
-  public func cancel() {
-    cancelled = true
+  public func pause() {
+    state = .Paused
+  }
+  
+  public func resume() {
+
+    objc_sync_enter(self)
+    if state != .Paused {
+      // Not paused
+      return
+    } else {
+      state = .Running
+    }
+    objc_sync_exit(self)
+    
+    _runNextTask()
   }
   
   public var hasCompletions: Bool {
@@ -74,22 +103,20 @@ public class TaskQueue: Printable {
       completions += [completion!]
     }
     
-    if (paused) {
-      paused = false
-      _runNextTask()
+    objc_sync_enter(self)
+    if state == .Running {
+      // Already running
       return
+    } else {
+      state = .Running
     }
-    
-    if running {
-      return
-    }
-    
-    running = true
+    objc_sync_exit(self)
+
     _runNextTask()
   }
   
   private func _runNextTask(result: AnyObject? = nil) {
-    if (cancelled) {
+    if state == .Cancelled {
       tasks.removeAll(keepCapacity: false)
       completions.removeAll(keepCapacity: false)
     }
@@ -100,7 +127,7 @@ public class TaskQueue: Printable {
     
     lastResult = result
     
-    if paused {
+    if state == .Paused {
       return
     }
     
@@ -143,8 +170,6 @@ public class TaskQueue: Printable {
   }
   
   private func _complete() {
-    paused = false
-    running = false
     
     if hasCompletions {
       //synchronized remove completions
@@ -154,7 +179,8 @@ public class TaskQueue: Printable {
       }
       objc_sync_exit(self)
     }
-    completed = true
+
+    state = .Completed
   }
   
   //
@@ -199,9 +225,8 @@ public class TaskQueue: Printable {
   // Provide description when printed
   //
   public var description: String {
-    let state = running ? "runing " : (paused ? "paused ": "stopped")
     let type = maximumNumberOfActiveTasks==1 ? "serial": "parallel"
-    return "[TaskQueue] type=\(type) state=\(state) \(tasks.count) tasks"
+    return "[TaskQueue] type=\(type) state=\(state.description()) \(tasks.count) tasks"
   }
   
   deinit {

@@ -127,7 +127,6 @@ class MainViewController: UIViewController {
           handleError(results, next: next)
         }
       }
-      
     }
 
     class VehicleStopsDelegate :APIDelegateBase {
@@ -144,7 +143,7 @@ class MainViewController: UIViewController {
               let selectedStopRow = self.ref.rowForStop(self.ref.selectedStop!)
               if selectedStopRow == nil {
                 log.debug("Selected stop \(self.ref.selectedStop!.name) passed")
-                if let queue = self.ref.autoUnexpandTaskQueue where !queue.running {
+                if let queue = self.ref.autoUnexpandTaskQueue where queue.state != .Running {
                   log.debug("Launching auto unexpand")
                   queue.run()
                 }
@@ -209,16 +208,25 @@ class MainViewController: UIViewController {
       log.info("Task: waiting for location")
       // get closes vehicle
       if self.userLocation == nil {
+
         if locationCheckCounter++ < 10 {
           q!.retry(delay: 0.5)
+
         } else {
-          q?.removeAll()
+          
+          // Pause and try to continue later
+          q!.pause()
+          self.progressViewManager.hideProgress()
+          locationCheckCounter = 0
+
           Async.main {
-            let alert = UIAlertController(title: NSLocalizedString("Cannot acquire your location", comment:""), message: NSLocalizedString("", comment: ""), preferredStyle: UIAlertControllerStyle.Alert)
+            let alert = UIAlertController(title: NSLocalizedString("Failed locate you.", comment:""), message: NSLocalizedString("", comment: ""), preferredStyle: UIAlertControllerStyle.Alert)
             alert.addAction(UIAlertAction(title: NSLocalizedString("OK", comment: ""), style: UIAlertActionStyle.Default, handler: nil))
             self.presentViewController(alert, animated: true, completion: nil)
+            self.extendProgressLabelTextWith(NSLocalizedString("Location failed.", comment: ""))
           }
-          next("No location")
+          q!.retry()
+          
         }
       } else {
         next(nil)
@@ -226,8 +234,10 @@ class MainViewController: UIViewController {
     }
     
     q.tasks +=! {
-      log.info("Task: show closest vehicle headers")
-      self.vehicleScrollView.reloadData()
+      if self.selectedStop == nil {
+        log.info("Task: show closest vehicle headers")
+        self.vehicleScrollView.reloadData()
+      }
     }
     
     q.tasks +=~ {results, next in
@@ -285,6 +295,7 @@ class MainViewController: UIViewController {
   }
 
   override func viewDidLoad() {
+    log.verbose("viewDidLoad")
     super.viewDidLoad()
     
     vehicleScrollView.delegate = self
@@ -307,16 +318,20 @@ class MainViewController: UIViewController {
       selector: "applicationDidBecomeActive:",
       name: UIApplicationDidBecomeActiveNotification,
       object: nil)
-
+    NSNotificationCenter.defaultCenter().addObserver(self,
+      selector: "applicationWillTerminate:",
+      name: UIApplicationWillTerminateNotification,
+      object: nil)
+    
     // Reachability
     reachability.whenReachable = { reachability in
       self.extendProgressLabelTextWith(NSLocalizedString("Network connectivity resumed. Refreshing data from network...", comment: ""))
       
       log.debug("Now reachable")
-      if self.initialRefreshTaskQueue == nil || !self.initialRefreshTaskQueue!.running {
+      if self.initialRefreshTaskQueue == nil || self.initialRefreshTaskQueue!.state != .Running {
         self.initialRefreshTaskQueue = self.initInitialRefreshTaskQueue()
       }
-      if let q = self.initialRefreshTaskQueue where !q.running  {
+      if let q = self.initialRefreshTaskQueue where q.state != .Running  {
         q.run {
           Async.main {
             if let q = self.initialRefreshTaskQueue, result = q.lastResult as? String where !result.isBlank {
@@ -339,8 +354,6 @@ class MainViewController: UIViewController {
 
   override func viewWillAppear(animated: Bool) {
     super.viewWillAppear(animated)
-    extendProgressLabelTextWith(NSLocalizedString("Aquiring location...", comment: ""))
-    NSNotificationCenter.defaultCenter().addObserver(self, selector: "locationUpdated:", name: "newLocationNotif", object: nil)
   }
 
   override func didReceiveMemoryWarning() {
@@ -832,7 +845,7 @@ extension MainViewController: UITextFieldDelegate {
 extension MainViewController {
   @objc func locationUpdated(notification: NSNotification){
     log.verbose("locationUpdate \(notification.name)")
-    if let locInfo = notification.userInfo as? [String:CLLocation], newLoc = locInfo["newLocationResult"] {
+    if let locInfo = notification.userInfo as? [String:CLLocation], newLoc = locInfo[AppDelegate.newLocationResult] {
       if userLocation == nil || userLocation!.moreAccurateThanLocation(newLoc) ||
           !userLocation!.commonHorizontalLocationWith(newLoc) {
         userLocation = newLoc
@@ -858,28 +871,47 @@ extension MainViewController {
   
   func applicationWillResignActive(notification: NSNotification) {
     log.verbose("applicationWillResignActive:")
-    NSNotificationCenter.defaultCenter().removeObserver(self)
-    initialRefreshTaskQueue?.cancel()
+    NSNotificationCenter.defaultCenter().removeObserver(self, name: AppDelegate.newLocationNotificationName, object: nil)
+    if initialRefreshTaskQueue?.state == .Running {
+      initialRefreshTaskQueue?.pause()
+    }
   }
 
   func applicationDidBecomeActive(notification: NSNotification) {
     log.verbose("applicationDidBecomeActive:")
-    initialRefreshTaskQueue = initInitialRefreshTaskQueue()
-    initialRefreshTaskQueue?.run {
-      Async.main {
-        if let q = self.initialRefreshTaskQueue, result = q.lastResult as? String where !result.isBlank {
-          self.extendProgressLabelTextWith(NSLocalizedString("Failed to initialize the application", comment: ""))
-          log.error("Intial refresh failed: \(result)")
-        } else {
-          log.info("Intial refresh done successfully!")
-          self.extendProgressLabelTextWith(NSLocalizedString("All data loaded", comment: ""))
-          self.stopTableView.hidden = false
-          self.hideProgressLabel()
+
+    extendProgressLabelTextWith(NSLocalizedString("Aquiring location...", comment: ""))
+    NSNotificationCenter.defaultCenter().addObserver(self, selector: "locationUpdated:", name: AppDelegate.newLocationNotificationName, object: nil)
+    
+    if initialRefreshTaskQueue?.state == .Paused {
+      // try to continue if paused
+      initialRefreshTaskQueue?.resume()
+
+    } else {
+      // restart the queue
+      
+      initialRefreshTaskQueue = initInitialRefreshTaskQueue()
+      initialRefreshTaskQueue?.run {
+        Async.main {
+          if let q = self.initialRefreshTaskQueue, result = q.lastResult as? String where !result.isBlank {
+            self.extendProgressLabelTextWith(NSLocalizedString("Failed to initialize the application", comment: ""))
+            log.error("Intial refresh failed: \(result)")
+          } else {
+            log.info("Intial refresh done successfully!")
+            self.extendProgressLabelTextWith(NSLocalizedString("All data loaded", comment: ""))
+            self.stopTableView.hidden = false
+            self.hideProgressLabel()
+          }
+          self.progressViewManager.hideProgress()
         }
-        self.progressViewManager.hideProgress()
       }
     }
-
+ 
+  }
+  
+  func applicationWillTerminate(notification: NSNotification) {
+    log.verbose("applicationWillTerminate:")
+    NSNotificationCenter.defaultCenter().removeObserver(self)
   }
 }
 
