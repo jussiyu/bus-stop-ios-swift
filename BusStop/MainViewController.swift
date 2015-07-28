@@ -50,24 +50,51 @@ class MainViewController: UIViewController {
     }
   }
   
-  var closestVehicles: [VehicleActivity] = []
+  var closestVehicles: [VehicleActivity] = [] {
+    didSet {
+      let oldSelectedVehicleIndex = selectedVehicleIndex
+      if selectedVehicle == nil || find(closestVehicles, selectedVehicle!) == nil {
+        // vehicle not found anymore so reset it to the first
+        self.selectedVehicle = closestVehicles.first
+        log.info("Selected vehicle reset to first")
+        
+        // and unexpand the selected stop
+        if selectedStop != nil {
+          unexpandSelectedStop()
+          log.info("Vehicle reset so unexpanding the selected stop")
+        }
+      }
+      
+      // scroll to new index
+      if let selectedVehicleIndex = selectedVehicleIndex where selectedVehicleIndex != oldSelectedVehicleIndex {
+        vehicleScrollView.scrollToViewWithIndex(selectedVehicleIndex, animated: true)
+        if let selectedStop = selectedStop {
+          if let selectedStopRow = rowForStop(selectedStop) {
+            expandStopAtIndexPath(NSIndexPath(forRow: selectedStopRow, inSection: 0))
+          } else {
+            unexpandSelectedStop()
+            log.info("selected stop does not exist anymore so unexpanding")
+          }
+        }
+      }
+    }
+  }
   
-  var currentVehicle: VehicleActivity? {
-    let closestVehicles = self.closestVehicles
-    if closestVehicles.count > currentVehicleIndex {
-      return closestVehicles[currentVehicleIndex]
+  var selectedVehicle: VehicleActivity? {
+    didSet {
+      selectedStop = nil
+    }
+  }
+  private var selectedVehicleIndex: Int? {
+    if let selectedVehicle = selectedVehicle {
+      return closestVehicles.indexOf(selectedVehicle)
     } else {
       return nil
     }
   }
 
   private var stops: [String: Stop] = [:]
-
-  private var currentVehicleIndex = 0 {
-    didSet {
-      selectedStop = nil
-    }
-  }
+  
   private var selectedStop: Stop? {
     didSet {
       systemSoundPlayedForSelectedStop = false
@@ -241,12 +268,12 @@ class MainViewController: UIViewController {
     }
     
     q.tasks +=~ {results, next in
-      log.info("Task: load stops for the current vehicle")
-      self.refreshStopsForCurrentVehicle(queue: q, next: next)
+      log.info("Task: load stops for the selected vehicle")
+      self.refreshStopsForSelectedVehicle(queue: q, next: next)
     }
     
     q.tasks +=! {
-      log.info("Task: show closest vehicle headers => load stops for the current vehicle")
+      log.info("Task: show closest vehicle headers => load stops for the selected vehicle")
       self.stopTableView.hidden = false
       self.extendProgressLabelTextWith(NSLocalizedString("All data loaded", comment: ""))
       self.hideProgressLabel()
@@ -402,12 +429,12 @@ class MainViewController: UIViewController {
     }
   }
 
-  private func refreshStopsForCurrentVehicle(#queue: TaskQueue?, next: APIController.NextTask?) {
-    log.verbose("refreshStopsForVehicle")
+  private func refreshStopsForSelectedVehicle(#queue: TaskQueue?, next: APIController.NextTask?) {
+    log.verbose("refreshStopsForSelectedVehicle")
 
-    if let currentVehicleRef = currentVehicle?.vehRef {
+    if let selectedVehicleRef = selectedVehicle?.vehRef {
       if reachability.isReachable() {
-        api.getVehicleActivityStopsForVehicle(currentVehicleRef, next: next)
+        api.getVehicleActivityStopsForVehicle(selectedVehicleRef, next: next)
       } else {
         showNetworkReachabilityError()
 
@@ -415,7 +442,7 @@ class MainViewController: UIViewController {
         next?("no network connection")
       }
     } else {
-      log.warning("no current vehicle found")
+      log.warning("no selected vehicle found")
       queue?.removeAll()
       next?(nil)
     }
@@ -445,7 +472,7 @@ class MainViewController: UIViewController {
 
   func timedRefreshRequested(timer: NSTimer) {
     Async.main {self.progressViewManager.showProgress() }
-    refreshStopsForCurrentVehicle(queue: nil) { _ in Async.main {self.progressViewManager.hideProgress()} }
+    refreshStopsForSelectedVehicle(queue: nil) { _ in Async.main {self.progressViewManager.hideProgress()} }
   }
   
   func extendProgressLabelTextWith(text: String) {
@@ -469,8 +496,8 @@ class MainViewController: UIViewController {
 
   
   func stopForRow(row: Int) -> Stop? {
-    if let currentVehicle = currentVehicle where currentVehicle.stops.count > row {
-      if let lastPath = currentVehicle.stops[row].lastPathComponent, stop = stops[lastPath] {
+    if let selectedVehicle = selectedVehicle where selectedVehicle.stops.count > row {
+      if let lastPath = selectedVehicle.stops[row].lastPathComponent, stop = stops[lastPath] {
         return stop
       } else {
         log.warning("Stop for row \(row) does exist in the stop list")
@@ -484,9 +511,9 @@ class MainViewController: UIViewController {
   
   func rowForStop(stop: Stop) -> Int? {
     if let ref = selectedStop?.ref {
-      return currentVehicle?.stopIndexByRef(ref)
+      return selectedVehicle?.stopIndexByRef(ref)
     } else {
-      log.warning("Current vehicle does not currenly have this stop")
+      log.warning("Selected vehicle does not currenly have this stop")
       return nil
     }
   }
@@ -525,7 +552,7 @@ extension MainViewController: UITableViewDataSource {
     if let selectedStop = selectedStop {
       return 1
     } else {
-      return currentVehicle?.stops.count ?? 0
+      return selectedVehicle?.stops.count ?? 0
     }
   }
   
@@ -534,8 +561,7 @@ extension MainViewController: UITableViewDataSource {
     if selectedStop == nil {
       let cell = tableView.dequeueReusableCellWithIdentifier(defaultCellIdentifier, forIndexPath:indexPath) as! UITableViewCell
       
-      let currentVehicle = self.currentVehicle
-      if currentVehicle != nil {
+      if let selectedVehicle = selectedVehicle {
         
         let rowToBeReturned = indexPath.row
         
@@ -545,6 +571,9 @@ extension MainViewController: UITableViewDataSource {
           cell.textLabel?.text = NSLocalizedString("Unknown stop", comment: "")
           log.error("Unknown stop at row \(rowToBeReturned)")
         }
+      } else {
+        
+        log.warning("Not vehicle selected")
       }
       
       return cell
@@ -554,7 +583,6 @@ extension MainViewController: UITableViewDataSource {
       // selected cell
       let cell = tableView.dequeueReusableCellWithIdentifier(selectedCellIdentifier, forIndexPath:indexPath) as! SelectedStopTableViewCell
       
-      let currentVehicle = self.currentVehicle
       // Return the currently selected stop
       let style = NSParagraphStyle.defaultParagraphStyle().mutableCopy() as! NSMutableParagraphStyle
       style.hyphenationFactor = 1.0
@@ -566,9 +594,9 @@ extension MainViewController: UITableViewDataSource {
       cell.stopNameLabel.font = stopNameLabelFont
       
       if let ref = selectedStop!.ref {
-        if let stopsBeforeSelectedStop = currentVehicle?.stopIndexByRef(ref) {
+        if let stopsBeforeSelectedStop = selectedVehicle?.stopIndexByRef(ref) {
           var stopDistance: String?
-          if let userLocationInVehicle = currentVehicle?.location {
+          if let userLocationInVehicle = selectedVehicle?.location {
             stopDistance = selectedStop!.distanceFromUserLocation(userLocationInVehicle)
           }
           var distanceHintText = String(format: NSLocalizedString("%d stop(s) before your stop", comment: ""), stopsBeforeSelectedStop)
@@ -649,25 +677,27 @@ extension MainViewController: UITableViewDelegate {
   }
   
   private func expandStopTableView() {
-    if let currentVehicleHeaderView = vehicleScrollView.viewAtIndex(currentVehicleIndex) as? VehicleHeaderView {
-      expandStopTableViewByOffset(currentVehicleHeaderView.bounds.height +
-        currentVehicleHeaderView.layoutMargins.bottom)
+    if let selectedVehicleIndex = selectedVehicleIndex,
+        selectedVehicleHeaderView = vehicleScrollView.viewAtIndex(selectedVehicleIndex) as? VehicleHeaderView {
+      expandStopTableViewByOffset(selectedVehicleHeaderView.bounds.height +
+        selectedVehicleHeaderView.layoutMargins.bottom)
       stopTableView.layoutIfNeeded()
     }
   }
   
   private func expandStopTableViewByOffset(offset: CGFloat) {
     
-    if let currentVehicleHeaderView = vehicleScrollView.viewAtIndex(currentVehicleIndex) as? VehicleHeaderView {
+    if let selectedVehicleIndex = selectedVehicleIndex,
+        selectedVehicleHeaderView = vehicleScrollView.viewAtIndex(selectedVehicleIndex) as? VehicleHeaderView {
       // shink and hide not needed info
-      currentVehicleHeaderView.fadeOutByOffset(offset)
+      selectedVehicleHeaderView.fadeOutByOffset(offset)
       
       // Move adjacent headers to side and him them
       for viewIndex in 0..<vehicleScrollView.viewCount {
         if let view = vehicleScrollView.viewAtIndex(viewIndex) {
-          if viewIndex != currentVehicleIndex {
+          if viewIndex != selectedVehicleIndex {
             view.alpha = 1 - offset / 10
-            view.transform = CGAffineTransformMakeTranslation(viewIndex > currentVehicleIndex ? offset : -offset, 0)
+            view.transform = CGAffineTransformMakeTranslation(viewIndex > selectedVehicleIndex ? offset : -offset, 0)
           } else {
             view.alpha = 1
             view.transform = CGAffineTransformIdentity
@@ -676,7 +706,7 @@ extension MainViewController: UITableViewDelegate {
       }
       
       // scroll table view up to match current header view bottom
-      vehicleScrollViewBottomConstraint.constant = -min(offset, currentVehicleHeaderView.bounds.height +  currentVehicleHeaderView.layoutMargins.bottom) + currentVehicleHeaderView.layoutMargins.bottom
+      vehicleScrollViewBottomConstraint.constant = -min(offset, selectedVehicleHeaderView.bounds.height +  selectedVehicleHeaderView.layoutMargins.bottom) + selectedVehicleHeaderView.layoutMargins.bottom
       
     }
   }
@@ -718,7 +748,7 @@ extension MainViewController: UITableViewDelegate {
       indexPathsOnAbove.append(indexPath)
     }
     var indexPathsOnBelow = [NSIndexPath]()
-    let rowCount = currentVehicle?.stops.count ?? 0
+    let rowCount = selectedVehicle?.stops.count ?? 0
     if rowForSelectedStop + 1 < rowCount {
       for row in (rowForSelectedStop + 1) ..< rowCount {
         let indexPath = NSIndexPath(forRow: row, inSection: 0)
@@ -753,7 +783,7 @@ extension MainViewController: UITableViewDelegate {
     // the tapped (and only) row was already selected => add other rows back
     
     // calculate the final row for the selected stop (or nil)
-    var newRowForSelectedStop = rowForStop(selectedStop!)
+    var newRowForSelectedStop = selectedStop != nil ? rowForStop(selectedStop!) : nil
     
     // reset the selection
     selectedStop = nil
@@ -769,7 +799,7 @@ extension MainViewController: UITableViewDelegate {
     log.debug("About to insert \(indexPathsOnAbove.count) stop(s) above")
     
     var indexPathsOnBelow = [NSIndexPath]()
-    let rowCount = currentVehicle?.stops.count ?? 0
+    let rowCount = selectedVehicle?.stops.count ?? 0
 
     // If the selected stop does not exist anymore so add *all* rows from row #0 onwards
     let insertNewRowsFromThisRow = newRowForSelectedStop != nil ? newRowForSelectedStop! + 1 : 0
@@ -955,8 +985,15 @@ extension MainViewController: HorizontalScrollerDelegate {
   
   func horizontalScroller(horizontalScroller: HorizontalScroller, didScrollToViewAtIndex: Int) {
     log.verbose("horizontalScroller(_:didScrollToViewAtIndex: \(didScrollToViewAtIndex))")
-    currentVehicleIndex = didScrollToViewAtIndex
-    refreshStopsForCurrentVehicle(queue: nil) {_ in Async.main {self.progressViewManager.hideProgress()} }
+
+    if closestVehicles.count > didScrollToViewAtIndex {
+      selectedVehicle = closestVehicles[didScrollToViewAtIndex]
+    } else {
+      log.error("vehicle with invalid index selected")
+      selectedVehicle = nil
+    }
+
+    refreshStopsForSelectedVehicle(queue: nil) {_ in Async.main {self.progressViewManager.hideProgress()} }
   }
   
   func horizontalScrollerWillBeginDragging(horizontalScroller: HorizontalScroller) {

@@ -10,7 +10,7 @@ import Foundation
 import CoreLocation
 import SwiftyJSON
 
-class VehicleActivity {
+class VehicleActivity : Equatable {
 
   // MARK: - properties
   let lineRef: String
@@ -109,3 +109,6 @@ class VehicleActivity {
   }
 }
 
+func == (lhs: VehicleActivity, rhs: VehicleActivity) -> Bool {
+  return lhs.vehRef == rhs.vehRef
+}

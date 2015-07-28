@@ -65,11 +65,13 @@ class HorizontalScroller: UIView {
   }
   
   func scrollToViewWithIndex(index: Int, animated: Bool = true ) {
-    // center the header with index to the scroller
-    let scrollViewWidth = bounds.width
-    let currentViewCenter = scrollerSubviews[index].frame.midX
-    let newOffset = currentViewCenter - scrollViewWidth / 2
-    scroller.setContentOffset(CGPoint(x: CGFloat(newOffset), y: 0), animated: animated)
+    if scrollerSubviews.count > index {
+      // center the header with index to the scroller
+      let scrollViewWidth = bounds.width
+      let currentViewCenter = scrollerSubviews[index].frame.midX
+      let newOffset = currentViewCenter - scrollViewWidth / 2
+      scroller.setContentOffset(CGPoint(x: CGFloat(newOffset), y: 0), animated: animated)
+    }
   }
   
   func reloadData() {

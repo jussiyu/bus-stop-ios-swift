@@ -110,6 +110,15 @@ extension Array{
     }
     return result
   }
+  
+  func indexOf<T : Equatable>(object:T) -> Int? {
+    for (index,obj) in enumerate(self) {
+      if obj as? T == object {
+        return index
+      }
+    }
+    return nil
+  }
 }
 
 var startTime = NSDate()
