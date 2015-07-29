@@ -16,11 +16,14 @@ import Async
 import TaskQueue
 import AudioToolbox
 
-
+//
 // MARK: - UIViewController
+//
 class MainViewController: UIViewController {
   
+  //
   // MARK: - outlets
+  //
   @IBOutlet weak var stopTableView: UITableView!
   @IBOutlet weak var vehicleScrollView: HorizontalScroller!
   @IBOutlet weak var vehicleScrollViewTopConstraint: NSLayoutConstraint!
@@ -31,9 +34,13 @@ class MainViewController: UIViewController {
   let progressViewManager = MediumProgressViewManager.sharedInstance
   let reachability = Reachability.reachabilityForInternetConnection()
   
+  //
   // MARK: - properties
+  //
   let defaultCellIdentifier: String = "StopCell"
   let selectedCellIdentifier: String = "SelectedStopCell"
+  var systemSoundID: SystemSoundID?
+  var systemSoundPlayedForSelectedStop = false
   var autoRefresh:Bool = false
   var autoRefreshTimer: NSTimer?
   
@@ -85,7 +92,7 @@ class MainViewController: UIViewController {
       selectedStop = nil
     }
   }
-  private var selectedVehicleIndex: Int? {
+  var selectedVehicleIndex: Int? {
     if let selectedVehicle = selectedVehicle {
       return closestVehicles.indexOf(selectedVehicle)
     } else {
@@ -93,14 +100,13 @@ class MainViewController: UIViewController {
     }
   }
 
-  private var stops: [String: Stop] = [:]
-  
-  private var selectedStop: Stop? {
+  var stops: [String: Stop] = [:]
+  var selectedStop: Stop? {
     didSet {
       systemSoundPlayedForSelectedStop = false
     }
   }
-  private var userLocation: CLLocation? {
+  var userLocation: CLLocation? {
     didSet {
       if let userLocation = userLocation {
         closestVehicles = vehicles.getClosestVehicles(userLocation, maxCount: maxVisibleVehicleCount)
@@ -110,11 +116,9 @@ class MainViewController: UIViewController {
     }
   }
   
-  private var systemSoundID: SystemSoundID?
-  private var systemSoundPlayedForSelectedStop = false
-  
-  lazy private var api: APIControllerProtocol = {
-    
+  lazy var apiDelegate: [String: APIControllerDelegate] = {
+
+    // Common functionality
     class APIDelegateBase: APIControllerDelegate {
       let ref: MainViewController
       init(ref: MainViewController) {
@@ -143,6 +147,7 @@ class MainViewController: UIViewController {
       }
     }
     
+    // API call specific delegates
     class VehicleDelegate :APIDelegateBase {
       override func didReceiveAPIResults(results: JSON, next: ApiControllerDelegateNextTask?) {
         if results["status"] == "success" {
@@ -201,8 +206,17 @@ class MainViewController: UIViewController {
       }
     }
     
-    return APIController(vehDelegate: VehicleDelegate(ref: self), stopsDelegate: StopsDelegate(ref: self), vehStopsDelegate: VehicleStopsDelegate(ref:self))
+    return ["vehicleDelegate": VehicleDelegate(ref: self), "vehicleStopsDelegate": VehicleStopsDelegate(ref: self), "stopsDelegate": StopsDelegate(ref: self)]
   }()
+
+  // Define real remote and and test apis to switch between at runtime
+  lazy var localApi: APIControllerProtocol = {
+    return APIControllerLocal(vehDelegate: self.apiDelegate["vehicleDelegate"]!, stopsDelegate: self.apiDelegate["stopsDelegate"]!, vehStopsDelegate: self.apiDelegate["vehicleStopsDelegate"]!)
+  }()
+  lazy var remoteApi: APIControllerProtocol = {
+    return APIController(vehDelegate: self.apiDelegate["vehicleDelegate"]!, stopsDelegate: self.apiDelegate["stopsDelegate"]!, vehStopsDelegate: self.apiDelegate["vehicleStopsDelegate"]!)
+  }()
+  lazy var api: APIControllerProtocol = self.remoteApi
   
   var initialRefreshTaskQueue: TaskQueue?
   
@@ -280,7 +294,6 @@ class MainViewController: UIViewController {
   }
 
   var autoUnexpandTaskQueue: TaskQueue?
-  
   func initAutoUnexpandTaskQueue() -> TaskQueue {
     let q = TaskQueue()
 
@@ -308,10 +321,13 @@ class MainViewController: UIViewController {
 
     return q
   }
-  
   var autoUnexpandTaskQueueProgress: String?
   
+  
+  
+  //
   // MARK: - lifecycle
+  //
   override func viewDidLayoutSubviews() {
   }
 
@@ -406,6 +422,8 @@ class MainViewController: UIViewController {
     }
   }
 
+  
+  
   // MARK: - utility functions
   
   private func refreshStops(#queue: TaskQueue?, next: ApiControllerDelegateNextTask?) {
@@ -1021,13 +1039,23 @@ extension MainViewController: HorizontalScrollerDelegate {
   func horizontalScrollerTapped(horizontalScroller: HorizontalScroller, numberOfTaps: Int) {
     self.progressViewManager.showProgress()
     
+    
     if numberOfTaps == 3 {
+      // Switch between remote and local test data
+      selectedVehicle = nil
         // TODO: switch to local APIController
+      if api is APIController {
+        self.api = self.localApi
+      } else {
+        self.api = self.remoteApi
+      }
+
     }
     
     refreshVehicles(queue: nil) {_ in
       Async.main {
         self.vehicleScrollView.reloadData()
+        self.stopTableView.reloadSections(NSIndexSet(index: 0), withRowAnimation: .Fade)
         log.info("Tap to refresh done successfully!")
         self.progressViewManager.hideProgress()
       }

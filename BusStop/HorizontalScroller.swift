@@ -57,12 +57,16 @@ class HorizontalScroller: UIView {
     
     singleTapRecognizer = UITapGestureRecognizer(target: self, action: "viewTapped:")
     addGestureRecognizer(singleTapRecognizer!)
-    multiTapRecognizer = UITapGestureRecognizer(target: self, action: "viewTrippleTapped:")
+    multiTapRecognizer = UITapGestureRecognizer(target: self, action: "viewTapped:")
     multiTapRecognizer!.numberOfTapsRequired = 3
     addGestureRecognizer(multiTapRecognizer!)
     singleTapRecognizer?.requireGestureRecognizerToFail(multiTapRecognizer!)
     
     scroller.scrollsToTop = false
+  }
+  
+  deinit {
+    singleTapRecognizer?.removeTarget(nil, action: nil)
   }
   
   func viewAtIndex(index: Int) -> UIView? {
@@ -221,9 +225,9 @@ extension HorizontalScroller: UIScrollViewDelegate {
 // MARK: - selector handler
 extension HorizontalScroller {
   @objc func viewTapped(sender: UITapGestureRecognizer){
-    log.verbose("viewtapped)")
+    log.verbose("viewtapped \(sender.numberOfTapsRequired) time(s)")
     if sender.state == .Ended {
-      delegate?.horizontalScrollerTapped?(self, numberOfTaps = sender.numberOfTapsRequired)
+      delegate?.horizontalScrollerTapped?(self, numberOfTaps: sender.numberOfTapsRequired)
     }
   }
 }
