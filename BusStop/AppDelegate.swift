@@ -40,6 +40,17 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     if let launchOptions = launchOptions,
       localNotification = launchOptions[UIApplicationLaunchOptionsLocalNotificationKey] as? UILocalNotification {
       log.debug("local notification received: \(localNotification)")
+    } else {
+      UIApplication.sharedApplication().cancelAllLocalNotifications()
+      let localNotification = UILocalNotification()
+      localNotification.fireDate = NSDate(timeIntervalSinceNow: 60)
+      localNotification.alertAction = nil
+      localNotification.soundName = UILocalNotificationDefaultSoundName
+      localNotification.alertBody = "Testing local notification"
+      localNotification.alertAction = NSLocalizedString("Action", comment:"")
+      localNotification.applicationIconBadgeNumber = 1
+      localNotification.repeatInterval = nil
+//      UIApplication.sharedApplication().scheduleLocalNotification(localNotification)
     }
 
     // Request local notification usage
@@ -51,6 +62,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     } else {
       locationServiceDisabledAlert()
     }
+
 
 //    // URL cache
 //    let URLCache = NSURLCache(memoryCapacity: 4 * 1024 * 1024, diskCapacity: 4 * 1024 * 1024, diskPath: "nsurlcache")
@@ -165,6 +177,11 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
   
   func application(application: UIApplication, didReceiveLocalNotification notification: UILocalNotification) {
     log.debug("didReceiveLocalNotification: \(notification)")
+  }
+  
+  func application(application: UIApplication, handleActionWithIdentifier identifier: String?, forLocalNotification notification: UILocalNotification, completionHandler: () -> Void) {
+    log.debug("handleActionWithIdentifier: \(notification)")
+    completionHandler()
   }
 
 }
