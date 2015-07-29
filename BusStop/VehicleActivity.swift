@@ -96,7 +96,7 @@ class VehicleActivity : Equatable {
         return NSString.localizedStringWithFormat(NSLocalizedString("%d km(s) from your location", comment: "distance in km"), dist/1000) as String
       }
     } else {
-      return "--".localizedWithComment("unknown distance between user and the vehicle")
+      return NSLocalizedString("--", comment: "unknown distance between user and the vehicle")
     }
   }
   

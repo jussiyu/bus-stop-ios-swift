@@ -11,26 +11,38 @@ import SystemConfiguration
 import XCGLogger
 import TaskQueue
 
+typealias ApiControllerDelegateNextTask = (AnyObject?) -> Void
 
-protocol APIControllerProtocol {
+protocol APIControllerDelegate {
 
-  func didReceiveAPIResults(results: JSON, next: APIController.NextTask?)
-  func didReceiveError(urlerror: NSError, next: APIController.NextTask?)
+  func didReceiveAPIResults(results: JSON, next: ApiControllerDelegateNextTask?)
+  func didReceiveError(urlerror: NSError, next: ApiControllerDelegateNextTask?)
 }
 
-class APIController {
-  typealias NextTask = (AnyObject?) -> Void
+protocol APIControllerProtocol {
+  
+//    init(vehDelegate: APIControllerDelegate, stopsDelegate: APIControllerDelegate, vehStopsDelegate: APIControllerDelegate)
+  
+    func getVehicleActivitiesForLine(lineId: Int, next: ApiControllerDelegateNextTask?)
+    func getVehicleActivityStopsForVehicle(vehicleRef: String, next: ApiControllerDelegateNextTask?)
+    func getVehicleActivityHeaders(#next: ApiControllerDelegateNextTask?)
+    func getStops(next: ApiControllerDelegateNextTask?)
+    func connectedToNetwork() -> Bool
+}
 
-  let vehDelegate, stopsDelegate, vehStopsDelegate: APIControllerProtocol
+class APIController : APIControllerProtocol {
+  
+
+  let vehDelegate, stopsDelegate, vehStopsDelegate: APIControllerDelegate
   let journeysAPIbaseURL = "http://data.itsfactory.fi/journeys/api/1/"
   
-  init(vehDelegate: APIControllerProtocol, stopsDelegate: APIControllerProtocol, vehStopsDelegate: APIControllerProtocol) {
+  init(vehDelegate: APIControllerDelegate, stopsDelegate: APIControllerDelegate, vehStopsDelegate: APIControllerDelegate) {
     self.vehDelegate = vehDelegate
     self.stopsDelegate = stopsDelegate
     self.vehStopsDelegate = vehStopsDelegate
   }
   
-  func getVehicleActivitiesForLine(lineId: Int, next: NextTask?) {
+  func getVehicleActivitiesForLine(lineId: Int, next: ApiControllerDelegateNextTask?) {
     doGetOnPath("journeysAPIbaseURL?lineRef=\(lineId)", delegate: vehDelegate, next: next)
   }
 
@@ -38,15 +50,15 @@ class APIController {
 //    doGetOnPath("journeysAPIbaseURL", delegate: vehDelegate, cachingEnabled: false)
 //  }
 
-  func getVehicleActivityStopsForVehicle(vehicleRef: String, next: NextTask?) {
+  func getVehicleActivityStopsForVehicle(vehicleRef: String, next: ApiControllerDelegateNextTask?) {
     doGetOnPath("\(journeysAPIbaseURL)vehicle-activity?vehicleRef=\(vehicleRef)", delegate: vehStopsDelegate, cachingEnabled: false, next: next)
   }
 
-  func getVehicleActivityHeaders(#next: NextTask?) {
+  func getVehicleActivityHeaders(#next: ApiControllerDelegateNextTask?) {
     doGetOnPath("\(journeysAPIbaseURL)vehicle-activity?exclude-fields=monitoredVehicleJourney.onwardCalls", delegate: vehDelegate, cachingEnabled: false, next: next)
   }
 
-  func getStops(next: NextTask?) {
+  func getStops(next: ApiControllerDelegateNextTask?) {
     doGetOnPath("\(journeysAPIbaseURL)stop-points", delegate: stopsDelegate, next: next)
   }
 
@@ -69,7 +81,7 @@ class APIController {
     return (isReachable && !needsConnection)
   }
   
-  private func doGetOnPath(urlPath: String, delegate: APIControllerProtocol, cachingEnabled: Bool = true, next: NextTask?) {
+  private func doGetOnPath(urlPath: String, delegate: APIControllerDelegate, cachingEnabled: Bool = true, next: ApiControllerDelegateNextTask?) {
     UIApplication.sharedApplication().networkActivityIndicatorVisible = true
 
     let url = NSURL(string: urlPath)
@@ -116,15 +128,4 @@ class APIController {
       log.severe("Invalid URL: " + urlPath)
     }
   }
-}
-
-extension String {
-  
-  var isBlank: Bool {
-    get {
-      let trimmed = stringByTrimmingCharactersInSet(NSCharacterSet.whitespaceCharacterSet())
-      return trimmed.isEmpty
-    }
-  }
-  
 }

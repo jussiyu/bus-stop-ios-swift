@@ -113,23 +113,23 @@ class MainViewController: UIViewController {
   private var systemSoundID: SystemSoundID?
   private var systemSoundPlayedForSelectedStop = false
   
-  lazy private var api: APIController = {
+  lazy private var api: APIControllerProtocol = {
     
-    class APIDelegateBase: APIControllerProtocol {
+    class APIDelegateBase: APIControllerDelegate {
       let ref: MainViewController
       init(ref: MainViewController) {
         self.ref = ref
       }
 
-      func didReceiveAPIResults(results: JSON, next: APIController.NextTask?) {
+      func didReceiveAPIResults(results: JSON, next: ApiControllerDelegateNextTask?) {
       }
       
-      func didReceiveError(urlerror: NSError, next: APIController.NextTask?) {
+      func didReceiveError(urlerror: NSError, next: ApiControllerDelegateNextTask?) {
         self.ref.initialRefreshTaskQueue?.removeAll()
         next?("URL error \(urlerror)")
       }
       
-      func handleError(results: JSON, next: APIController.NextTask?) {
+      func handleError(results: JSON, next: ApiControllerDelegateNextTask?) {
         Async.main {
           let errorTitle = results["data"]["title"] ?? "unknown error"
           let errorMessage = results["data"]["message"] ?? "unknown details"
@@ -144,7 +144,7 @@ class MainViewController: UIViewController {
     }
     
     class VehicleDelegate :APIDelegateBase {
-      override func didReceiveAPIResults(results: JSON, next: APIController.NextTask?) {
+      override func didReceiveAPIResults(results: JSON, next: ApiControllerDelegateNextTask?) {
         if results["status"] == "success" {
           Async.background {
             self.ref.vehicles = Vehicles(fromJSON: results["body"])
@@ -157,7 +157,7 @@ class MainViewController: UIViewController {
     }
 
     class VehicleStopsDelegate :APIDelegateBase {
-      override func didReceiveAPIResults(results: JSON, next: APIController.NextTask?) {
+      override func didReceiveAPIResults(results: JSON, next: ApiControllerDelegateNextTask?) {
         if results["status"] == "success" {
           Async.background {
             self.ref.vehicles.setStopsFromJSON(results["body"])
@@ -189,7 +189,7 @@ class MainViewController: UIViewController {
     
     class StopsDelegate: APIDelegateBase {
       
-      override func didReceiveAPIResults(results: JSON, next: APIController.NextTask?) {
+      override func didReceiveAPIResults(results: JSON, next: ApiControllerDelegateNextTask?) {
         if results["status"] == "success" {
           Async.background {
             self.ref.stops = Stop.StopsFromJSON(results["body"])
@@ -203,7 +203,7 @@ class MainViewController: UIViewController {
     
     return APIController(vehDelegate: VehicleDelegate(ref: self), stopsDelegate: StopsDelegate(ref: self), vehStopsDelegate: VehicleStopsDelegate(ref:self))
   }()
-
+  
   var initialRefreshTaskQueue: TaskQueue?
   
   func initInitialRefreshTaskQueue() -> TaskQueue {
@@ -408,7 +408,7 @@ class MainViewController: UIViewController {
 
   // MARK: - utility functions
   
-  private func refreshStops(#queue: TaskQueue?, next: APIController.NextTask?) {
+  private func refreshStops(#queue: TaskQueue?, next: ApiControllerDelegateNextTask?) {
     log.verbose("RefreshStops")
     
     if reachability.isReachable() {
@@ -421,7 +421,7 @@ class MainViewController: UIViewController {
     }
   }
 
-  private func refreshVehicles(#queue: TaskQueue?, next: APIController.NextTask?) {
+  private func refreshVehicles(#queue: TaskQueue?, next: ApiControllerDelegateNextTask?) {
     log.verbose("RefreshVehicles")
     
     if reachability.isReachable() {
@@ -434,7 +434,7 @@ class MainViewController: UIViewController {
     }
   }
 
-  private func refreshStopsForSelectedVehicle(#queue: TaskQueue?, next: APIController.NextTask?) {
+  private func refreshStopsForSelectedVehicle(#queue: TaskQueue?, next: ApiControllerDelegateNextTask?) {
     log.verbose("refreshStopsForSelectedVehicle")
 
     if let selectedVehicleRef = selectedVehicle?.vehRef {
@@ -1018,8 +1018,13 @@ extension MainViewController: HorizontalScrollerDelegate {
     resetVehicleScrollView()
   }
   
-  func horizontalScrollerTapped(horizontalScroller: HorizontalScroller) {
+  func horizontalScrollerTapped(horizontalScroller: HorizontalScroller, numberOfTaps: Int) {
     self.progressViewManager.showProgress()
+    
+    if numberOfTaps == 3 {
+        // TODO: switch to local APIController
+    }
+    
     refreshVehicles(queue: nil) {_ in
       Async.main {
         self.vehicleScrollView.reloadData()

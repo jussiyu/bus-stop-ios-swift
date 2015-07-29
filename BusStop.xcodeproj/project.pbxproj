@@ -20,6 +20,8 @@
 		4A2FA8571B5533720088C00F /* UIFontDescriptorExt.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A2FA8561B5533720088C00F /* UIFontDescriptorExt.swift */; };
 		4A3DF9A91B4B0A9900CF1345 /* Localizable.stringsdict in Resources */ = {isa = PBXBuildFile; fileRef = 4A3DF9A71B4B0A9900CF1345 /* Localizable.stringsdict */; };
 		4A4D12B91B2AC01900B6B757 /* VehicleActivity.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A4D12B81B2AC01900B6B757 /* VehicleActivity.swift */; };
+		4A532E1A1B68C5AB00A80544 /* APIControllerLocal.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A532E191B68C5AB00A80544 /* APIControllerLocal.swift */; };
+		4A532E281B68D7DE00A80544 /* testdata in CopyFiles */ = {isa = PBXBuildFile; fileRef = 4A532E251B68D6A700A80544 /* testdata */; };
 		4A6BC41F1B53B0DC0095FC71 /* VehicleHeaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A6BC41E1B53B0DC0095FC71 /* VehicleHeaderView.swift */; };
 		4A84A0461B61011A005931B0 /* SelectedStopTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A84A0451B61011A005931B0 /* SelectedStopTableViewCell.swift */; };
 		4AAFBABB1B236791008F488D /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 4AAFBABA1B236791008F488D /* Main.storyboard */; };
@@ -38,6 +40,19 @@
 			remoteInfo = BusStop;
 		};
 /* End PBXContainerItemProxy section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		4A532E271B68D77B00A80544 /* CopyFiles */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 12;
+			dstPath = "";
+			dstSubfolderSpec = 7;
+			files = (
+				4A532E281B68D7DE00A80544 /* testdata in CopyFiles */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
 		21E9CFEBB044447E7E089058 /* Pods-BusStopTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-BusStopTests.debug.xcconfig"; path = "Pods/Target Support Files/Pods-BusStopTests/Pods-BusStopTests.debug.xcconfig"; sourceTree = "<group>"; };
@@ -60,6 +75,8 @@
 		4A3DF9A81B4B0A9900CF1345 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.xml; name = en; path = en.lproj/Localizable.stringsdict; sourceTree = "<group>"; };
 		4A3DF9AA1B4B0AA000CF1345 /* fi */ = {isa = PBXFileReference; lastKnownFileType = text.xml; name = fi; path = fi.lproj/Localizable.stringsdict; sourceTree = "<group>"; };
 		4A4D12B81B2AC01900B6B757 /* VehicleActivity.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = VehicleActivity.swift; sourceTree = "<group>"; };
+		4A532E191B68C5AB00A80544 /* APIControllerLocal.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = APIControllerLocal.swift; sourceTree = "<group>"; };
+		4A532E251B68D6A700A80544 /* testdata */ = {isa = PBXFileReference; lastKnownFileType = folder; name = testdata; path = BusStop/testdata; sourceTree = "<group>"; };
 		4A6BC41E1B53B0DC0095FC71 /* VehicleHeaderView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = VehicleHeaderView.swift; sourceTree = "<group>"; };
 		4A75298AA8FC50C4F94424EA /* Pods-BusStop.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-BusStop.release.xcconfig"; path = "Pods/Target Support Files/Pods-BusStop/Pods-BusStop.release.xcconfig"; sourceTree = "<group>"; };
 		4A84A0451B61011A005931B0 /* SelectedStopTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SelectedStopTableViewCell.swift; sourceTree = "<group>"; };
@@ -117,6 +134,7 @@
 		4A0EA3501B21C0B000F747D0 = {
 			isa = PBXGroup;
 			children = (
+				4A532E251B68D6A700A80544 /* testdata */,
 				4A0EA35B1B21C0B000F747D0 /* BusStop */,
 				4A0EA3711B21C0B000F747D0 /* BusStopTests */,
 				4A0EA35A1B21C0B000F747D0 /* Products */,
@@ -193,6 +211,7 @@
 			isa = PBXGroup;
 			children = (
 				4A0EA3801B23235800F747D0 /* APIController.swift */,
+				4A532E191B68C5AB00A80544 /* APIControllerLocal.swift */,
 			);
 			name = API;
 			sourceTree = "<group>";
@@ -228,6 +247,7 @@
 				4A0EA3571B21C0B000F747D0 /* Resources */,
 				97AB2CBA6BAF3F845FC3849C /* Embed Pods Frameworks */,
 				B222CECFCBC776CC7DCD8518 /* Copy Pods Resources */,
+				4A532E271B68D77B00A80544 /* CopyFiles */,
 			);
 			buildRules = (
 			);
@@ -424,6 +444,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				4A532E1A1B68C5AB00A80544 /* APIControllerLocal.swift in Sources */,
 				4A0EA3811B23235800F747D0 /* APIController.swift in Sources */,
 				4A2FA8571B5533720088C00F /* UIFontDescriptorExt.swift in Sources */,
 				4A10E1F21B30214100231417 /* Common.swift in Sources */,

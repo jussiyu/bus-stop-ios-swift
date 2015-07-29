@@ -20,7 +20,7 @@ import XCGLogger
   optional func horizontalScroller(horizontalScroller: HorizontalScroller, didScrollToViewAtIndex: Int)
   optional func initialViewIndex(horizontalScroller: HorizontalScroller) -> Int
   optional func horizontalScrollerWillBeginDragging(horizontalScroller: HorizontalScroller)
-  optional func horizontalScrollerTapped(horizontalScroller: HorizontalScroller)
+  optional func horizontalScrollerTapped(horizontalScroller: HorizontalScroller, numberOfTaps: Int)
 }
 
 class HorizontalScroller: UIView {
@@ -29,6 +29,9 @@ class HorizontalScroller: UIView {
   
   private var scroller: UIScrollView!
   private var scrollerSubviews = [UIView]()
+  
+  private var singleTapRecognizer: UITapGestureRecognizer?
+  private var multiTapRecognizer: UITapGestureRecognizer?
   
   var viewCount: Int {
     return scrollerSubviews.count
@@ -52,7 +55,13 @@ class HorizontalScroller: UIView {
     NSLayoutConstraint.activateConstraints(NSLayoutConstraint.constraintsWithVisualFormat("V:|[scroller]|", options: nil, metrics: [:], views: ["scroller":scroller]))
     NSLayoutConstraint.activateConstraints(NSLayoutConstraint.constraintsWithVisualFormat("H:|[scroller]|", options: nil, metrics: [:], views: ["scroller":scroller]))
     
-    addGestureRecognizer(UITapGestureRecognizer(target: self, action: "viewTapped:"))
+    singleTapRecognizer = UITapGestureRecognizer(target: self, action: "viewTapped:")
+    addGestureRecognizer(singleTapRecognizer!)
+    multiTapRecognizer = UITapGestureRecognizer(target: self, action: "viewTrippleTapped:")
+    multiTapRecognizer!.numberOfTapsRequired = 3
+    addGestureRecognizer(multiTapRecognizer!)
+    singleTapRecognizer?.requireGestureRecognizerToFail(multiTapRecognizer!)
+    
     scroller.scrollsToTop = false
   }
   
@@ -214,7 +223,7 @@ extension HorizontalScroller {
   @objc func viewTapped(sender: UITapGestureRecognizer){
     log.verbose("viewtapped)")
     if sender.state == .Ended {
-      delegate?.horizontalScrollerTapped?(self)
+      delegate?.horizontalScrollerTapped?(self, numberOfTaps = sender.numberOfTapsRequired)
     }
   }
 }

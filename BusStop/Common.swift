@@ -28,13 +28,13 @@ extension String {
     return String.f.numberFromString(self)?.doubleValue
   }
   
-  func localizedWithComment(comment:String) -> String {
-    return NSLocalizedString(self, tableName: nil, bundle: NSBundle.mainBundle(), value: "", comment: comment)
+  var isBlank: Bool {
+    get {
+      let trimmed = stringByTrimmingCharactersInSet(NSCharacterSet.whitespaceCharacterSet())
+      return trimmed.isEmpty
+    }
   }
-
-  func localized() -> String {
-    return NSLocalizedString(self, tableName: nil, bundle: NSBundle.mainBundle(), value: "", comment: self)
-  }
+  
 }
 
 extension Double {
@@ -50,7 +50,7 @@ extension Double {
     if let s = Double.f.stringFromNumber(self) {
       return s
     } else {
-      return "***".localizedWithComment("double to string is unknown")
+      return NSLocalizedString("***", comment: "double to string is unknown")
     }
     
   }
