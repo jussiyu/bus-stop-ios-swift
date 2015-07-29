@@ -274,9 +274,6 @@ class MainViewController: UIViewController {
     
     q.tasks +=! {
       log.info("Task: show closest vehicle headers => load stops for the selected vehicle")
-      self.stopTableView.hidden = false
-      self.extendProgressLabelTextWith(NSLocalizedString("All data loaded", comment: ""))
-      self.hideProgressLabel()
     }
     
     return q
@@ -392,8 +389,16 @@ class MainViewController: UIViewController {
     // Dispose of any resources that can be recreated.
   }
 
+  deinit {
+    log.verbose("deinit")
+    NSNotificationCenter.defaultCenter().removeObserver(self)
+  }
+
   
+  
+  //
   // MARK: - actions
+  //
   @IBAction func autoRefreshToggled(sender: AnyObject) {
     if let toggle = autoRefreshSwitch.customView as? UISwitch {
       autoRefresh = toggle.on
@@ -623,10 +628,14 @@ extension MainViewController: UITableViewDelegate {
   
   func tableView(tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
     stopTableViewHeader = UILabel()
-    if selectedStop == nil {
-      stopTableViewHeader!.text = NSLocalizedString("Choose your stop", comment: "")
+    if closestVehicles.count > 0 {
+      if selectedStop == nil {
+        stopTableViewHeader!.text = NSLocalizedString("Choose your stop", comment: "")
+      } else {
+        stopTableViewHeader!.text = NSLocalizedString("Now tracking your stop", comment: "")
+      }
     } else {
-      stopTableViewHeader!.text = NSLocalizedString("Now tracking your stop", comment: "")
+      stopTableViewHeader!.text = ""
     }
     stopTableViewHeader!.textAlignment = .Center
     stopTableViewHeader!.backgroundColor = UIColor.whiteColor()
@@ -898,7 +907,12 @@ extension MainViewController {
     //    vehicleStopTableView takes care of itself
     vehicleScrollView.reloadData()
   }
-  
+}
+
+//
+// MARK: - Life cycle notification related notification handlers
+//
+extension MainViewController {
   func applicationWillResignActive(notification: NSNotification) {
     log.verbose("applicationWillResignActive:")
     NSNotificationCenter.defaultCenter().removeObserver(self, name: AppDelegate.newLocationNotificationName, object: nil)
@@ -941,7 +955,6 @@ extension MainViewController {
   
   func applicationWillTerminate(notification: NSNotification) {
     log.verbose("applicationWillTerminate:")
-    NSNotificationCenter.defaultCenter().removeObserver(self)
   }
 }
 
@@ -972,7 +985,7 @@ extension MainViewController: HorizontalScrollerDelegate {
     let noDataView = VehicleHeaderView(
       lineRef: "",
       vehicleRef: NSLocalizedString("No busses near you", comment: "show as vehicle label when no busses near or no user location known"),
-      distance: "")
+      distance: NSLocalizedString("Tap to refresh", comment: ""))
     return noDataView
   }
 
@@ -989,11 +1002,15 @@ extension MainViewController: HorizontalScrollerDelegate {
     if closestVehicles.count > didScrollToViewAtIndex {
       selectedVehicle = closestVehicles[didScrollToViewAtIndex]
     } else {
-      log.error("vehicle with invalid index selected")
+      if closestVehicles.count > 0 {
+        log.error("vehicle with invalid index selected")
+      }
       selectedVehicle = nil
     }
 
-    refreshStopsForSelectedVehicle(queue: nil) {_ in Async.main {self.progressViewManager.hideProgress()} }
+    if selectedVehicle != nil {
+      refreshStopsForSelectedVehicle(queue: nil) {_ in Async.main {self.progressViewManager.hideProgress()} }
+    }
   }
   
   func horizontalScrollerWillBeginDragging(horizontalScroller: HorizontalScroller) {
@@ -1002,6 +1019,14 @@ extension MainViewController: HorizontalScrollerDelegate {
   }
   
   func horizontalScrollerTapped(horizontalScroller: HorizontalScroller) {
+    self.progressViewManager.showProgress()
+    refreshVehicles(queue: nil) {_ in
+      Async.main {
+        self.vehicleScrollView.reloadData()
+        log.info("Tap to refresh done successfully!")
+        self.progressViewManager.hideProgress()
+      }
+    }
     stopTableView.scrollToTop(animated: true)
     resetVehicleScrollView()
   }

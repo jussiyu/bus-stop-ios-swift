@@ -152,8 +152,8 @@
 		4A0EA35C1B21C0B000F747D0 /* Supporting Files */ = {
 			isa = PBXGroup;
 			children = (
-				4A3DF9A71B4B0A9900CF1345 /* Localizable.stringsdict */,
 				4A0EA35D1B21C0B000F747D0 /* Info.plist */,
+				4A3DF9A71B4B0A9900CF1345 /* Localizable.stringsdict */,
 				4A2BB80F1B4AEAB900F350C7 /* Localizable.strings */,
 			);
 			name = "Supporting Files";
