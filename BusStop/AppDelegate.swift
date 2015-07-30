@@ -41,16 +41,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
       localNotification = launchOptions[UIApplicationLaunchOptionsLocalNotificationKey] as? UILocalNotification {
       log.debug("local notification received: \(localNotification)")
     } else {
-      UIApplication.sharedApplication().cancelAllLocalNotifications()
-      let localNotification = UILocalNotification()
-      localNotification.fireDate = NSDate(timeIntervalSinceNow: 60)
-      localNotification.alertAction = nil
-      localNotification.soundName = UILocalNotificationDefaultSoundName
-      localNotification.alertBody = "Testing local notification"
-      localNotification.alertAction = NSLocalizedString("Action", comment:"")
-      localNotification.applicationIconBadgeNumber = 1
-      localNotification.repeatInterval = nil
-      UIApplication.sharedApplication().scheduleLocalNotification(localNotification)
     }
     
     // reset badge if allowed
@@ -80,7 +70,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     log.verbose("")
     // Sent when the application is about to move from active to inactive state. This can occur for certain types of temporary interruptions (such as an incoming phone call or SMS message) or when the user quits the application and it begins the transition to the background state.
     // Use this method to pause ongoing tasks, disable timers, and throttle down OpenGL ES frame rates. Games should use this method to pause the game.
-    lm?.stopUpdatingLocation()
   }
 
   func applicationDidEnterBackground(application: UIApplication) {
@@ -124,6 +113,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
   func applicationWillTerminate(application: UIApplication) {
     // Called when the application is about to terminate. Save data if appropriate. See also applicationDidEnterBackground:.
+    lm?.stopUpdatingLocation()
   }
   
   func applicationDidReceiveMemoryWarning(application: UIApplication) {
@@ -132,7 +122,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
   }
 
   // Initialize location manager
-  func initializeLocationWithAuthorizationStatus(status: CLAuthorizationStatus) {
+  func initializeLocationWithAuthorizationStatus(status: CLAuthorizationStatus, significantChangesOnly: Bool = false) {
 
     if status == .AuthorizedAlways || status == .AuthorizedWhenInUse {
       
@@ -141,10 +131,14 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         lm.delegate = self
         lm.desiredAccuracy = kCLLocationAccuracyBest
         lm.activityType = CLActivityType.Other
-        lm.distanceFilter = 10 // meters
+        lm.distanceFilter = 100 // meters
         
         if CLLocationManager.locationServicesEnabled() {
-          lm.startUpdatingLocation()
+          if significantChangesOnly {
+            lm.startMonitoringSignificantLocationChanges()
+          } else {
+            lm.startUpdatingLocation()
+          }
           log.debug("started location monitoring")
         } else {
             locationServiceDisabledAlert()
@@ -154,6 +148,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     } else {
       // User disapproved location updates so make sure that we no more use it
       lm?.stopUpdatingLocation()
+      lm?.stopMonitoringSignificantLocationChanges()
       log.error("Location service not allowed")
       locationServiceDisabledAlert(authorizationStatus: status)
     }
@@ -203,7 +198,7 @@ extension AppDelegate: CLLocationManagerDelegate {
       if latestLoc.horizontalAccuracy > 0 && latestLoc.timestamp.timeIntervalSinceNow > -30 {
         // good enough location received
         NSNotificationCenter.defaultCenter().postNotificationName(AppDelegate.newLocationNotificationName, object: self, userInfo: [AppDelegate.newLocationResult: locations[0]])
-        lm?.stopUpdatingLocation()
+//        lm?.stopUpdatingLocation()
       }
     }
   }

@@ -12,7 +12,7 @@ import SwiftyJSON
 import XCGLogger
 
 
-struct Stop {
+struct Stop : Printable {
   let id: String
   let ref: NSURL?
   let name: String
@@ -64,6 +64,10 @@ struct Stop {
       return NSLocalizedString("--", comment: "unknown distance between user and the vehicle")
     }
     
+  }
+  
+  var description: String {
+    return name
   }
 
 }

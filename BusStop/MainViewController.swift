@@ -40,7 +40,7 @@ class MainViewController: UIViewController {
   let defaultCellIdentifier: String = "StopCell"
   let selectedCellIdentifier: String = "SelectedStopCell"
   var systemSoundID: SystemSoundID?
-  var systemSoundPlayedForSelectedStop = false
+  var userNotifiedForSelectedStop = false
   var autoRefresh:Bool = false
   var autoRefreshTimer: NSTimer?
   
@@ -107,7 +107,7 @@ class MainViewController: UIViewController {
   var stops: [String: Stop] = [:]
   var selectedStop: Stop? {
     didSet {
-      systemSoundPlayedForSelectedStop = false
+      userNotifiedForSelectedStop = false
     }
   }
   var userLocation: CLLocation? {
@@ -179,12 +179,15 @@ class MainViewController: UIViewController {
               let selectedStopRow = self.ref.rowForStop(self.ref.selectedStop!)
               if selectedStopRow == nil {
                 log.debug("Selected stop \(self.ref.selectedStop!.name) passed")
-                if let queue = self.ref.autoUnexpandTaskQueue where queue.state != .Running {
-                  log.debug("Launching auto unexpand")
-                  queue.run()
+                if self.ref.autoUnexpandTaskQueue == nil ||
+                  self.ref.autoUnexpandTaskQueue!.state == .Completed ||
+                  self.ref.autoUnexpandTaskQueue!.state == .Cancelled {
+                  log.debug("Launching new auto unexpand")
+                  self.ref.autoUnexpandTaskQueue = self.ref.initAutoUnexpandTaskQueue()
+                  self.ref.autoUnexpandTaskQueue?.run()
                 }
               } else if selectedStopRow == 0 {
-                self.ref.playSelectedStopReachedAlert()
+                self.ref.notifySelectedStopReached()
               }
             }
             
@@ -349,8 +352,6 @@ class MainViewController: UIViewController {
   
     // Autorefresh
     autoRefresh = (autoRefreshSwitch.customView as! UISwitch).on
-
-    autoUnexpandTaskQueue = initAutoUnexpandTaskQueue()
     
     NSNotificationCenter.defaultCenter().addObserver(self,
       selector: "preferredContentSizeChanged:",
@@ -370,6 +371,11 @@ class MainViewController: UIViewController {
       name: UIApplicationWillTerminateNotification,
       object: nil)
     
+  }
+
+  override func viewWillAppear(animated: Bool) {
+    super.viewWillAppear(animated)
+
     // Reachability
     reachability.whenReachable = { reachability in
       self.extendProgressLabelTextWith(NSLocalizedString("Network connectivity resumed. Refreshing data from network...", comment: ""))
@@ -396,13 +402,12 @@ class MainViewController: UIViewController {
       }
     }
     reachability.startNotifier()
-
   }
 
-  override func viewWillAppear(animated: Bool) {
-    super.viewWillAppear(animated)
+  override func viewWillDisappear(animated: Bool) {
+    reachability.stopNotifier()
   }
-
+  
   override func didReceiveMemoryWarning() {
     super.didReceiveMemoryWarning()
     if systemSoundID != nil {
@@ -548,6 +553,29 @@ class MainViewController: UIViewController {
     }
   }
 
+  private func notifySelectedStopReached() {
+    if userNotifiedForSelectedStop {
+      return
+    }
+    userNotifiedForSelectedStop = true
+    
+    if UIApplication.sharedApplication().applicationState == .Active {
+      playSelectedStopReachedAlert()
+    } else {
+      UIApplication.sharedApplication().cancelAllLocalNotifications()
+      let localNotification = UILocalNotification()
+      localNotification.fireDate = nil
+      localNotification.alertAction = nil
+      localNotification.soundName = UILocalNotificationDefaultSoundName
+      localNotification.alertBody = NSLocalizedString("\(selectedStop!.name) is the next one!", comment: "")
+      localNotification.alertAction = NSLocalizedString("Action", comment:"")
+//      localNotification.applicationIconBadgeNumber = 1
+      localNotification.repeatInterval = nil
+      UIApplication.sharedApplication().scheduleLocalNotification(localNotification)
+    }
+  }
+
+  
   private func playSelectedStopReachedAlert() {
     if systemSoundID  == nil {
       systemSoundID = SystemSoundID(kSystemSoundID_Vibrate)
@@ -560,10 +588,8 @@ class MainViewController: UIViewController {
 //      }
     }
     
-    // Play only once per stop
-    if let systemSoundID = systemSoundID where !systemSoundPlayedForSelectedStop {
+    if let systemSoundID = systemSoundID {
       AudioServicesPlayAlertSound(systemSoundID)
-      systemSoundPlayedForSelectedStop = true
     }
   }
   
@@ -811,7 +837,8 @@ extension MainViewController: UITableViewDelegate {
 
   private func unexpandSelectedStop() {
     autoUnexpandTaskQueue?.cancel()
-    autoUnexpandTaskQueue = initAutoUnexpandTaskQueue()
+
+    appDelegate.lm?.stopUpdatingLocation()
 
     stopTableView.deselectRowAtIndexPath(NSIndexPath(forRow: 0, inSection: 0), animated: true)
     // the tapped (and only) row was already selected => add other rows back
@@ -896,6 +923,7 @@ extension MainViewController: UITableViewDelegate {
 // MARK: - UITextFieldDelegate
 //
 extension MainViewController: UITextFieldDelegate {
+  
   func textFieldShouldReturn(textField: UITextField) -> Bool {
     textField.resignFirstResponder()
     return true
@@ -907,6 +935,7 @@ extension MainViewController: UITextFieldDelegate {
 // MARK: - locationUpdate notification handler
 //
 extension MainViewController {
+  
   @objc func locationUpdated(notification: NSNotification){
     log.verbose("locationUpdate \(notification.name)")
     if let locInfo = notification.userInfo as? [String:CLLocation], newLoc = locInfo[AppDelegate.newLocationResult] {
@@ -918,6 +947,10 @@ extension MainViewController {
       } else {
         log.info("Existing or worse user loc notified. Ignored.")
       }
+    
+      if UIApplication.sharedApplication().applicationState != .Background {
+        appDelegate.lm?.stopUpdatingLocation()
+      }
     }
   }
 }
@@ -927,6 +960,7 @@ extension MainViewController {
 // MARK: - preferredContentSizeChanged notification handler
 //
 extension MainViewController {
+  
   func preferredContentSizeChanged(notification: NSNotification) {
     log.verbose("preferredContentSizeChanged")
     //    vehicleStopTableView takes care of itself
@@ -938,11 +972,21 @@ extension MainViewController {
 // MARK: - Life cycle notification related notification handlers
 //
 extension MainViewController {
+  
   func applicationWillResignActive(notification: NSNotification) {
-    log.verbose("applicationWillResignActive:")
+    log.verbose("")
     NSNotificationCenter.defaultCenter().removeObserver(self, name: AppDelegate.newLocationNotificationName, object: nil)
     if initialRefreshTaskQueue?.state == .Running {
       initialRefreshTaskQueue?.pause()
+    }
+    
+    // start location updates if user has selected a stop
+    if selectedStop != nil &&
+      CLLocationManager.locationServicesEnabled() &&
+      CLLocationManager.authorizationStatus() == CLAuthorizationStatus.AuthorizedWhenInUse {
+        if let lm = appDelegate.lm {
+          lm.startUpdatingLocation()
+        }
     }
   }
 
@@ -975,7 +1019,6 @@ extension MainViewController {
         }
       }
     }
- 
   }
   
   func applicationWillTerminate(notification: NSNotification) {

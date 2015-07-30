@@ -76,10 +76,10 @@ class Vehicles {
       if let vehRef = VehicleActivity.vehicleRefFromJSON(monVeh),
         v = vehicles[vehRef] {
           v.setStopsFromJSON(monVeh)
+          log.debug("\(v.stops.count) stops set for \(vehRef). 1st is \(v.stops.first?.lastPathComponent)")
       }
       ++vehicleCount
     }
-    log.debug("Stops for vehicles read: \(vehicleCount)")
   }
 }
 

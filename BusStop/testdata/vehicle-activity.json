@@ -16061,7 +16061,7 @@
       "operatorRef" : "TKL",
       "bearing" : "88.0",
       "delay" : "P0Y0M0DT0H57M52.000S",
-      "vehicleRef" : "",
+      "vehicleRef" : "xyz",
       "journeyPatternRef" : "5",
       "originShortName" : "0042",
       "destinationShortName" : "5127",

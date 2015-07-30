@@ -93,7 +93,7 @@ class VehicleHeaderView: UIView {
   }
   
   private func minimizeView(view: UIView, inout constraint: NSLayoutConstraint?, byAmount: CGFloat) {
-    log.verbose("shink amount: \(byAmount * 100)%, constraint.constant: \(constraint?.constant)")
+//    log.verbose("shink amount: \(byAmount * 100)%, constraint.constant: \(constraint?.constant)")
     
     view.alpha =  max(0, 1 - byAmount*4)
 
