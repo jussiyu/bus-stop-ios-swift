@@ -50,11 +50,16 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
       localNotification.alertAction = NSLocalizedString("Action", comment:"")
       localNotification.applicationIconBadgeNumber = 1
       localNotification.repeatInterval = nil
-//      UIApplication.sharedApplication().scheduleLocalNotification(localNotification)
+      UIApplication.sharedApplication().scheduleLocalNotification(localNotification)
+    }
+    
+    // reset badge if allowed
+    if UIApplication.sharedApplication().currentUserNotificationSettings().types & UIUserNotificationType.Badge != nil {
+      UIApplication.sharedApplication().applicationIconBadgeNumber = 0
     }
 
     // Request local notification usage
-    UIApplication.sharedApplication().registerUserNotificationSettings(UIUserNotificationSettings(forTypes: .Alert | .Sound, categories: nil))
+    UIApplication.sharedApplication().registerUserNotificationSettings(UIUserNotificationSettings(forTypes: .Badge | .Alert | .Sound, categories: nil))
 
     if CLLocationManager.locationServicesEnabled() {
       // Request location usage in async if needed
@@ -98,20 +103,20 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     }
 
     // Check current location auth status and initialize service if allowed
-    let locStatus = CLLocationManager.authorizationStatus()
-    log.debug("location auth status: \(locStatus.hashValue)")
+    let locationAuthorizationStatus = CLLocationManager.authorizationStatus()
+    log.debug("location auth status: \(locationAuthorizationStatus.hashValue)")
 
-    switch locStatus {
+    switch locationAuthorizationStatus {
     case CLAuthorizationStatus.AuthorizedAlways:
-      initializeLocationWithAuthorizationStatus(locStatus)
+      initializeLocationWithAuthorizationStatus(locationAuthorizationStatus)
     case CLAuthorizationStatus.AuthorizedWhenInUse:
-      initializeLocationWithAuthorizationStatus(locStatus)
+      initializeLocationWithAuthorizationStatus(locationAuthorizationStatus)
     case CLAuthorizationStatus.NotDetermined:
       log.info("Location service has not been authorized by user yet. Do nothing yet.")
     case CLAuthorizationStatus.Denied:
-        locationServiceDisabledAlert(authorizationStatus: locStatus)
+        locationServiceDisabledAlert(authorizationStatus: locationAuthorizationStatus)
     default:
-      log.error("Location auth restricted: \(locStatus.hashValue)")
+      log.error("Location auth restricted: \(locationAuthorizationStatus.hashValue)")
       // TODO show note
     }
 
@@ -142,7 +147,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
           lm.startUpdatingLocation()
           log.debug("started location monitoring")
         } else {
-            locationServiceDisabledAlert(authorizationStatus: status)
+            locationServiceDisabledAlert()
         }
       }
 
@@ -150,13 +155,13 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
       // User disapproved location updates so make sure that we no more use it
       lm?.stopUpdatingLocation()
       log.error("Location service not allowed")
-      // TODO show note
+      locationServiceDisabledAlert(authorizationStatus: status)
     }
 
   }
 
   private func locationServiceDisabledAlert(authorizationStatus: CLAuthorizationStatus? = nil) {
-    log.warning("Location services disabled on device level. Show alert.")
+    log.warning("Location services disabled" + (authorizationStatus == nil ? " on device level." : "") + " Show alert.")
 
     let errorTitle = NSLocalizedString("Turn on Location Services to Allow BusStop to Determine Your Location", comment: "")
     let errorMessage = "" //NSLocalizedString("Location service disabled", comment: "")
@@ -178,10 +183,12 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
   
   func application(application: UIApplication, didReceiveLocalNotification notification: UILocalNotification) {
     log.debug("didReceiveLocalNotification: \(notification)")
+    UIApplication.sharedApplication().applicationIconBadgeNumber = 0
   }
   
   func application(application: UIApplication, handleActionWithIdentifier identifier: String?, forLocalNotification notification: UILocalNotification, completionHandler: () -> Void) {
     log.debug("handleActionWithIdentifier: \(notification)")
+    UIApplication.sharedApplication().applicationIconBadgeNumber = 0
     completionHandler()
   }
 

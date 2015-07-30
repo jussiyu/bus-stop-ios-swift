@@ -90,6 +90,10 @@ class MainViewController: UIViewController {
   var selectedVehicle: VehicleActivity? {
     didSet {
       selectedStop = nil
+      
+//      if selectedVehicle != nil {
+//        defaults.setObject(selectedVehicle?.vehRef, forKey: selectedVehicleKey)
+//      }
     }
   }
   var selectedVehicleIndex: Int? {
@@ -261,10 +265,13 @@ class MainViewController: UIViewController {
           locationCheckCounter = 0
 
           Async.main {
-            let alert = UIAlertController(title: NSLocalizedString("Failed locate you.", comment:""), message: NSLocalizedString("", comment: ""), preferredStyle: UIAlertControllerStyle.Alert)
-            alert.addAction(UIAlertAction(title: NSLocalizedString("OK", comment: ""), style: UIAlertActionStyle.Default, handler: nil))
+            var title = CLLocationManager.authorizationStatus() == .AuthorizedWhenInUse ?
+              NSLocalizedString("Failed to acquire your location.", comment:"") :
+              NSLocalizedString("To use BusStop, please allow BusStop to use location data in phone settings.", comment:"")
+            let alert = UIAlertController(title: title, message: nil, preferredStyle: UIAlertControllerStyle.Alert)
+            alert.addAction(UIAlertAction(title: NSLocalizedString("OK", comment: "Alert OK"), style: UIAlertActionStyle.Default, handler: nil))
             self.presentViewController(alert, animated: true, completion: nil)
-            self.extendProgressLabelTextWith(NSLocalizedString("Location failed.", comment: ""))
+            self.extendProgressLabelTextWith(NSLocalizedString("Failed to acquire location.", comment: ""))
           }
           q!.retry()
           
