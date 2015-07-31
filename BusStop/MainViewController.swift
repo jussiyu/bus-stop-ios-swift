@@ -598,6 +598,67 @@ class MainViewController: UIViewController {
 
 
 //
+// MARK: - Life cycle notification related notification handlers
+//
+extension MainViewController {
+  
+  func applicationWillResignActive(notification: NSNotification) {
+    log.verbose("")
+    
+    NSNotificationCenter.defaultCenter().removeObserver(self, name: AppDelegate.newLocationNotificationName, object: nil)
+    
+    if initialRefreshTaskQueue?.state == .Running {
+      initialRefreshTaskQueue?.pause()
+    }
+    
+    // start location updates if user has selected a stop
+    if selectedStop != nil &&
+      CLLocationManager.locationServicesEnabled() &&
+      CLLocationManager.authorizationStatus() == CLAuthorizationStatus.AuthorizedWhenInUse {
+        if let lm = appDelegate.lm {
+          lm.startUpdatingLocation()
+        }
+    }
+  }
+  
+  func applicationDidBecomeActive(notification: NSNotification) {
+    log.verbose("applicationDidBecomeActive:")
+    
+    extendProgressLabelTextWith(NSLocalizedString("Aquiring location...", comment: ""))
+    NSNotificationCenter.defaultCenter().addObserver(self, selector: "locationUpdated:", name: AppDelegate.newLocationNotificationName, object: nil)
+    
+    if initialRefreshTaskQueue?.state == .Paused {
+      // try to continue if paused
+      initialRefreshTaskQueue?.resume()
+      
+    } else {
+      // restart the queue
+      
+      initialRefreshTaskQueue = initInitialRefreshTaskQueue()
+      initialRefreshTaskQueue?.run {
+        Async.main {
+          if let q = self.initialRefreshTaskQueue, result = q.lastResult as? String where !result.isBlank {
+            self.extendProgressLabelTextWith(NSLocalizedString("Failed to initialize the application", comment: ""))
+            log.error("Intial refresh failed: \(result)")
+          } else {
+            log.info("Intial refresh done successfully!")
+            self.extendProgressLabelTextWith(NSLocalizedString("All data loaded", comment: ""))
+            self.stopTableView.hidden = false
+            self.hideProgressLabel()
+          }
+          self.progressViewManager.hideProgress()
+        }
+      }
+    }
+  }
+  
+  func applicationWillTerminate(notification: NSNotification) {
+    log.verbose("applicationWillTerminate:")
+  }
+}
+
+
+//
 // MARK: - UITableViewDataSource
 //
 extension MainViewController: UITableViewDataSource {
@@ -967,65 +1028,6 @@ extension MainViewController {
     vehicleScrollView.reloadData()
   }
 }
-
-//
-// MARK: - Life cycle notification related notification handlers
-//
-extension MainViewController {
-  
-  func applicationWillResignActive(notification: NSNotification) {
-    log.verbose("")
-    NSNotificationCenter.defaultCenter().removeObserver(self, name: AppDelegate.newLocationNotificationName, object: nil)
-    if initialRefreshTaskQueue?.state == .Running {
-      initialRefreshTaskQueue?.pause()
-    }
-    
-    // start location updates if user has selected a stop
-    if selectedStop != nil &&
-      CLLocationManager.locationServicesEnabled() &&
-      CLLocationManager.authorizationStatus() == CLAuthorizationStatus.AuthorizedWhenInUse {
-        if let lm = appDelegate.lm {
-          lm.startUpdatingLocation()
-        }
-    }
-  }
-
-  func applicationDidBecomeActive(notification: NSNotification) {
-    log.verbose("applicationDidBecomeActive:")
-
-    extendProgressLabelTextWith(NSLocalizedString("Aquiring location...", comment: ""))
-    NSNotificationCenter.defaultCenter().addObserver(self, selector: "locationUpdated:", name: AppDelegate.newLocationNotificationName, object: nil)
-    
-    if initialRefreshTaskQueue?.state == .Paused {
-      // try to continue if paused
-      initialRefreshTaskQueue?.resume()
-
-    } else {
-      // restart the queue
-      
-      initialRefreshTaskQueue = initInitialRefreshTaskQueue()
-      initialRefreshTaskQueue?.run {
-        Async.main {
-          if let q = self.initialRefreshTaskQueue, result = q.lastResult as? String where !result.isBlank {
-            self.extendProgressLabelTextWith(NSLocalizedString("Failed to initialize the application", comment: ""))
-            log.error("Intial refresh failed: \(result)")
-          } else {
-            log.info("Intial refresh done successfully!")
-            self.extendProgressLabelTextWith(NSLocalizedString("All data loaded", comment: ""))
-            self.stopTableView.hidden = false
-            self.hideProgressLabel()
-          }
-          self.progressViewManager.hideProgress()
-        }
-      }
-    }
-  }
-  
-  func applicationWillTerminate(notification: NSNotification) {
-    log.verbose("applicationWillTerminate:")
-  }
-}
-
 
 //
 // MARK: - HorizontalScrollerDelegate
