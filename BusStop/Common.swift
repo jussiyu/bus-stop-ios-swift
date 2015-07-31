@@ -164,3 +164,18 @@ extension UIViewController {
     return UIApplication.sharedApplication().delegate as! AppDelegate
   }
 }
+
+func synchronize<T>(lockObj: AnyObject!, closure: ()->T) -> T
+{
+  objc_sync_enter(lockObj)
+  var retVal: T = closure()
+  objc_sync_exit(lockObj)
+  return retVal
+}
+
+func synchronize(lockObj: AnyObject!, closure: () -> ())
+{
+  objc_sync_enter(lockObj)
+  closure()
+  objc_sync_exit(lockObj)
+}

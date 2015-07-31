@@ -297,7 +297,8 @@ class MainViewController: UIViewController {
     }
     
     q.tasks +=! {
-      log.info("Task: show closest vehicle headers => load stops for the selected vehicle")
+      log.info("Task: Show stops for the selected vehicle")
+      self.stopTableView.reloadSections(NSIndexSet(index: 0), withRowAnimation: .Fade)
     }
     
     return q
@@ -345,7 +346,7 @@ class MainViewController: UIViewController {
   }
 
   override func viewDidLoad() {
-    log.verbose("viewDidLoad")
+    log.verbose("")
     super.viewDidLoad()
     
     vehicleScrollView.delegate = self
@@ -384,22 +385,8 @@ class MainViewController: UIViewController {
       if self.initialRefreshTaskQueue == nil || self.initialRefreshTaskQueue!.state != .Running {
         self.initialRefreshTaskQueue = self.initInitialRefreshTaskQueue()
       }
-      if let q = self.initialRefreshTaskQueue where q.state != .Running  {
-        q.run {
-          Async.main {
-            if let q = self.initialRefreshTaskQueue, result = q.lastResult as? String where !result.isBlank {
-              self.extendProgressLabelTextWith(NSLocalizedString("Failed to initialize the application", comment: ""))
-              log.error("Intial refresh failed: \(result)")
-            } else {
-              log.info("Intial refresh done successfully by reachability!")
-              self.extendProgressLabelTextWith(NSLocalizedString("All data loaded", comment: ""))
-              self.stopTableView.hidden = false
-              self.hideProgressLabel()
-            }
-            self.progressViewManager.hideProgress()
-          }
-        }
-      }
+
+      self.refreshAll()
     }
     reachability.startNotifier()
   }
@@ -435,11 +422,48 @@ class MainViewController: UIViewController {
   }
 
   
-  
+  //
   // MARK: - utility functions
-  
+  //
+  private func refreshAll() {
+    
+    synchronize(self) {
+      // if queue is nil then it can be created in default branch
+      switch self.initialRefreshTaskQueue?.state ?? .NotStarted {
+      case .Paused:
+        log.info("RefreshAll resuming paused queue...")
+        self.initialRefreshTaskQueue?.resume()
+        
+      case .Running:
+        log.warning("RefreshAll already running")
+        0
+        
+      default:
+        log.info("RefreshAll starting fresh queue...")
+        
+        // Recrated new queue
+        self.initialRefreshTaskQueue = self.initInitialRefreshTaskQueue()
+        self.initialRefreshTaskQueue!.run {
+          Async.main {
+            if let q = self.initialRefreshTaskQueue, result = q.lastResult as? String where !result.isBlank {
+              self.extendProgressLabelTextWith(NSLocalizedString("Failed to initialize the application", comment: ""))
+              log.error("RefreshAll failed: \(result)")
+            } else {
+              log.info("RefreshAll done successfully!")
+              self.extendProgressLabelTextWith(NSLocalizedString("All data loaded", comment: ""))
+              self.stopTableView.hidden = false
+              self.hideProgressLabel()
+            }
+            self.progressViewManager.hideProgress()
+          }
+        }
+      }
+    }
+
+  }
+
   private func refreshStops(#queue: TaskQueue?, next: ApiControllerDelegateNextTask?) {
-    log.verbose("RefreshStops")
+    log.verbose("")
     
     if reachability.isReachable() {
       api.getStops(next)
@@ -452,7 +476,7 @@ class MainViewController: UIViewController {
   }
 
   private func refreshVehicles(#queue: TaskQueue?, next: ApiControllerDelegateNextTask?) {
-    log.verbose("RefreshVehicles")
+    log.verbose("")
     
     if reachability.isReachable() {
       api.getVehicleActivityHeaders(next: next)
@@ -465,7 +489,7 @@ class MainViewController: UIViewController {
   }
 
   private func refreshStopsForSelectedVehicle(#queue: TaskQueue?, next: ApiControllerDelegateNextTask?) {
-    log.verbose("refreshStopsForSelectedVehicle")
+    log.verbose("")
 
     if let selectedVehicleRef = selectedVehicle?.vehRef {
       if reachability.isReachable() {
@@ -569,7 +593,6 @@ class MainViewController: UIViewController {
       localNotification.soundName = UILocalNotificationDefaultSoundName
       localNotification.alertBody = NSLocalizedString("\(selectedStop!.name) is the next one!", comment: "")
       localNotification.alertAction = NSLocalizedString("Action", comment:"")
-//      localNotification.applicationIconBadgeNumber = 1
       localNotification.repeatInterval = nil
       UIApplication.sharedApplication().scheduleLocalNotification(localNotification)
     }
@@ -622,38 +645,16 @@ extension MainViewController {
   }
   
   func applicationDidBecomeActive(notification: NSNotification) {
-    log.verbose("applicationDidBecomeActive:")
+    log.verbose("")
     
     extendProgressLabelTextWith(NSLocalizedString("Aquiring location...", comment: ""))
     NSNotificationCenter.defaultCenter().addObserver(self, selector: "locationUpdated:", name: AppDelegate.newLocationNotificationName, object: nil)
     
-    if initialRefreshTaskQueue?.state == .Paused {
-      // try to continue if paused
-      initialRefreshTaskQueue?.resume()
-      
-    } else {
-      // restart the queue
-      
-      initialRefreshTaskQueue = initInitialRefreshTaskQueue()
-      initialRefreshTaskQueue?.run {
-        Async.main {
-          if let q = self.initialRefreshTaskQueue, result = q.lastResult as? String where !result.isBlank {
-            self.extendProgressLabelTextWith(NSLocalizedString("Failed to initialize the application", comment: ""))
-            log.error("Intial refresh failed: \(result)")
-          } else {
-            log.info("Intial refresh done successfully!")
-            self.extendProgressLabelTextWith(NSLocalizedString("All data loaded", comment: ""))
-            self.stopTableView.hidden = false
-            self.hideProgressLabel()
-          }
-          self.progressViewManager.hideProgress()
-        }
-      }
-    }
+    refreshAll()
   }
   
   func applicationWillTerminate(notification: NSNotification) {
-    log.verbose("applicationWillTerminate:")
+    log.verbose("")
   }
 }
 
@@ -1047,7 +1048,7 @@ extension MainViewController: HorizontalScrollerDelegate {
       subView = UIView()
     }
     
-    log.debug("subView at index \(indexPath): \(subView)")
+//    log.debug("subView at index \(indexPath): \(subView)")
     return subView  //TODO: return optional
   }
   
@@ -1104,15 +1105,9 @@ extension MainViewController: HorizontalScrollerDelegate {
 
     }
     
-    refreshVehicles(queue: nil) {_ in
-      Async.main {
-        self.vehicleScrollView.reloadData()
-        self.stopTableView.reloadSections(NSIndexSet(index: 0), withRowAnimation: .Fade)
-        log.info("Tap to refresh done successfully!")
-        self.progressViewManager.hideProgress()
-      }
-    }
     stopTableView.scrollToTop(animated: true)
     resetVehicleScrollView()
+
+    refreshAll()
   }
 }

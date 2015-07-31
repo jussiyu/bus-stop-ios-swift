@@ -78,7 +78,7 @@ class VehicleHeaderView: UIView {
   }
   
   override func intrinsicContentSize() -> CGSize {
-    log.verbose("header vehicleDistanceLabel frame: \(self.vehicleDistanceLabel.frame)")
+//    log.verbose("header vehicleDistanceLabel frame: \(self.vehicleDistanceLabel.frame)")
     return CGSize(width: VehicleHeaderView.defaultWidth + widthExtra, height: vehicleDistanceLabel.frame.maxY + 8)
   }
   
