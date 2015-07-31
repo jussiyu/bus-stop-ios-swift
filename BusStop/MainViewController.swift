@@ -1037,27 +1037,42 @@ extension MainViewController: HorizontalScrollerDelegate {
   
   // MARK: - Data source functions
   func horizontalScroller(horizontalScroller: HorizontalScroller, viewAtIndexPath indexPath: Int) -> UIView {
-    var subView: UIView = UIView()
+    var view: UIView?
     if let userLocation = userLocation where closestVehicles.count > indexPath {
+      
       let veh = closestVehicles[indexPath]
-      subView = VehicleHeaderView(
-        lineRef: String(format: NSLocalizedString("Line %@", comment: "Line name header"), veh.lineRef),
-        vehicleRef: veh.formattedVehicleRef,
-        distance: veh.distanceFromUserLocation(userLocation))
+      let lineRef = String(format: NSLocalizedString("Line %@", comment: "Line name header"), veh.lineRef)
+      let vehicleRef = veh.formattedVehicleRef
+      let distance: String = veh.distanceFromUserLocation(userLocation)
+      
+      view = horizontalScroller.dequeueReusableView() as? VehicleHeaderView
+      if view != nil {
+        VehicleHeaderView.initWithReusedView(view as! VehicleHeaderView, lineRef: lineRef, vehicleRef: vehicleRef, distance: distance)
+      } else {
+        view = VehicleHeaderView(lineRef: lineRef, vehicleRef: vehicleRef, distance: distance)
+      }
     } else {
-      subView = UIView()
+      log.error("No user location or vehicle found!")
+      view = UIView()
     }
     
-//    log.debug("subView at index \(indexPath): \(subView)")
-    return subView  //TODO: return optional
+//    log.debug("subView at index \(indexPath): \(view)")
+    return view!
   }
   
   func horizontalScrollerNoDataView(horizontalScroller: HorizontalScroller) -> UIView {
-    let noDataView = VehicleHeaderView(
-      lineRef: "",
-      vehicleRef: NSLocalizedString("No busses near you", comment: "show as vehicle label when no busses near or no user location known"),
-      distance: NSLocalizedString("Tap to refresh", comment: ""))
-    return noDataView
+    let lineRef = ""
+    let vehicleRef = NSLocalizedString("No busses near you", comment: "show as vehicle label when no busses near or no user location known")
+    let distance = NSLocalizedString("Tap to refresh", comment: "")
+
+    var noDataView = horizontalScroller.dequeueReusableView() as? VehicleHeaderView
+    if noDataView != nil {
+      VehicleHeaderView.initWithReusedView(noDataView!, lineRef: lineRef, vehicleRef: vehicleRef, distance: distance)
+    } else {
+      noDataView = VehicleHeaderView(lineRef: lineRef, vehicleRef: vehicleRef, distance: distance)
+    }
+    
+    return noDataView!
   }
 
   // MARK: - Notification functions

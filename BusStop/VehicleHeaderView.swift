@@ -21,6 +21,13 @@ class VehicleHeaderView: UIView {
   static let defaultWidth: CGFloat = 200
   var widthExtra: CGFloat = 0
   
+  class func initWithReusedView(view: VehicleHeaderView, lineRef: String, vehicleRef: String, distance: String) -> VehicleHeaderView {
+    view.lineLabel.text = lineRef
+    view.vehicleLabel.text = vehicleRef
+    view.vehicleDistanceLabel.text = distance.stringByReplacingOccurrencesOfString("\\n", withString: "\n", options: nil)
+    return view
+  }
+
   convenience init(lineRef: String, vehicleRef: String, distance: String) {
     var frame = CGRectZero
     self.init(frame: frame)
@@ -29,19 +36,20 @@ class VehicleHeaderView: UIView {
 //    backgroundColor = UIColor.lightGrayColor()
     lineLabel = UILabel()
     lineLabel.textAlignment = NSTextAlignment.Center
-    lineLabel.text = lineRef
 //    lineLabel.backgroundColor = UIColor.yellowColor()
     vehicleLabel = UILabel()
     vehicleLabel.textAlignment = NSTextAlignment.Center
-    vehicleLabel.text = vehicleRef
 //    vehicleLabel.backgroundColor = UIColor.redColor()
     vehicleLabel.setContentHuggingPriority(1000, forAxis: .Vertical)
     vehicleDistanceLabel = UILabel()
     vehicleDistanceLabel.textAlignment = NSTextAlignment.Center
-    vehicleDistanceLabel.text = distance.stringByReplacingOccurrencesOfString("\\n", withString: "\n", options: nil)
     vehicleDistanceLabel.numberOfLines = 2
     vehicleDistanceLabel.setContentHuggingPriority(1000, forAxis: .Vertical)
 //    vehicleDistanceLabel.backgroundColor = UIColor.greenColor()
+
+    lineLabel.text = lineRef
+    vehicleLabel.text = vehicleRef
+    vehicleDistanceLabel.text = distance.stringByReplacingOccurrencesOfString("\\n", withString: "\n", options: nil)
     
     // add child views
     addSubview(lineLabel)

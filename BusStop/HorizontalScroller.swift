@@ -29,6 +29,7 @@ class HorizontalScroller: UIView {
   
   private var scroller: UIScrollView!
   private var scrollerSubviews = [UIView]()
+  private var reusableSubviews = [UIView]()
   
   private var singleTapRecognizer: UITapGestureRecognizer?
   private var multiTapRecognizer: UITapGestureRecognizer?
@@ -87,14 +88,21 @@ class HorizontalScroller: UIView {
     }
   }
   
+  func dequeueReusableView() -> UIView? {
+    if reusableSubviews.count > 0 {
+      return reusableSubviews.removeAtIndex(reusableSubviews.count - 1)
+    } else {
+      return nil
+    }
+  }
+  
   func reloadData() {
     if let delegate = delegate {
-      scrollerSubviews = []
 
-      // delete old views 
-      // TODO: reuse old views
-      let views = scroller.subviews
-      for view in views {
+      // move old views to reuse list 
+      while scrollerSubviews.count > 0 {
+        let view = scrollerSubviews.removeAtIndex(scrollerSubviews.count - 1)
+        reusableSubviews.append(view)
         view.removeFromSuperview()
       }
       
