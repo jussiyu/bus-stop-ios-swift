@@ -59,21 +59,33 @@ class MainViewController: UIViewController {
   
   var closestVehicles: [VehicleActivity] = [] {
     didSet {
-      let oldSelectedVehicleIndex = selectedVehicleIndex
-      if selectedVehicle == nil || find(closestVehicles, selectedVehicle!) == nil {
-        // vehicle not found anymore so reset it to the first
+      if selectedVehicle == nil {
         self.selectedVehicle = closestVehicles.first
         log.info("Selected vehicle reset to first")
         
-        // and unexpand the selected stop
+      } else if find(closestVehicles, selectedVehicle!) == nil {
+        log.info("Selected vehicle not found anymore so reseting it to the first")
+        
         if selectedStop != nil {
-          unexpandSelectedStop()
-          log.info("Vehicle reset so unexpanding the selected stop")
+          // Unexpand the selected stop
+
+          log.debug("Unexpaning the selectected of a lost vehicle \(self.selectedVehicle!.vehRef)")
+          Async.main {
+            var title = NSLocalizedString("Lost your bus.", comment:"")
+            var message = NSLocalizedString("Your bus not nearby you anymore. Stopped tracking your stop.", comment:"")
+            let alert = UIAlertController(title: title, message: message, preferredStyle: UIAlertControllerStyle.Alert)
+            alert.addAction(UIAlertAction(title: NSLocalizedString("OK", comment: "Alert OK"), style: UIAlertActionStyle.Default, handler: nil))
+            self.presentViewController(alert, animated: true, completion: {
+                self.unexpandSelectedStop()
+            })
+          }
         }
+        
+        self.selectedVehicle = closestVehicles.first
       }
       
-      // scroll to new index
-      if let selectedVehicleIndex = selectedVehicleIndex where selectedVehicleIndex != oldSelectedVehicleIndex {
+      // scroll to new index if user has a stop selected
+      if let selectedVehicleIndex = selectedVehicleIndex {
         vehicleScrollView.scrollToViewWithIndex(selectedVehicleIndex, animated: true)
         if let selectedStop = selectedStop {
           if let selectedStopRow = rowForStop(selectedStop) {
@@ -298,7 +310,8 @@ class MainViewController: UIViewController {
     
     q.tasks +=! {
       log.info("Task: Show stops for the selected vehicle")
-      self.stopTableView.reloadSections(NSIndexSet(index: 0), withRowAnimation: .Fade)
+      self.stopTableView.reloadData()
+//      self.stopTableView.reloadSections(NSIndexSet(index: 0), withRowAnimation: .Fade)
     }
     
     return q
@@ -719,16 +732,27 @@ extension MainViewController: UITableViewDataSource {
           }
           var distanceHintText = String(format: NSLocalizedString("%d stop(s) before your stop", comment: ""), stopsBeforeSelectedStop)
           if let stopDistance = stopDistance {
-            distanceHintText += ".\n\(stopDistance)"
+            distanceHintText += "\nYour stop is about \(stopDistance)"
           }
           cell.distanceHintLabel.text = distanceHintText.stringByReplacingOccurrencesOfString("\\n", withString: "\n", options: nil)
         } else {
           cell.distanceHintLabel.text = autoUnexpandTaskQueueProgress ?? ""
         }
       }
+      
+      // Close button
+      cell.closeButton.setTitle(NSLocalizedString("Stop tracking", comment: ""), forState: .Normal)
+      cell.closeButton.removeTarget(nil, action: nil, forControlEvents: .TouchUpInside)
+      cell.closeButton.addTarget(self, action: "selectedStopCloseButtonPressed:", forControlEvents: .TouchUpInside)
     
       return cell
     }
+  }
+  
+  func selectedStopCloseButtonPressed(sender: AnyObject) {
+    log.verbose("")
+  
+    unexpandSelectedStop()
   }
   
 }
@@ -773,7 +797,7 @@ extension MainViewController: UITableViewDelegate {
     if selectedStop == nil {
       expandStopAtIndexPath(indexPath)
     } else {
-      unexpandSelectedStop()
+//      unexpandSelectedStop()
     }
 
   }

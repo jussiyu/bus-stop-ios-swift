@@ -16,7 +16,7 @@ class VehicleActivity : Equatable {
   let lineRef: String
   let vehRef: String
   var location: CLLocation?
-  var stops = [NSURL]()
+  var stops: [NSURL] = []
   var description: String {
     return "vehRef: \(vehRef), loc: \(location?.coordinate.latitude.toString(fractionDigits: 2)):\(location?.coordinate.longitude.toString(fractionDigits: 2))"
   }
@@ -65,7 +65,7 @@ class VehicleActivity : Equatable {
   }
   
   func setStopsFromJSON(monVeh: JSON) {
-    self.stops = [NSURL]()
+    self.stops = []
     
     let stops = monVeh["onwardCalls"]
     for (index: String, subJson: JSON) in stops {

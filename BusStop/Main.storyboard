@@ -67,6 +67,14 @@
                                                     <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
                                                     <nil key="highlightedColor"/>
                                                 </label>
+                                                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Czf-NX-pHh" userLabel="closeButton">
+                                                    <rect key="frame" x="440" y="151" width="120" height="40"/>
+                                                    <fontDescription key="fontDescription" style="UICTFontTextStyleBody"/>
+                                                    <inset key="contentEdgeInsets" minX="10" minY="10" maxX="10" maxY="10"/>
+                                                    <state key="normal" title="Stop tracking">
+                                                        <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                                                    </state>
+                                                </button>
                                             </subviews>
                                             <constraints>
                                                 <constraint firstItem="kfY-uu-hrM" firstAttribute="top" secondItem="6dr-5Q-vdJ" secondAttribute="topMargin" id="Fdh-fF-HvC"/>
@@ -74,12 +82,15 @@
                                                 <constraint firstItem="nLM-hV-c62" firstAttribute="trailing" secondItem="6dr-5Q-vdJ" secondAttribute="trailingMargin" id="L2g-0a-whR"/>
                                                 <constraint firstItem="kfY-uu-hrM" firstAttribute="height" secondItem="nLM-hV-c62" secondAttribute="height" id="U7J-vL-gdA"/>
                                                 <constraint firstItem="nLM-hV-c62" firstAttribute="bottom" secondItem="6dr-5Q-vdJ" secondAttribute="bottomMargin" id="UgM-Ga-Oqn"/>
+                                                <constraint firstAttribute="bottomMargin" secondItem="Czf-NX-pHh" secondAttribute="bottom" id="by5-7Y-VfD"/>
                                                 <constraint firstAttribute="trailingMargin" secondItem="kfY-uu-hrM" secondAttribute="trailing" id="ffb-Tl-JEy"/>
                                                 <constraint firstItem="nLM-hV-c62" firstAttribute="top" secondItem="kfY-uu-hrM" secondAttribute="bottom" constant="8" id="krt-u8-ISA"/>
                                                 <constraint firstItem="nLM-hV-c62" firstAttribute="leading" secondItem="6dr-5Q-vdJ" secondAttribute="leadingMargin" id="sdl-Dh-2MR"/>
+                                                <constraint firstItem="Czf-NX-pHh" firstAttribute="trailing" secondItem="6dr-5Q-vdJ" secondAttribute="trailingMargin" id="xx4-ff-TyQ"/>
                                             </constraints>
                                         </tableViewCellContentView>
                                         <connections>
+                                            <outlet property="closeButton" destination="Czf-NX-pHh" id="6bn-4Y-Pad"/>
                                             <outlet property="distanceHintLabel" destination="nLM-hV-c62" id="QfF-cS-M0X"/>
                                             <outlet property="stopNameLabel" destination="kfY-uu-hrM" id="YhA-An-yTZ"/>
                                         </connections>

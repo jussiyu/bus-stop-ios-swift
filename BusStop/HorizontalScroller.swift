@@ -84,6 +84,7 @@ class HorizontalScroller: UIView {
       let scrollViewWidth = bounds.width
       let currentViewCenter = scrollerSubviews[index].frame.midX
       let newOffset = currentViewCenter - scrollViewWidth / 2
+      log.debug("Scrolling to view with index \(index); from offset \(self.scroller.contentOffset) to \(newOffset)")
       scroller.setContentOffset(CGPoint(x: CGFloat(newOffset), y: 0), animated: animated)
     }
   }
