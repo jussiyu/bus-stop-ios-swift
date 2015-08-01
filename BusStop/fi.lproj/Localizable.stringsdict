@@ -49,11 +49,30 @@
       <key>zero</key>
       <string>Seuraava pysäkki on sinun pysäkkisi!</string>
       <key>one</key>
-      <string>Vain yksi pysäkki ennen sinun pysäkkiäsi</string>
+      <string>Vain yksi pysäkki ennen sinun pysäkkiäsi.</string>
       <key>two</key>
-      <string>Kaksi pysäkkiä ennen sinun pysäkkiäsi</string>
+      <string>Kaksi pysäkkiä ennen sinun pysäkkiäsi.</string>
       <key>other</key>
-      <string>%d pysäkkiä ennen sinun pysäkkiäsi</string>
+      <string>Vielä %d pysäkkiä ennen sinun pysäkkiäsi.</string>
+    </dict>
+  </dict>
+
+  <key>Arriving your stop in about %d minutes(s)</key>
+  <dict>
+    <key>NSStringLocalizedFormatKey</key>
+    <string>%#@minutes@</string>
+    <key>minutes</key>
+    <dict>
+      <key>NSStringFormatSpecTypeKey</key>
+      <string>NSStringPluralRuleType</string>
+      <key>NSStringFormatValueTypeKey</key>
+      <string>d</string>
+      <key>zero</key>
+      <string>Saavumme pysäkillesi vajaan minuutin kuluttua.</string>
+      <key>one</key>
+      <string>Saavumme pysäkillesi reilun minuutin kuluttua.</string>
+      <key>other</key>
+      <string>Saavumme pysäkillesi noin %d minuutin kuluttua.</string>
     </dict>
   </dict>
 

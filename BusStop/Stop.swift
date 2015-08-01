@@ -37,8 +37,8 @@ struct Stop : Printable {
           let coordinates = locString?.componentsSeparatedByString(",")
           var location: CLLocation? = nil
           if let coordinates = coordinates where coordinates.count == 2 {
-            if let lat = coordinates[0].fromPOSIXStringtoDouble(),
-              lon = coordinates[1].fromPOSIXStringtoDouble() {
+            if let lat = coordinates[0].fromPOSIXStringToDouble(),
+              lon = coordinates[1].fromPOSIXStringToDouble() {
                 let locTest = CLLocationCoordinate2DMake(lat, lon)
                 if CLLocationCoordinate2DIsValid(locTest) {
                   location = CLLocation(latitude: lat, longitude: lon)

@@ -724,6 +724,7 @@ extension MainViewController: UITableViewDataSource {
       let stopNameLabelFont = UIFont(descriptor: UIFontDescriptor.preferredDescriptorWithStyle(UIFontTextStyleHeadline, oversizedBy: 16), size: 0)
       cell.stopNameLabel.font = stopNameLabelFont
       
+
       if let ref = selectedStop!.ref {
         if let stopsBeforeSelectedStop = selectedVehicle?.stopIndexByRef(ref) {
           var stopDistance: String?
@@ -731,9 +732,29 @@ extension MainViewController: UITableViewDataSource {
             stopDistance = selectedStop!.distanceFromUserLocation(userLocationInVehicle)
           }
           var distanceHintText = String(format: NSLocalizedString("%d stop(s) before your stop", comment: ""), stopsBeforeSelectedStop)
-          if let stopDistance = stopDistance {
-            distanceHintText += "\nYour stop is about \(stopDistance)"
+
+          if let stop = selectedVehicle?.stopByRef(ref) {
+            let minutesUntilSelectedStop = Int(floor(stop.expectedArrivalTime.timeIntervalSinceNow / 60))
+            var timeHintText: String?
+            if minutesUntilSelectedStop >= 0 {
+              timeHintText = String(format: NSLocalizedString("Arriving your stop in about %d minutes(s)", comment: ""), minutesUntilSelectedStop)
+            } else {
+              timeHintText = String(format: NSLocalizedString("Arriving your stop very soon!", comment: ""), minutesUntilSelectedStop)
+            }
+            distanceHintText += "\n\(timeHintText!)"
           }
+      
+//      if let ref = selectedStop!.ref {
+//        if let stopsBeforeSelectedStop = selectedVehicle?.stopIndexByRef(ref) {
+//          var stopDistance: String?
+//          if let userLocationInVehicle = selectedVehicle?.location {
+//            stopDistance = selectedStop!.distanceFromUserLocation(userLocationInVehicle)
+//          }
+//          var distanceHintText = String(format: NSLocalizedString("%d stop(s) before your stop", comment: ""), stopsBeforeSelectedStop)
+//          if let stopDistance = stopDistance {
+//            distanceHintText += "\nYour stop is about \(stopDistance)"
+//          }
+
           cell.distanceHintLabel.text = distanceHintText.stringByReplacingOccurrencesOfString("\\n", withString: "\n", options: nil)
         } else {
           cell.distanceHintLabel.text = autoUnexpandTaskQueueProgress ?? ""

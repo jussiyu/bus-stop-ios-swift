@@ -39,12 +39,36 @@ extension String {
   func toDouble() -> Double? {
     return String.localeNumberFormatter.numberFromString(self)?.doubleValue
   }
-  func fromPOSIXStringtoDouble() -> Double? {
+  func fromPOSIXStringToDouble() -> Double? {
     return String.posixNumberFormatter.numberFromString(self)?.doubleValue
   }
-
-  func fromISO8601StringtoDate() -> NSDate? {
+  
+  func fromISO8601StringToDate() -> NSDate? {
     return String.iso8601DateFormatter.dateFromString(self)
+  }
+
+  func fromStringToTimeInterval() -> NSTimeInterval? {
+      // -P0Y0M0DT0H3M20.000S",
+    var interval: NSTimeInterval = 0
+    let negative = self[self.startIndex] == "-"
+    if let minutesRange = self.rangeOfString("H\\d+M", options: NSStringCompareOptions.RegularExpressionSearch) {
+      var minutesString = self.substringWithRange(minutesRange)
+      minutesString.removeAtIndex(minutesString.startIndex) // remove H
+      minutesString.removeAtIndex(minutesString.endIndex.predecessor()) // remove M
+      if let minutes = minutesString.toInt() {
+        interval += NSTimeInterval(60 * minutes)
+      }
+    }
+    if let secondsRange = self.rangeOfString("M\\d+\\.", options: NSStringCompareOptions.RegularExpressionSearch) {
+      var secondsString = self.substringWithRange(secondsRange)
+      secondsString.removeAtIndex(secondsString.startIndex) // remove M
+      secondsString.removeAtIndex(secondsString.endIndex.predecessor()) // remove .
+      if let seconds = secondsString.toInt() {
+        interval += NSTimeInterval(seconds)
+      }
+    }
+    
+    return negative ? -interval : interval
   }
 
   var isBlank: Bool {

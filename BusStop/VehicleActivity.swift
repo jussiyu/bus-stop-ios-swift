@@ -26,6 +26,7 @@ class VehicleActivity : Equatable {
   let vehRef: String
   var location: CLLocation?
   var stops: [VehicleActivityStop] = []
+  let delay: NSTimeInterval
   var description: String {
     return "vehRef: \(vehRef), loc: \(location?.coordinate.latitude.toString(fractionDigits: 2)):\(location?.coordinate.longitude.toString(fractionDigits: 2))"
   }
@@ -47,6 +48,14 @@ class VehicleActivity : Equatable {
     }
   }
   
+  func stopByRef(ref: NSURL) -> VehicleActivityStop? {
+    if let index = stopIndexByRef(ref) {
+      return stops[index]
+    } else {
+    return nil
+    }
+  }
+
   func stopIndexByRef(ref: NSURL) -> Int? {
     for i in 0..<stops.count {
       if stops[i].ref == ref {
@@ -62,6 +71,9 @@ class VehicleActivity : Equatable {
       self.vehRef = vehRef
       self.lineRef = lineRef
       
+      let delayString = monVeh["delay"].string
+      self.delay = delayString?.fromStringToTimeInterval() ?? 0
+      
       setLocationFromJSON(monVeh)
       setStopsFromJSON(monVeh)
       
@@ -69,6 +81,7 @@ class VehicleActivity : Equatable {
       log.error("failed to parse vehicle activity from JSON: \(monVeh)")
       self.vehRef = ""
       self.lineRef = ""
+      self.delay = 0
       return nil
     }
   }
@@ -82,10 +95,10 @@ class VehicleActivity : Equatable {
       let url = stopRef != nil ? NSURL(fileURLWithPath: stopRef!): nil
       
       let arrivalString = subJSON["expectedArrivalTime"].string
-      let arrivalTime = arrivalString?.fromISO8601StringtoDate()
+      let arrivalTime = arrivalString?.fromISO8601StringToDate()
       
       let departureString = subJSON["expectedDepartureTime"].string
-      let departureTime = departureString?.fromISO8601StringtoDate()
+      let departureTime = departureString?.fromISO8601StringToDate()
       
       let order = subJSON["order"].string?.toInt()
       
@@ -102,7 +115,8 @@ class VehicleActivity : Equatable {
 
   func setLocationFromJSON(monVeh: JSON) {
     let locJson = monVeh["vehicleLocation"]
-    if let lat = locJson["latitude"].string?.fromPOSIXStringtoDouble(), lon = locJson["longitude"].string?.fromPOSIXStringtoDouble() {
+    if let lat = locJson["latitude"].string?.fromPOSIXStringToDouble(),
+        lon = locJson["longitude"].string?.fromPOSIXStringToDouble() {
       let locTest = CLLocationCoordinate2DMake(lat, lon)
       if CLLocationCoordinate2DIsValid(locTest) {
         self.location = CLLocation(latitude: lat, longitude: lon)
