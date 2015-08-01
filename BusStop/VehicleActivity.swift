@@ -9,14 +9,23 @@
 import Foundation
 import CoreLocation
 import SwiftyJSON
+import XCGLogger
 
 class VehicleActivity : Equatable {
+  
+  struct VehicleActivityStop {
+    var id: String {return ref.lastPathComponent ?? "<invalid ID>"}
+    let ref: NSURL
+    let expectedArrivalTime: NSDate
+    let expectedDepartureTime: NSDate
+    let order: Int
+  }
 
   // MARK: - properties
   let lineRef: String
   let vehRef: String
   var location: CLLocation?
-  var stops: [NSURL] = []
+  var stops: [VehicleActivityStop] = []
   var description: String {
     return "vehRef: \(vehRef), loc: \(location?.coordinate.latitude.toString(fractionDigits: 2)):\(location?.coordinate.longitude.toString(fractionDigits: 2))"
   }
@@ -30,7 +39,7 @@ class VehicleActivity : Equatable {
     }
   }
   
-  var nextStop: NSURL? {
+  var nextStop: VehicleActivityStop? {
     if stops.count > 0 {
       return stops[0]
     } else {
@@ -40,7 +49,7 @@ class VehicleActivity : Equatable {
   
   func stopIndexByRef(ref: NSURL) -> Int? {
     for i in 0..<stops.count {
-      if stops[i] == ref {
+      if stops[i].ref == ref {
         return i
       }
     }
@@ -68,11 +77,24 @@ class VehicleActivity : Equatable {
     self.stops = []
     
     let stops = monVeh["onwardCalls"]
-    for (index: String, subJson: JSON) in stops {
-      if let stopRef = subJson["stopPointRef"].string {
-        if let url = NSURL(fileURLWithPath: stopRef) {
-          self.stops.append(url)
-        }
+    for (index: String, subJSON: JSON) in stops {
+      let stopRef = subJSON["stopPointRef"].string
+      let url = stopRef != nil ? NSURL(fileURLWithPath: stopRef!): nil
+      
+      let arrivalString = subJSON["expectedArrivalTime"].string
+      let arrivalTime = arrivalString?.fromISO8601StringtoDate()
+      
+      let departureString = subJSON["expectedDepartureTime"].string
+      let departureTime = departureString?.fromISO8601StringtoDate()
+      
+      let order = subJSON["order"].string?.toInt()
+      
+      if let url = url, arrivalTime = arrivalTime, departureTime = departureTime, order = order {
+        let stop = VehicleActivityStop(ref: url, expectedArrivalTime: arrivalTime,
+          expectedDepartureTime: departureTime, order: order)
+        self.stops.append(stop)
+      } else {
+        log.error("Failed to create vehicle activity stop from JSON\n\(subJSON)")
       }
     }
 //    log.info("onwardCalls count: \(stops.count)")

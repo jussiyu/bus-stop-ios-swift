@@ -569,7 +569,7 @@ class MainViewController: UIViewController {
   
   func stopForRow(row: Int) -> Stop? {
     if let selectedVehicle = selectedVehicle where selectedVehicle.stops.count > row {
-      if let lastPath = selectedVehicle.stops[row].lastPathComponent, stop = stops[lastPath] {
+      if let stop = stops[selectedVehicle.stops[row].id] {
         return stop
       } else {
         log.warning("Stop for row \(row) does exist in the stop list")

@@ -25,13 +25,14 @@ struct Stop : Printable {
     self.location = location
   }
   
-  static func StopsFromJSON(result: JSON) -> [String: Stop]{
+    static func StopsFromJSON(result: JSON) -> [String: Stop]{
     var stops = [String: Stop]()
     
     for (index: String, subJson: JSON) in result {
 //      let mun = subJson["municipality"]
       if let id = subJson["shortName"].string, stopRef = subJson["url"].string,
         name = subJson["name"].string where !stopRef.isEmpty {
+
           let locString = subJson["location"].string
           let coordinates = locString?.componentsSeparatedByString(",")
           var location: CLLocation? = nil
@@ -44,6 +45,7 @@ struct Stop : Printable {
                 }
             }
           }
+
           var s = Stop(id: id, name: name, ref: stopRef, location: location)
           stops[id] = s
       }

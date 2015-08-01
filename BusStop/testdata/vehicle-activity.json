@@ -15988,7 +15988,7 @@
         "stopPointRef" : "http://data.itsfactory.fi/journeys/api/1/stop-points/3524",
         "order" : "39"
       }, {
-        "expectedArrivalTime" : "2015-07-13T14:33:00+03:00",
+        "	" : "2015-07-13T14:33:00+03:00",
         "expectedDepartureTime" : "2015-07-13T14:33:00+03:00",
         "stopPointRef" : "http://data.itsfactory.fi/journeys/api/1/stop-points/3526",
         "order" : "40"

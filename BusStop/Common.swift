@@ -13,21 +13,40 @@ import CoreLocation
 import TaskQueue
 
 extension String {
-  static var f: NSNumberFormatter = {
+  static var localeNumberFormatter: NSNumberFormatter = {
     let f = NSNumberFormatter()
+    f.locale = NSLocale.currentLocale()
     f.numberStyle = NSNumberFormatterStyle.DecimalStyle
+    return f
+  }()
+
+  static var posixNumberFormatter: NSNumberFormatter = {
+    let f = NSNumberFormatter()
+    f.locale = NSLocale(localeIdentifier: "en_US_POSIX")
+    f.numberStyle = NSNumberFormatterStyle.DecimalStyle
+    return f
+  }()
+
+  static var iso8601DateFormatter: NSDateFormatter = {
+    // 2015-07-13T14:32:00+03:00
+    let f = NSDateFormatter()
+    f.locale = NSLocale(localeIdentifier: "en_US_POSIX")
+    f.timeZone = NSTimeZone(forSecondsFromGMT: 0)
+    f.dateFormat = "yyyy-MM-dd'T'HH:mm:sszzz"
     return f
   }()
   
   func toDouble() -> Double? {
-    String.f.locale = NSLocale.currentLocale()
-    return String.f.numberFromString(self)?.doubleValue
+    return String.localeNumberFormatter.numberFromString(self)?.doubleValue
   }
   func fromPOSIXStringtoDouble() -> Double? {
-    String.f.locale = NSLocale(localeIdentifier: "en_US_POSIX")
-    return String.f.numberFromString(self)?.doubleValue
+    return String.posixNumberFormatter.numberFromString(self)?.doubleValue
   }
-  
+
+  func fromISO8601StringtoDate() -> NSDate? {
+    return String.iso8601DateFormatter.dateFromString(self)
+  }
+
   var isBlank: Bool {
     get {
       let trimmed = stringByTrimmingCharactersInSet(NSCharacterSet.whitespaceCharacterSet())
