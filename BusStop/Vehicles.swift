@@ -28,7 +28,7 @@ class Vehicles {
     for (index: String, subJson: JSON) in result {
       let monVeh = subJson["monitoredVehicleJourney"]
       if let v = VehicleActivity(fromJSON: monVeh) {
-        vehicles[v.vehRef] = v
+        vehicles[v.vehicleRef] = v
         ++vehicleCount
         if vehicleCount >= maxVehiclesToRead {
           break
@@ -60,8 +60,8 @@ class Vehicles {
     var vehicleCount = 0
     for (index: String, subJson: JSON) in result {
       let monVeh = subJson["monitoredVehicleJourney"]
-      if let vehRef = VehicleActivity.vehicleRefFromJSON(monVeh),
-        v = vehicles[vehRef] {
+      if let vehicleRef = VehicleActivity.vehicleRefFromJSON(monVeh),
+        v = vehicles[vehicleRef] {
           v.setLocationFromJSON(monVeh)
       }
       ++vehicleCount
@@ -73,10 +73,10 @@ class Vehicles {
     var vehicleCount = 0
     for (index: String, subJson: JSON) in result {
       let monVeh = subJson["monitoredVehicleJourney"]
-      if let vehRef = VehicleActivity.vehicleRefFromJSON(monVeh),
-        v = vehicles[vehRef] {
+      if let vehicleRef = VehicleActivity.vehicleRefFromJSON(monVeh),
+        v = vehicles[vehicleRef] {
           v.setStopsFromJSON(monVeh)
-          log.debug("\(v.stops.count) stops set for \(vehRef). 1st is \(v.stops.first?.id)")
+          log.debug("\(v.stops.count) stops set for \(vehicleRef). 1st is \(v.stops.first?.id)")
       }
       ++vehicleCount
     }

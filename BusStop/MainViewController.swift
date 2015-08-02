@@ -69,7 +69,7 @@ class MainViewController: UIViewController {
         if selectedStop != nil {
           // Unexpand the selected stop
 
-          log.debug("Unexpaning the selectected of a lost vehicle \(self.selectedVehicle!.vehRef)")
+          log.debug("Unexpaning the selectected of a lost vehicle \(self.selectedVehicle!.vehicleRef)")
           Async.main {
             var title = NSLocalizedString("Lost your bus.", comment:"")
             var message = NSLocalizedString("Your bus not nearby you anymore. Stopped tracking your stop.", comment:"")
@@ -104,7 +104,7 @@ class MainViewController: UIViewController {
       selectedStop = nil
       
 //      if selectedVehicle != nil {
-//        defaults.setObject(selectedVehicle?.vehRef, forKey: selectedVehicleKey)
+//        defaults.setObject(selectedVehicle?.vehicleRef, forKey: selectedVehicleKey)
 //      }
     }
   }
@@ -504,7 +504,7 @@ class MainViewController: UIViewController {
   private func refreshStopsForSelectedVehicle(#queue: TaskQueue?, next: ApiControllerDelegateNextTask?) {
     log.verbose("")
 
-    if let selectedVehicleRef = selectedVehicle?.vehRef {
+    if let selectedVehicleRef = selectedVehicle?.vehicleRef {
       if reachability.isReachable() {
         api.getVehicleActivityStopsForVehicle(selectedVehicleRef, next: next)
       } else {

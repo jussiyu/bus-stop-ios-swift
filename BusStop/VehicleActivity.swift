@@ -22,20 +22,20 @@ class VehicleActivity : Equatable {
 
   // MARK: - properties
   let lineRef: String
-  let vehRef: String
+  let vehicleRef: String
   var location: CLLocation?
   var stops: [VehicleActivityStop] = []
   let delay: NSTimeInterval
   var description: String {
-    return "vehRef: \(vehRef), loc: \(location?.coordinate.latitude.toString(fractionDigits: 2)):\(location?.coordinate.longitude.toString(fractionDigits: 2))"
+    return "vehicleRef: \(vehicleRef), loc: \(location?.coordinate.latitude.toString(fractionDigits: 2)):\(location?.coordinate.longitude.toString(fractionDigits: 2))"
   }
  
   var formattedVehicleRef: String {
-    let comps = vehRef.componentsSeparatedByString("_")
+    let comps = vehicleRef.componentsSeparatedByString("_")
     if comps.count == 2 {
       return "\(comps[0]) \(comps[1])"
     } else {
-      return vehRef
+      return vehicleRef
     }
   }
   
@@ -75,8 +75,8 @@ class VehicleActivity : Equatable {
 
   // MARK: - initialization
   init?(fromJSON monVeh: JSON) {
-    if let vehRef = monVeh["vehicleRef"].string, lineRef = monVeh["lineRef"].string where !vehRef.isEmpty && !lineRef.isEmpty {
-      self.vehRef = vehRef
+    if let vehicleRef = monVeh["vehicleRef"].string, lineRef = monVeh["lineRef"].string where !vehicleRef.isEmpty && !lineRef.isEmpty {
+      self.vehicleRef = vehicleRef
       self.lineRef = lineRef
       
       let delayString = monVeh["delay"].string
@@ -87,7 +87,7 @@ class VehicleActivity : Equatable {
       
     } else {
       log.error("failed to parse vehicle activity from JSON: \(monVeh)")
-      self.vehRef = ""
+      self.vehicleRef = ""
       self.lineRef = ""
       self.delay = 0
       return nil
@@ -154,5 +154,5 @@ class VehicleActivity : Equatable {
 }
 
 func == (lhs: VehicleActivity, rhs: VehicleActivity) -> Bool {
-  return lhs.vehRef == rhs.vehRef
+  return lhs.vehicleRef == rhs.vehicleRef
 }
