@@ -18,7 +18,7 @@ let log = XCGLogger.defaultInstance()
 class AppDelegate: UIResponder, UIApplicationDelegate {
 
   var window: UIWindow?
-  var lm: CLLocationManager?
+  var locationManager: CLLocationManager?
 
   static let newLocationNotificationName = "newLocationNotification"
   static let newLocationResult = "newLocationResult"
@@ -53,7 +53,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
     if CLLocationManager.locationServicesEnabled() {
       // Request location usage in async if needed
-      lm?.requestWhenInUseAuthorization()
+      locationManager?.requestWhenInUseAuthorization()
     } else {
       locationServiceDisabledAlert()
     }
@@ -113,7 +113,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
   func applicationWillTerminate(application: UIApplication) {
     // Called when the application is about to terminate. Save data if appropriate. See also applicationDidEnterBackground:.
-    lm?.stopUpdatingLocation()
+    locationManager?.stopUpdatingLocation()
   }
   
   func applicationDidReceiveMemoryWarning(application: UIApplication) {
@@ -126,8 +126,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
     if status == .AuthorizedAlways || status == .AuthorizedWhenInUse {
       
-      lm = lm ?? CLLocationManager()
-      if let lm = lm {
+      locationManager = locationManager ?? CLLocationManager()
+      if let lm = locationManager {
         lm.delegate = self
         lm.desiredAccuracy = kCLLocationAccuracyBest
         lm.activityType = CLActivityType.Other
@@ -147,8 +147,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
     } else {
       // User disapproved location updates so make sure that we no more use it
-      lm?.stopUpdatingLocation()
-      lm?.stopMonitoringSignificantLocationChanges()
+      locationManager?.stopUpdatingLocation()
+      locationManager?.stopMonitoringSignificantLocationChanges()
       log.error("Location service not allowed")
       locationServiceDisabledAlert(authorizationStatus: status)
     }
@@ -207,7 +207,7 @@ extension AppDelegate: CLLocationManagerDelegate {
     log.error("Location Manager didFailWithError: \(error)")
 
     if error == CLError.Denied.rawValue || error == CLError.LocationUnknown.rawValue {
-      lm?.stopUpdatingLocation()
+      locationManager?.stopUpdatingLocation()
     }
   }
   
