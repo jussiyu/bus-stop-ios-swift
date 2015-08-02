@@ -14,13 +14,11 @@ import XCGLogger
 
 struct Stop : Printable {
   let id: String
-  let ref: NSURL?
   let name: String
   let location: CLLocation?
   
   init(id: String, name: String, ref: String = "", location: CLLocation?) {
     self.id = id
-    self.ref = NSURL(fileURLWithPath: ref)
     self.name = name
     self.location = location
   }
@@ -29,7 +27,7 @@ struct Stop : Printable {
     var stops = [String: Stop]()
     
     for (index: String, subJson: JSON) in result {
-      if let id = subJson["shortName"].string, stopRef = subJson["url"].string, name = subJson["name"].string where !stopRef.isEmpty {
+      if let id = subJson["shortName"].string, name = subJson["name"].string where !id.isEmpty {
 
         let locString = subJson["location"].string
         let coordinates = locString?.componentsSeparatedByString(",")
@@ -44,7 +42,7 @@ struct Stop : Printable {
           }
         }
         
-        var s = Stop(id: id, name: name, ref: stopRef, location: location)
+        var s = Stop(id: id, name: name, location: location)
         stops[id] = s
       }
     }

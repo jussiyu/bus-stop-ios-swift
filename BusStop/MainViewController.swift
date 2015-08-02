@@ -582,12 +582,11 @@ class MainViewController: UIViewController {
   }
   
   func rowForStop(stop: Stop) -> Int? {
-    if let ref = selectedStop?.ref {
-      return selectedVehicle?.stopIndexByRef(ref)
-    } else {
+    let row = selectedVehicle?.stopIndexById(stop.id)
+    if row == nil {
       log.warning("Selected vehicle does not currenly have this stop")
-      return nil
     }
+    return row
   }
 
   private func notifySelectedStopReached() {
@@ -725,25 +724,24 @@ extension MainViewController: UITableViewDataSource {
       cell.stopNameLabel.font = stopNameLabelFont
       
 
-      if let ref = selectedStop!.ref {
-        if let stopsBeforeSelectedStop = selectedVehicle?.stopIndexByRef(ref) {
-          var stopDistance: String?
-          if let userLocationInVehicle = selectedVehicle?.location {
-            stopDistance = selectedStop!.distanceFromUserLocation(userLocationInVehicle)
+      if let selectedStopIndex = selectedVehicle?.stopIndexById(selectedStop!.id) {
+        var stopDistance: String?
+        if let userLocationInVehicle = selectedVehicle?.location {
+          stopDistance = selectedStop!.distanceFromUserLocation(userLocationInVehicle)
+        }
+        var distanceHintText = String(format: NSLocalizedString("%d stop(s) before your stop", comment: ""), selectedStopIndex)
+        
+        if let stop = selectedVehicle?.stops[selectedStopIndex] {
+          let minutesUntilSelectedStop = Int(floor(stop.expectedArrivalTime.timeIntervalSinceNow / 60))
+          var timeHintText: String?
+          if minutesUntilSelectedStop >= 0 {
+            timeHintText = String(format: NSLocalizedString("Arriving your stop in about %d minutes(s)", comment: ""), minutesUntilSelectedStop)
+          } else {
+            timeHintText = String(format: NSLocalizedString("Arriving your stop very soon!", comment: ""), minutesUntilSelectedStop)
           }
-          var distanceHintText = String(format: NSLocalizedString("%d stop(s) before your stop", comment: ""), stopsBeforeSelectedStop)
-
-          if let stop = selectedVehicle?.stopByRef(ref) {
-            let minutesUntilSelectedStop = Int(floor(stop.expectedArrivalTime.timeIntervalSinceNow / 60))
-            var timeHintText: String?
-            if minutesUntilSelectedStop >= 0 {
-              timeHintText = String(format: NSLocalizedString("Arriving your stop in about %d minutes(s)", comment: ""), minutesUntilSelectedStop)
-            } else {
-              timeHintText = String(format: NSLocalizedString("Arriving your stop very soon!", comment: ""), minutesUntilSelectedStop)
-            }
-            distanceHintText += "\n\(timeHintText!)"
-          }
-      
+          distanceHintText += "\n\(timeHintText!)"
+        }
+        
 //      if let ref = selectedStop!.ref {
 //        if let stopsBeforeSelectedStop = selectedVehicle?.stopIndexByRef(ref) {
 //          var stopDistance: String?
@@ -755,10 +753,9 @@ extension MainViewController: UITableViewDataSource {
 //            distanceHintText += "\nYour stop is about \(stopDistance)"
 //          }
 
-          cell.distanceHintLabel.text = distanceHintText.stringByReplacingOccurrencesOfString("\\n", withString: "\n", options: nil)
-        } else {
-          cell.distanceHintLabel.text = autoUnexpandTaskQueueProgress ?? ""
-        }
+        cell.distanceHintLabel.text = distanceHintText.stringByReplacingOccurrencesOfString("\\n", withString: "\n", options: nil)
+      } else {
+        cell.distanceHintLabel.text = autoUnexpandTaskQueueProgress ?? ""
       }
       
       // Close button

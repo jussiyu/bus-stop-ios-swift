@@ -14,8 +14,7 @@ import XCGLogger
 class VehicleActivity : Equatable {
   
   struct VehicleActivityStop {
-    var id: String {return ref.lastPathComponent ?? "<invalid ID>"}
-    let ref: NSURL
+    var id: String
     let expectedArrivalTime: NSDate
     let expectedDepartureTime: NSDate
     let order: Int
@@ -48,17 +47,26 @@ class VehicleActivity : Equatable {
     }
   }
   
-  func stopByRef(ref: NSURL) -> VehicleActivityStop? {
-    if let index = stopIndexByRef(ref) {
+  func stopById(id: String) -> VehicleActivityStop? {
+    if let index = stopIndexById(id) {
       return stops[index]
     } else {
     return nil
     }
   }
+//
+//  func stopIndexByRef(ref: NSURL) -> Int? {
+//    for i in 0..<stops.count {
+//      if stops[i].ref == ref {
+//        return i
+//      }
+//    }
+//    return nil
+//  }
 
-  func stopIndexByRef(ref: NSURL) -> Int? {
+  func stopIndexById(id: String) -> Int? {
     for i in 0..<stops.count {
-      if stops[i].ref == ref {
+      if stops[i].id == id {
         return i
       }
     }
@@ -92,7 +100,7 @@ class VehicleActivity : Equatable {
     let stops = monVeh["onwardCalls"]
     for (index: String, subJSON: JSON) in stops {
       let stopRef = subJSON["stopPointRef"].string
-      let url = stopRef != nil ? NSURL(fileURLWithPath: stopRef!): nil
+      let ref = stopRef != nil ? NSURL(fileURLWithPath: stopRef!): nil
       
       let arrivalString = subJSON["expectedArrivalTime"].string
       let arrivalTime = arrivalString?.fromISO8601StringToDate()
@@ -102,8 +110,8 @@ class VehicleActivity : Equatable {
       
       let order = subJSON["order"].string?.toInt()
       
-      if let url = url, arrivalTime = arrivalTime, departureTime = departureTime, order = order {
-        let stop = VehicleActivityStop(ref: url, expectedArrivalTime: arrivalTime,
+      if let ref = ref, id = ref.lastPathComponent, arrivalTime = arrivalTime, departureTime = departureTime, order = order {
+        let stop = VehicleActivityStop(id: id, expectedArrivalTime: arrivalTime,
           expectedDepartureTime: departureTime, order: order)
         self.stops.append(stop)
       } else {
