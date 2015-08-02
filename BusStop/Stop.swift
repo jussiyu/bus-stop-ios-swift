@@ -29,25 +29,23 @@ struct Stop : Printable {
     var stops = [String: Stop]()
     
     for (index: String, subJson: JSON) in result {
-//      let mun = subJson["municipality"]
-      if let id = subJson["shortName"].string, stopRef = subJson["url"].string,
-        name = subJson["name"].string where !stopRef.isEmpty {
+      if let id = subJson["shortName"].string, stopRef = subJson["url"].string, name = subJson["name"].string where !stopRef.isEmpty {
 
-          let locString = subJson["location"].string
-          let coordinates = locString?.componentsSeparatedByString(",")
-          var location: CLLocation? = nil
-          if let coordinates = coordinates where coordinates.count == 2 {
-            if let lat = coordinates[0].fromPOSIXStringToDouble(),
-              lon = coordinates[1].fromPOSIXStringToDouble() {
-                let locTest = CLLocationCoordinate2DMake(lat, lon)
-                if CLLocationCoordinate2DIsValid(locTest) {
-                  location = CLLocation(latitude: lat, longitude: lon)
-                }
-            }
+        let locString = subJson["location"].string
+        let coordinates = locString?.componentsSeparatedByString(",")
+        var location: CLLocation? = nil
+        if let coordinates = coordinates where coordinates.count == 2 {
+          if let lat = coordinates[0].fromPOSIXStringToDouble(),
+            lon = coordinates[1].fromPOSIXStringToDouble() {
+              let locTest = CLLocationCoordinate2DMake(lat, lon)
+              if CLLocationCoordinate2DIsValid(locTest) {
+                location = CLLocation(latitude: lat, longitude: lon)
+              }
           }
-
-          var s = Stop(id: id, name: name, ref: stopRef, location: location)
-          stops[id] = s
+        }
+        
+        var s = Stop(id: id, name: name, ref: stopRef, location: location)
+        stops[id] = s
       }
     }
     log.debug("Parsed \(stops.count) stops")
@@ -57,10 +55,11 @@ struct Stop : Printable {
   func distanceFromUserLocation(userLocation: CLLocation) -> String {
     if let dist = location?.distanceFromLocation(userLocation) {
       if dist < 1000 {
-        return NSString.localizedStringWithFormat(NSLocalizedString("%d meter(s) from your location", comment: "distance in meters"), lround(dist)) as String
+        return NSString.localizedStringWithFormat(
+          NSLocalizedString("%d meter(s) from your location", comment: "distance in meters"), lround(dist)) as String
       } else {
-        return NSString.localizedStringWithFormat(NSLocalizedString("%d km(s) from your location", comment: "distance in km"), dist/1000) as String
-        //        return "\((dist/1000).toString(fractionDigits: 1)) km".localizedWithComment("distance in km")
+        return NSString.localizedStringWithFormat(
+          NSLocalizedString("%d km(s) from your location", comment: "distance in km"), dist/1000) as String
       }
     } else {
       return NSLocalizedString("--", comment: "unknown distance between user and the vehicle")
