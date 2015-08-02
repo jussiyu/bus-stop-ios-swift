@@ -34,6 +34,14 @@ class HorizontalScroller: UIView {
   private var singleTapRecognizer: UITapGestureRecognizer?
   private var multiTapRecognizer: UITapGestureRecognizer?
   
+  var touchEnabled: Bool {
+    get {return scroller.scrollEnabled}
+    set {
+      scroller.scrollEnabled = newValue
+      singleTapRecognizer?.enabled = newValue
+      multiTapRecognizer?.enabled = newValue
+    }
+  }
   var viewCount: Int {
     return scrollerSubviews.count
   }

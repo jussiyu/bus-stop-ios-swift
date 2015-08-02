@@ -820,7 +820,7 @@ extension MainViewController: UITableViewDelegate {
     if selectedStop == nil {
       expandStopAtIndexPath(indexPath)
     } else {
-//      unexpandSelectedStop()
+      // There is a dedicated close button on the view so do nothing here
     }
 
   }
@@ -898,6 +898,8 @@ extension MainViewController: UITableViewDelegate {
   private func expandStopAtIndexPath(indexPath: NSIndexPath) {
     stopTableView.deselectRowAtIndexPath(indexPath, animated: true)
     
+    vehicleScrollView.touchEnabled = false
+
     // no row was selected when the row was tapped => remove other rows
     
     // store the stop for the selected row
@@ -946,6 +948,8 @@ extension MainViewController: UITableViewDelegate {
 
   private func unexpandSelectedStop() {
     autoUnexpandTaskQueue?.cancel()
+    
+    vehicleScrollView.touchEnabled = true
 
     appDelegate.lm?.stopUpdatingLocation()
 
