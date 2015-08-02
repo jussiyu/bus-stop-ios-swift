@@ -90,16 +90,7 @@ class VehicleHeaderView: UIView {
     return CGSize(width: VehicleHeaderView.defaultWidth + widthExtra, height: vehicleDistanceLabel.frame.maxY + 8)
   }
   
-  func fadeOutByOffset(offset: CGFloat) {
-    var amount = min(1, 1 - (bounds.height - offset) / bounds.height)
-    amount = amount < 0.01 ? 0 : amount
-    
-    minimizeView(lineLabel, constraint: &lineLabelHeightConstraint, byAmount: amount)
-    minimizeView(vehicleDistanceLabel, constraint: &vehicleDistanceLabelHeightConstraint, byAmount: amount)
-    
-    layoutIfNeeded()
-  }
-  
+ 
   private func minimizeView(view: UIView, inout constraint: NSLayoutConstraint?, byAmount: CGFloat) {
 //    log.verbose("shink amount: \(byAmount * 100)%, constraint.constant: \(constraint?.constant)")
     
@@ -121,6 +112,19 @@ class VehicleHeaderView: UIView {
   }
 
 }
+
+extension VehicleHeaderView: FadeableUIView {
+  func fadeOutByOffset(offset: CGFloat) {
+    var amount = min(1, 1 - (bounds.height - offset) / bounds.height)
+    amount = amount < 0.01 ? 0 : amount
+    
+    minimizeView(lineLabel, constraint: &lineLabelHeightConstraint, byAmount: amount)
+    minimizeView(vehicleDistanceLabel, constraint: &vehicleDistanceLabelHeightConstraint, byAmount: amount)
+    
+    layoutIfNeeded()
+  }
+}
+
 
 extension VehicleHeaderView: Printable, DebugPrintable{
   override var description: String {

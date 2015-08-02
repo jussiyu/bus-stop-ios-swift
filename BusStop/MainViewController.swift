@@ -848,6 +848,7 @@ extension MainViewController: UITableViewDelegate {
   private func expandStopTableView() {
     if let selectedVehicleIndex = selectedVehicleIndex,
         selectedVehicleHeaderView = vehicleScrollView.viewAtIndex(selectedVehicleIndex) as? VehicleHeaderView {
+
       expandStopTableViewByOffset(selectedVehicleHeaderView.bounds.height +
         selectedVehicleHeaderView.layoutMargins.bottom)
       stopTableView.layoutIfNeeded()
@@ -858,25 +859,12 @@ extension MainViewController: UITableViewDelegate {
     
     if let selectedVehicleIndex = selectedVehicleIndex,
         selectedVehicleHeaderView = vehicleScrollView.viewAtIndex(selectedVehicleIndex) as? VehicleHeaderView {
-      // shink and hide not needed info
-      selectedVehicleHeaderView.fadeOutByOffset(offset)
-      
-      // Move adjacent headers to side and him them
-      for viewIndex in 0..<vehicleScrollView.viewCount {
-        if let view = vehicleScrollView.viewAtIndex(viewIndex) {
-          if viewIndex != selectedVehicleIndex {
-            view.alpha = 1 - offset / 10
-            view.transform = CGAffineTransformMakeTranslation(viewIndex > selectedVehicleIndex ? offset : -offset, 0)
-          } else {
-            view.alpha = 1
-            view.transform = CGAffineTransformIdentity
-          }
-        }
-      }
-      
+
+      // Make horizontal scroller smaller
+      vehicleScrollView.shrinkViewByOffset(offset)
+          
       // scroll table view up to match current header view bottom
       vehicleScrollViewBottomConstraint.constant = -min(offset, selectedVehicleHeaderView.bounds.height +  selectedVehicleHeaderView.layoutMargins.bottom) + selectedVehicleHeaderView.layoutMargins.bottom
-      
     }
   }
   

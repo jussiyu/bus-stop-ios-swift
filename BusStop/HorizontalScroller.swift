@@ -23,6 +23,10 @@ import XCGLogger
   optional func horizontalScrollerTapped(horizontalScroller: HorizontalScroller, numberOfTaps: Int)
 }
 
+protocol FadeableUIView {
+  func fadeOutByOffset(offset: CGFloat)
+}
+
 class HorizontalScroller: UIView {
   
   weak var delegate: HorizontalScrollerDelegate?
@@ -33,6 +37,17 @@ class HorizontalScroller: UIView {
   
   private var singleTapRecognizer: UITapGestureRecognizer?
   private var multiTapRecognizer: UITapGestureRecognizer?
+  
+  private let noncurrentViewAlpha: CGFloat = 0.5
+  
+  var currentViewIndex: Int? {
+    if let scrollViewPageWidth = scrollerSubviews.first?.bounds.width where scrollViewPageWidth > 0 {
+      let page = Double((scroller.contentOffset.x + scrollViewPageWidth / 2) / scrollViewPageWidth)
+      return max(page.toInt() - 1, 0)
+    } else { // no subviews
+      return nil
+    }
+  }
   
   var touchEnabled: Bool {
     get {return scroller.scrollEnabled}
@@ -128,6 +143,13 @@ class HorizontalScroller: UIView {
           left.identifier = HorizontalScroller.subviewConstraintSidePadding
           scroller.addConstraint(left)
         }
+
+        if index == currentViewIndex ?? 0 {
+          subview.alpha = 1
+        } else {
+          subview.alpha = self.noncurrentViewAlpha
+        }
+
         scrollerSubviews.append(subview)
       }
       
@@ -153,7 +175,7 @@ class HorizontalScroller: UIView {
       if let initialViewIndex = delegate.initialViewIndex?(self) {
         scrollToViewWithIndex(initialViewIndex)
       }
-      
+
       // force intrisic size calculation now that all subviews have been created
       invalidateIntrinsicContentSize()
       
@@ -181,6 +203,27 @@ class HorizontalScroller: UIView {
     return CGSize(width: UIViewNoIntrinsicMetric, height: scrollerSubviews.first?.bounds.height ?? UIViewNoIntrinsicMetric)
   }
   
+  
+  func shrinkViewByOffset(offset: CGFloat) {
+    
+    if let currentViewIndex = currentViewIndex, currentView = viewAtIndex(currentViewIndex) as? FadeableUIView {
+        // shink and hide not needed info
+        currentView.fadeOutByOffset(offset)
+        
+        // Move adjacent headers to side and him them
+        for viewIndex in 0..<scrollerSubviews.count {
+          if let view = viewAtIndex(viewIndex) {
+            if viewIndex != currentViewIndex {
+              view.alpha = noncurrentViewAlpha - offset / 10
+              view.transform = CGAffineTransformMakeTranslation(viewIndex > currentViewIndex ? offset : -offset, 0)
+            } else {
+              view.alpha = 1
+              view.transform = CGAffineTransformIdentity
+            }
+          }
+        }
+    }
+  }
 }
 
 //             ----- -----
@@ -189,14 +232,18 @@ class HorizontalScroller: UIView {
 extension HorizontalScroller: UIScrollViewDelegate {
 
   private func scrollViewDidSomehowEndScrolling(scrollView: UIScrollView) {
-    // Calculate the currently centered subview and notify the delegate
-    if let scrollViewPageWidth = scrollerSubviews.first?.bounds.width {
-      let page = Double((scrollView.contentOffset.x + scrollViewPageWidth / 2) / scrollViewPageWidth)
-      let scrollViewPage = max(page.toInt() - 1, 0)
-      delegate?.horizontalScroller?(self, didScrollToViewAtIndex: scrollViewPage)
+    for (index, view) in enumerate(scrollerSubviews) {
+      if index == currentViewIndex {
+        UIView.animateWithDuration(0.2) {view.alpha = 1}
+      } else {
+        UIView.animateWithDuration(0.2) {view.alpha = self.noncurrentViewAlpha}
+      }
     }
-
+    if let currentViewIndex = currentViewIndex {
+      delegate?.horizontalScroller?(self, didScrollToViewAtIndex: currentViewIndex)
+    }
   }
+
   func scrollViewDidEndScrollingAnimation(scrollView: UIScrollView) {
     scrollViewDidSomehowEndScrolling(scrollView)
   }
@@ -208,7 +255,7 @@ extension HorizontalScroller: UIScrollViewDelegate {
   // paging for scrollview
   func scrollViewWillEndDragging(scrollView: UIScrollView, withVelocity velocity: CGPoint, targetContentOffset: UnsafeMutablePointer<CGPoint>) {
     
-    if let scrollViewPageWidth = scrollerSubviews.first?.bounds.width {
+    if let scrollViewPageWidth = scrollerSubviews.first?.bounds.width where scrollViewPageWidth > 0 {
       var currentOffset = CGFloat(scrollView.contentOffset.x)
       var targetOffset = CGFloat(targetContentOffset.memory.x)
       
@@ -237,6 +284,9 @@ extension HorizontalScroller: UIScrollViewDelegate {
     delegate?.horizontalScrollerWillBeginDragging?(self)
   }
   
+  func scrollViewDidScroll(scrollView: UIScrollView) {
+  }
+  
 }
 
 // MARK: - selector handler
@@ -248,5 +298,4 @@ extension HorizontalScroller {
     }
   }
 }
-// handling code
 

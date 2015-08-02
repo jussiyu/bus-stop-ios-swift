@@ -99,6 +99,7 @@ extension Double {
   }
 
   func toInt(rounded: Bool = true) -> Int {
+    
     return rounded ? Int(round(self)) : Int(self)
   }
 }
