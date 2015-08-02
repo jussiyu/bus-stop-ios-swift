@@ -55,7 +55,7 @@
 		</dict>
 	</dict>
 
-  <key>Arriving your stop in about %d minutes(s)</key>
+  <key>Arriving at your stop in about %d minutes(s)</key>
   <dict>
     <key>NSStringLocalizedFormatKey</key>
     <string>%#@minutes@</string>
@@ -66,11 +66,11 @@
       <key>NSStringFormatValueTypeKey</key>
       <string>d</string>
       <key>zero</key>
-      <string>Arriving your stop in less than a minute.</string>
+      <string>Arriving at your stop in less than a minute.</string>
       <key>one</key>
-      <string>Arriving your stop in about one minute.</string>
+      <string>Arriving at your stop in about one minute.</string>
       <key>other</key>
-      <string>Arriving your stop in about %d minutes.</string>
+      <string>Arriving at your stop in %d minutes.</string>
     </dict>
   </dict>
  

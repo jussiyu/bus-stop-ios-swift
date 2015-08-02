@@ -569,7 +569,8 @@ class MainViewController: UIViewController {
   
   func stopForRow(row: Int) -> Stop? {
     if let selectedVehicle = selectedVehicle where selectedVehicle.stops.count > row {
-      if let stop = stops[selectedVehicle.stops[row].id] {
+      let vehicleActivityStop = selectedVehicle.stops[row]
+      if let stop = stops[vehicleActivityStop.id] {
         return stop
       } else {
         log.warning("Stop for row \(row) does exist in the stop list")
@@ -688,11 +689,72 @@ extension MainViewController: UITableViewDataSource {
   
   func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
     
-    if selectedStop == nil {
+    if let selectedStop = selectedStop, selectedVehicle = selectedVehicle {
+      
+      // selected cell
+      let cell = tableView.dequeueReusableCellWithIdentifier(selectedCellIdentifier, forIndexPath:indexPath) as! SelectedStopTableViewCell
+      
+      // Return the currently selected stop
+      let style = NSParagraphStyle.defaultParagraphStyle().mutableCopy() as! NSMutableParagraphStyle
+      style.hyphenationFactor = 1.0
+      style.alignment = .Center
+      
+      let string = NSAttributedString(string: "\(selectedStop.name)\n(\(selectedStop.id))", attributes: [NSParagraphStyleAttributeName:style])
+      cell.stopNameLabel.attributedText = string
+      let stopNameLabelFont = UIFont(descriptor: UIFontDescriptor.preferredDescriptorWithStyle(UIFontTextStyleHeadline, oversizedBy: 16), size: 0)
+      cell.stopNameLabel.font = stopNameLabelFont
+      
+
+      if let selectedStopIndex = selectedVehicle.stopIndexById(selectedStop.id) {
+        var stopDistance: String?
+        if let userLocationInVehicle = selectedVehicle.location {
+            stopDistance = selectedStop.distanceFromUserLocation(userLocationInVehicle)
+        }
+        var distanceHintText = String(format: NSLocalizedString("%d stop(s) before your stop", comment: ""), selectedStopIndex)
+        
+        if selectedStopIndex < selectedVehicle.stops.count {
+          let stop = selectedVehicle.stops[selectedStopIndex]
+          let minutesUntilSelectedStop = Int(floor(stop.expectedArrivalTime.timeIntervalSinceNow / 60))
+          var timeHintText: String?
+          if minutesUntilSelectedStop >= 0 {
+            timeHintText = String(format: NSLocalizedString(
+                "Arriving at your stop in about %d minutes(s)", comment: ""), minutesUntilSelectedStop)
+          } else {
+            timeHintText = String(format: NSLocalizedString(
+                "Arriving at your stop very soon!", comment: ""), minutesUntilSelectedStop)
+          }
+          distanceHintText += "\n\(timeHintText!)"
+        }
+        
+        cell.distanceHintLabel.text = distanceHintText.stringByReplacingOccurrencesOfString(
+            "\\n", withString: "\n", options: nil)
+      } else {
+        cell.distanceHintLabel.text = autoUnexpandTaskQueueProgress ?? ""
+      }
+
+      // Delay message
+      let delayMinutes = Int(round(abs(selectedVehicle.delay / 60)))
+      let delaySeconds = Int(round(abs(selectedVehicle.delay % 60)))
+      if selectedVehicle.delay > 0 {
+        cell.delayLabel.text = String( format: NSLocalizedString("Behind schedule\nby %d min %d s", comment: ""), delayMinutes, delaySeconds)
+      } else if selectedVehicle.delay < 0 {
+        cell.delayLabel.text = String( format: NSLocalizedString("Ahead of schedule\nby %d min %d s", comment: ""), delayMinutes, delaySeconds)
+      } else {
+        cell.delayLabel.text = ""
+      }
+    
+      // Close button
+      cell.closeButton.setTitle(NSLocalizedString("Stop tracking", comment: ""), forState: .Normal)
+      cell.closeButton.removeTarget(nil, action: nil, forControlEvents: .TouchUpInside)
+      cell.closeButton.addTarget(self, action: "selectedStopCloseButtonPressed:", forControlEvents: .TouchUpInside)
+    
+      return cell
+
+    } else {  // selectedStop == nil
+      
       let cell = tableView.dequeueReusableCellWithIdentifier(defaultCellIdentifier, forIndexPath:indexPath) as! UITableViewCell
       
       if let selectedVehicle = selectedVehicle {
-        
         let rowToBeReturned = indexPath.row
         
         if let stop = stopForRow(rowToBeReturned) {
@@ -706,63 +768,6 @@ extension MainViewController: UITableViewDataSource {
         log.warning("Not vehicle selected")
       }
       
-      return cell
-      
-    } else { // selectedStop != nil
-      
-      // selected cell
-      let cell = tableView.dequeueReusableCellWithIdentifier(selectedCellIdentifier, forIndexPath:indexPath) as! SelectedStopTableViewCell
-      
-      // Return the currently selected stop
-      let style = NSParagraphStyle.defaultParagraphStyle().mutableCopy() as! NSMutableParagraphStyle
-      style.hyphenationFactor = 1.0
-      style.alignment = .Center
-      
-      let string = NSAttributedString(string: "\(selectedStop!.name)\n(\(selectedStop!.id))", attributes: [NSParagraphStyleAttributeName:style])
-      cell.stopNameLabel.attributedText = string
-      let stopNameLabelFont = UIFont(descriptor: UIFontDescriptor.preferredDescriptorWithStyle(UIFontTextStyleHeadline, oversizedBy: 16), size: 0)
-      cell.stopNameLabel.font = stopNameLabelFont
-      
-
-      if let selectedStopIndex = selectedVehicle?.stopIndexById(selectedStop!.id) {
-        var stopDistance: String?
-        if let userLocationInVehicle = selectedVehicle?.location {
-          stopDistance = selectedStop!.distanceFromUserLocation(userLocationInVehicle)
-        }
-        var distanceHintText = String(format: NSLocalizedString("%d stop(s) before your stop", comment: ""), selectedStopIndex)
-        
-        if let stop = selectedVehicle?.stops[selectedStopIndex] {
-          let minutesUntilSelectedStop = Int(floor(stop.expectedArrivalTime.timeIntervalSinceNow / 60))
-          var timeHintText: String?
-          if minutesUntilSelectedStop >= 0 {
-            timeHintText = String(format: NSLocalizedString("Arriving your stop in about %d minutes(s)", comment: ""), minutesUntilSelectedStop)
-          } else {
-            timeHintText = String(format: NSLocalizedString("Arriving your stop very soon!", comment: ""), minutesUntilSelectedStop)
-          }
-          distanceHintText += "\n\(timeHintText!)"
-        }
-        
-//      if let ref = selectedStop!.ref {
-//        if let stopsBeforeSelectedStop = selectedVehicle?.stopIndexByRef(ref) {
-//          var stopDistance: String?
-//          if let userLocationInVehicle = selectedVehicle?.location {
-//            stopDistance = selectedStop!.distanceFromUserLocation(userLocationInVehicle)
-//          }
-//          var distanceHintText = String(format: NSLocalizedString("%d stop(s) before your stop", comment: ""), stopsBeforeSelectedStop)
-//          if let stopDistance = stopDistance {
-//            distanceHintText += "\nYour stop is about \(stopDistance)"
-//          }
-
-        cell.distanceHintLabel.text = distanceHintText.stringByReplacingOccurrencesOfString("\\n", withString: "\n", options: nil)
-      } else {
-        cell.distanceHintLabel.text = autoUnexpandTaskQueueProgress ?? ""
-      }
-      
-      // Close button
-      cell.closeButton.setTitle(NSLocalizedString("Stop tracking", comment: ""), forState: .Normal)
-      cell.closeButton.removeTarget(nil, action: nil, forControlEvents: .TouchUpInside)
-      cell.closeButton.addTarget(self, action: "selectedStopCloseButtonPressed:", forControlEvents: .TouchUpInside)
-    
       return cell
     }
   }

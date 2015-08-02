@@ -11,4 +11,4 @@
 "No busses near you" = "No busses near you";
 "Line %@" = "Line %@";
 "%d stop(s) before your stop" = "%d stops before your stop";
-"Arriving your stop in about %d minutes(s)" = "Arriving your stop in about %d minutes(s)";
+"Arriving at your stop in about %d minutes(s)" = "Arriving at your stop in about %d minutes(s)";

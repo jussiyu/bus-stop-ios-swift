@@ -57,7 +57,7 @@
     </dict>
   </dict>
 
-  <key>Arriving your stop in about %d minutes(s)</key>
+  <key>Arriving at your stop in about %d minutes(s)</key>
   <dict>
     <key>NSStringLocalizedFormatKey</key>
     <string>%#@minutes@</string>

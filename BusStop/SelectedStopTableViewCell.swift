@@ -13,8 +13,9 @@ class SelectedStopTableViewCell: UITableViewCell {
   @IBOutlet weak var stopNameLabel: UILabel!
   @IBOutlet weak var distanceHintLabel: UILabel!
   @IBOutlet weak var closeButton: UIButton!
+  @IBOutlet weak var delayLabel: UILabel!
   
-    override func awakeFromNib() {
+  override func awakeFromNib() {
         super.awakeFromNib()
         // Initialization code
     }

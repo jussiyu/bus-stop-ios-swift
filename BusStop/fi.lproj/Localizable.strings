@@ -11,4 +11,4 @@
 "No busses near you" = "Ei bussejä lähellä";
 "Line %@" = "Line %@";
 "%d stop(s) before your stop" = "%d pysäkkiä ennen sinun pysäkkiäsi";
-"Arriving your stop in about %d minutes(s)" = "Saavumme pysäkillesi noin %d minuutin kuluttua";
+"Arriving at your stop in about %d minutes(s)" = "Saavumme pysäkillesi noin %d minuutin kuluttua";
