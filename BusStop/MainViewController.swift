@@ -43,6 +43,16 @@ class MainViewController: UIViewController {
   var userNotifiedForSelectedStop = false
   var autoRefresh:Bool = false
   var autoRefreshTimer: NSTimer?
+  let autoRefreshIntervalMax = 10.0
+  let autoRefreshIntervalMin = 1.0
+  var autoRefreshInterval: Double {
+    // adjust refresh interval based on how close user is to the selected stop
+    if let selectedStop = selectedStop, selectedStopIndex = selectedVehicle?.stopIndexById(selectedStop.id) {
+      return cap(2.0 * Double(selectedStopIndex), min: autoRefreshIntervalMin, max: autoRefreshIntervalMax)
+    } else {
+      return autoRefreshIntervalMax
+    }
+  }
   
   var stopTableViewHeader: UILabel?
   
@@ -531,20 +541,32 @@ class MainViewController: UIViewController {
   private func initAutoRefreshTimer(andFire: Bool = false) {
     (autoRefreshSwitch.customView as! UISwitch).on = autoRefresh
     
-    autoRefreshTimer?.invalidate()
-    if autoRefresh {
-      autoRefreshTimer = NSTimer.scheduledTimerWithTimeInterval(10, target: self, selector: "timedRefreshRequested:", userInfo: nil, repeats: true)
-      if andFire {autoRefreshTimer?.fire()}
-      autoRefreshTimer?.tolerance = 2
-      log.debug("Refresh enabled")
-    } else {
-      log.debug("Refresh disabled")
+    Async.main {
+      // Use main thread to ensure that invalidate functions correctly
+      self.autoRefreshTimer?.invalidate()
+      
+      if self.autoRefresh {
+        
+        self.autoRefreshTimer = NSTimer.scheduledTimerWithTimeInterval(
+            self.autoRefreshInterval, target: self, selector: "timedRefreshRequested:", userInfo: nil, repeats: false)
+        self.autoRefreshTimer?.tolerance = 2
+        if andFire {
+          self.autoRefreshTimer?.fire()
+        }
+        log.debug("Autorefresh initialized with \(self.autoRefreshInterval) inteval")
+        
+      } else {
+        log.debug("Autorefresh disabled")
+      }
     }
   }
 
   func timedRefreshRequested(timer: NSTimer) {
     Async.main {self.progressViewManager.showProgress() }
-    refreshStopsForSelectedVehicle(queue: nil) { _ in Async.main {self.progressViewManager.hideProgress()} }
+    refreshStopsForSelectedVehicle(queue: nil) {_ in
+      Async.main {self.progressViewManager.hideProgress()}
+      self.initAutoRefreshTimer(andFire: false)
+    }
   }
   
   func extendProgressLabelTextWith(text: String) {

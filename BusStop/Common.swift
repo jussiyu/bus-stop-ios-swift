@@ -12,6 +12,10 @@ import XCGLogger
 import CoreLocation
 import TaskQueue
 
+func cap<T : Comparable>(value: T, min minimum: T, max maximum: T) -> T {
+  return max( min(maximum, value), minimum)
+}
+
 extension String {
   static var localeNumberFormatter: NSNumberFormatter = {
     let f = NSNumberFormatter()
