@@ -917,7 +917,7 @@ extension MainViewController: UITableViewDelegate {
     // perform the correct update operation
     stopTableView.beginUpdates()
     if let header = stopTableViewHeader {
-      header.text = NSLocalizedString("Stop selected", comment: "")
+      header.text = NSLocalizedString("Now tracking your stop", comment: "")
     }
     stopTableView.deleteRowsAtIndexPaths(indexPathsOnAbove, withRowAnimation: .Fade)
     stopTableView.deleteRowsAtIndexPaths(indexPathsOnBelow, withRowAnimation: .Fade)
@@ -971,7 +971,7 @@ extension MainViewController: UITableViewDelegate {
     stopTableView.beginUpdates()
 
     if let header = stopTableViewHeader {
-      header.text = NSLocalizedString("Select your stop", comment: "")
+      header.text = NSLocalizedString("Choose your stop", comment: "")
     }
 
     // decide what to do with the current row (on row #0)
