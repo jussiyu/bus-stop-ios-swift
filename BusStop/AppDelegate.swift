@@ -11,6 +11,7 @@ import UIKit
 import CoreLocation
 import ReachabilitySwift
 import XCGLogger
+import Async
 
 let log = XCGLogger.defaultInstance()
 
@@ -18,10 +19,15 @@ let log = XCGLogger.defaultInstance()
 class AppDelegate: UIResponder, UIApplicationDelegate {
 
   var window: UIWindow?
-  var locationManager: CLLocationManager?
 
+  var locationManager: CLLocationManager?
+  var locationUpdateTimer: Async?
+  var locationUpdateStartTime: NSDate?
   static let newLocationNotificationName = "newLocationNotification"
   static let newLocationResult = "newLocationResult"
+  let locationUpdateDurationSeconds = 5.0
+  var locations: [CLLocation] = []
+  
   func application(application: UIApplication, didFinishLaunchingWithOptions launchOptions: [NSObject: AnyObject]?) -> Bool {
     
     // Logger configuration
@@ -122,40 +128,102 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
   }
 
   // Initialize location manager
-  func initializeLocationWithAuthorizationStatus(status: CLAuthorizationStatus, significantChangesOnly: Bool = false) {
+  func initializeLocationWithAuthorizationStatus(status: CLAuthorizationStatus) {
 
-    if status == .AuthorizedAlways || status == .AuthorizedWhenInUse {
+    if status == .AuthorizedWhenInUse {
       
       locationManager = locationManager ?? CLLocationManager()
       if let lm = locationManager {
         lm.delegate = self
-        lm.desiredAccuracy = kCLLocationAccuracyBest
+        lm.desiredAccuracy = kCLLocationAccuracyNearestTenMeters
         lm.activityType = CLActivityType.Other
-        lm.distanceFilter = 100 // meters
+//        lm.distanceFilter = 100 // meters
         
-        if CLLocationManager.locationServicesEnabled() {
-          if significantChangesOnly {
-            lm.startMonitoringSignificantLocationChanges()
-          } else {
-            lm.startUpdatingLocation()
-          }
-          log.debug("started location monitoring")
-        } else {
-            locationServiceDisabledAlert()
-        }
+        startUpdatingLocationForWhile()
       }
 
     } else {
       // User disapproved location updates so make sure that we no more use it
       locationManager?.stopUpdatingLocation()
       locationManager?.stopMonitoringSignificantLocationChanges()
-      log.error("Location service not allowed")
+      log.error("Location service not authorized by the user")
       locationServiceDisabledAlert(authorizationStatus: status)
     }
 
   }
+  
+  func startUpdatingLocation() {
+    locationManager?.startUpdatingLocation()
+  }
+  
+  
+  func startUpdatingLocationForWhile() {
+    log.verbose("")
+    if locationUpdateTimer != nil {
+      log.debug("Already monitoring. Ignoring.")
+      return
+    }
+    
+    if CLLocationManager.locationServicesEnabled() &&
+      CLLocationManager.authorizationStatus() == CLAuthorizationStatus.AuthorizedWhenInUse {
+        locations = []
+        locationManager?.startUpdatingLocation()
+        log.debug("started location monitoring")
+        locationUpdateStartTime = NSDate()
+        locationUpdateTimer = Async.background(after: locationUpdateDurationSeconds, block: handleReceivedLocations)
+    } else {
+      locationServiceDisabledAlert()
+    }
+  }
+  
+  func stopUpdatingLocation(handleReceivedLocations handle: Bool) {
+    log.verbose("")
+    locationManager?.stopUpdatingLocation()
+    locationUpdateTimer?.cancel()
+    if locationUpdateTimer != nil && handle {
+      handleReceivedLocations()
+    }
+  }
+
+  
+  
+  private func handleReceivedLocations() {
+    if locationUpdateTimer == nil {
+      // Handle locations only once
+      return
+    } else {
+      locationUpdateTimer = nil
+    }
+
+    let monitoringDuration = abs(locationUpdateStartTime?.timeIntervalSinceNow ?? 0)
+    log.debug("Location monitoring stopped after \(monitoringDuration) seconds and \(self.locations.count) locations")
+    locationManager?.stopUpdatingLocation()
+    let initialLocation = CLLocation()
+    var bestLocation: CLLocation? =
+    locations.reduce(nil as CLLocation?) { (best, candidate) in
+      if best == nil {
+        // ignore initial
+        return candidate
+      } else if candidate.horizontalAccuracy > 0 && candidate.horizontalAccuracy <= best?.horizontalAccuracy {
+        // ignore zero accuracy, prefer more exact and later locations
+        return candidate
+      } else {
+        return best
+      }
+    }
+    if let bestLocation = bestLocation where bestLocation.horizontalAccuracy > 0 {
+      NSNotificationCenter.defaultCenter().postNotificationName(AppDelegate.newLocationNotificationName, object: self, userInfo: [AppDelegate.newLocationResult: bestLocation])
+    } else {
+      log.error("No location found")
+    }
+  }
 
   private func locationServiceDisabledAlert(authorizationStatus: CLAuthorizationStatus? = nil) {
+    if UIApplication.sharedApplication().keyWindow?.rootViewController?.presentedViewController is UIAlertController {
+      log.debug("Alert controller already visible. Skipping")
+      return
+    }
+    
     log.warning("Location services disabled" + (authorizationStatus == nil ? " on device level." : "") + " Show alert.")
 
     let errorTitle = NSLocalizedString("Turn on Location Services to Allow BusStop to Determine Your Location", comment: "")
@@ -197,8 +265,20 @@ extension AppDelegate: CLLocationManagerDelegate {
     if let latestLoc = locations.last as? CLLocation {
       if latestLoc.horizontalAccuracy > 0 && latestLoc.timestamp.timeIntervalSinceNow > -30 {
         // good enough location received
-        NSNotificationCenter.defaultCenter().postNotificationName(AppDelegate.newLocationNotificationName, object: self, userInfo: [AppDelegate.newLocationResult: locations[0]])
-//        lm?.stopUpdatingLocation()
+        
+        if locationUpdateTimer != nil {
+          
+          // Store locations in order to handle them later
+          self.locations.append(latestLoc)
+          if latestLoc.horizontalAccuracy <= 10 {
+            stopUpdatingLocation(handleReceivedLocations: true)
+          }
+          
+        } else {
+          
+          // handle location immediately
+          NSNotificationCenter.defaultCenter().postNotificationName(AppDelegate.newLocationNotificationName, object: self, userInfo: [AppDelegate.newLocationResult: latestLoc])
+        }
       }
     }
   }

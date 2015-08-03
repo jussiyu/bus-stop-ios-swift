@@ -135,7 +135,7 @@ class VehicleActivity : Equatable {
   func distanceFromUserLocation(userLocation: CLLocation) -> String {
     if let dist = location?.distanceFromLocation(userLocation) {
       if dist < 1000 {
-        return NSString.localizedStringWithFormat(NSLocalizedString("%d meter(s) from your location", comment: "distance in meters"), lround(dist)) as String
+        return NSString.localizedStringWithFormat(NSLocalizedString("%d meter(s) from your location", comment: "distance in meters"), lround(dist), userLocation.horizontalAccuracy.toInt()) as String
       } else {
         return NSString.localizedStringWithFormat(NSLocalizedString("%d km(s) from your location", comment: "distance in km"), dist/1000) as String
       }

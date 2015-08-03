@@ -30,9 +30,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>one meter from your location</string>
+      <string>one meter from your location</string>
 			<key>other</key>
-			<string>%d meters\n from your location</string>
+			<string>%1$d (± %2$d) meters\nfrom your location</string>
 		</dict>
 	</dict>
 

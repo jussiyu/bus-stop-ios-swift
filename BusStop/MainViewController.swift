@@ -648,10 +648,8 @@ extension MainViewController {
     }
     
     // start location updates if user has selected a stop
-    if selectedStop != nil &&
-      CLLocationManager.locationServicesEnabled() &&
-          CLLocationManager.authorizationStatus() == CLAuthorizationStatus.AuthorizedWhenInUse {
-        appDelegate.locationManager?.startUpdatingLocation()
+    if selectedStop != nil {
+      appDelegate.startUpdatingLocation()
     }
   }
   
@@ -937,8 +935,6 @@ extension MainViewController: UITableViewDelegate {
     
     vehicleScrollView.touchEnabled = true
 
-    appDelegate.locationManager?.stopUpdatingLocation()
-
     stopTableView.deselectRowAtIndexPath(NSIndexPath(forRow: 0, inSection: 0), animated: true)
     // the tapped (and only) row was already selected => add other rows back
     
@@ -1045,10 +1041,6 @@ extension MainViewController {
         extendProgressLabelTextWith(NSLocalizedString("Location acquired.", comment: ""))
       } else {
         log.info("Existing or worse user loc notified. Ignored.")
-      }
-    
-      if UIApplication.sharedApplication().applicationState != .Background {
-        appDelegate.locationManager?.stopUpdatingLocation()
       }
     }
   }
@@ -1160,10 +1152,8 @@ extension MainViewController: HorizontalScrollerDelegate {
     stopTableView.scrollToTop(animated: true)
     resetVehicleScrollView()
 
-    if selectedStop != nil &&
-      CLLocationManager.locationServicesEnabled() &&
-      CLLocationManager.authorizationStatus() == CLAuthorizationStatus.AuthorizedWhenInUse {
-        appDelegate.locationManager?.startUpdatingLocation()
+    if selectedStop != nil {
+        appDelegate.startUpdatingLocationForWhile()
     }
     refreshAll()
   }
