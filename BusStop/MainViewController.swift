@@ -48,7 +48,7 @@ class MainViewController: UIViewController {
   var autoRefreshInterval: Double {
     // adjust refresh interval based on how close user is to the selected stop
     if let selectedStop = selectedStop, selectedStopIndex = selectedVehicle?.stopIndexById(selectedStop.id) {
-      return cap(2.0 * Double(selectedStopIndex), min: autoRefreshIntervalMin, max: autoRefreshIntervalMax)
+      return cap(pow(Double(selectedStopIndex), 3), min: autoRefreshIntervalMin, max: autoRefreshIntervalMax)
     } else {
       return autoRefreshIntervalMax
     }
