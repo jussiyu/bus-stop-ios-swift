@@ -2,7 +2,7 @@ PODS:
   - Async (1.3.1)
   - MediumProgressView (1.0.6)
   - ReachabilitySwift (1.1)
-  - SwiftyJSON (2.2.0)
+  - SwiftyJSON (2.2.1)
   - TaskQueue (0.9.7)
   - XCGLogger (2.1.1)
 
@@ -28,17 +28,17 @@ CHECKOUT OPTIONS:
     :commit: 9e64046b767fe11010891f5b7fe2aed613a6ee55
     :git: https://github.com/duemunk/Async.git
   MediumProgressView:
-    :commit: 90355f260172301fa2e6caf55760896794da6d5c
+    :commit: 4816e3ab9434a8abcacb17299b40aa844603e295
     :git: file:///Users/jussi/dev/iOS/mediumprogressview/
   TaskQueue:
-    :commit: 56994a32d6d7945fb86d297e0a2076abb84409c7
+    :commit: 9f5657d383860e475b68730112a808b52e609717
     :git: file:///Users/jussi/dev/iOS/TaskQueue
 
 SPEC CHECKSUMS:
   Async: edb15b1e34181d7c9873ce6b5d6eabc1c99e638b
   MediumProgressView: 96911061f6f1843ca7512fd4a7950c6c5d1dc543
   ReachabilitySwift: 1e53abddb01111deac0d229dabdb8bb043567b18
-  SwiftyJSON: 0b3e6c07af17ff745e77e8e9984097b55c956e5c
+  SwiftyJSON: ae2d0a3d68025d136602a33c4ee215091ced3e33
   TaskQueue: cc6c56e2868b8eeff36d012b5bb8c739651c4042
   XCGLogger: 8df921bcf88abbd511b887c8febde8163d624d81
 

@@ -49,7 +49,13 @@ public class MediumProgressViewManager {
   }
   
   public func hideProgress() {
+    progressView?.stopAnimationAndRemove()
+    progressView = nil
+  }
+  
+  public func hideProgressImmediately() {
     progressView?.removeFromSuperview()
+    progressView = nil
   }
   
   // MARK: Helpers
@@ -57,7 +63,7 @@ public class MediumProgressViewManager {
   private func initializeProgressViewWithFrame(aFrame: CGRect) -> MediumProgressView {
     let aWidth = aFrame.size.width
     let aHeight = aFrame.size.height
-    var frame = CGRectMake(0, 0, aWidth, height!)
+    var frame = CGRectMake(-aWidth, 0, aWidth, height!)
     if position == .Bottom {
       frame = CGRectMake(0, aHeight - height!, aWidth, height!)
     }
