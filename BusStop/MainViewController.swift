@@ -73,48 +73,23 @@ class MainViewController: UIViewController {
     didSet {
       if selectedVehicle == nil {
         self.selectedVehicle = closestVehicles.first
+        self.vehicleScrollView.scrollToViewWithIndex(0, animated: true)
         log.info("Selected vehicle reset to first")
-        
-      } else if find(closestVehicles, selectedVehicle!) == nil {
-        log.info("Selected vehicle not found anymore so reseting it to the first")
-        
-        if selectedStop != nil {
-          // Unexpand the selected stop
-
-          log.debug("Unexpaning the selectected of a lost vehicle \(self.selectedVehicle!.vehicleRef)")
-          Async.main {
-            var title = NSLocalizedString("Lost your bus.", comment:"")
-            var message = NSLocalizedString("Your bus not nearby you anymore. Stopped tracking your stop.", comment:"")
-            let alert = UIAlertController(title: title, message: message, preferredStyle: UIAlertControllerStyle.Alert)
-            alert.addAction(UIAlertAction(title: NSLocalizedString("OK", comment: "Alert OK"), style: UIAlertActionStyle.Default, handler: nil))
-            self.presentViewController(alert, animated: true, completion: {
-                self.unexpandSelectedStop()
-            })
-          }
-        }
-        
-        self.selectedVehicle = closestVehicles.first
+        return
       }
       
-      // scroll to new index if user has a stop selected
-      if let selectedVehicleIndex = selectedVehicleIndex {
-        vehicleScrollView.scrollToViewWithIndex(selectedVehicleIndex, animated: true)
-        if let selectedStop = selectedStop {
-          if let selectedStopRow = rowForStop(selectedStop) {
-//            unexpandSelectedStop()
-//            expandStopAtIndexPath(NSIndexPath(forRow: selectedStopRow, inSection: 0))
-          } else {
-            log.debug("Unexpaning the lost stop \(selectedStop.id)")
-            Async.main {
-              var title = NSLocalizedString("Lost your stop.", comment:"")
-              var message = NSLocalizedString("Your stop was already passed. Stopped tracking your stop.", comment:"")
-              let alert = UIAlertController(title: title, message: message, preferredStyle: UIAlertControllerStyle.Alert)
-              alert.addAction(UIAlertAction(title: NSLocalizedString("OK", comment: "Alert OK"), style: UIAlertActionStyle.Default, handler: nil))
-              self.presentViewController(alert, animated: true, completion: {
-                self.unexpandSelectedStop()
-              })
-            }
-          }
+      if selectedStop != nil && find(closestVehicles, selectedVehicle!) == nil {
+        log.info("Unexpaning the lost selected stop \(self.selectedStop?.id)")
+        Async.main {
+          var title = NSLocalizedString("Lost your stop.", comment:"")
+          var message = NSLocalizedString("Your stop was already passed. Stopped tracking your stop.", comment:"")
+          let alert = UIAlertController(title: title, message: message, preferredStyle: UIAlertControllerStyle.Alert)
+          alert.addAction(UIAlertAction(title: NSLocalizedString("OK", comment: "Alert OK"), style: UIAlertActionStyle.Default, handler: nil))
+          self.presentViewController(alert, animated: true, completion: {
+            self.unexpandSelectedStop()
+            self.selectedVehicle = self.closestVehicles.first
+            self.vehicleScrollView.scrollToViewWithIndex(0, animated: true)
+          })
         }
       }
     }
@@ -642,9 +617,9 @@ class MainViewController: UIViewController {
       UIApplication.sharedApplication().cancelAllLocalNotifications()
       let localNotification = UILocalNotification()
       localNotification.fireDate = nil
-//      localNotification.soundName = "\(stopSoundFileName).\(stopSoundFileExt)"
-//      localNotification.alertBody = NSLocalizedString("\(selectedStop!.name) is the next one!", comment: "")
-//      localNotification.alertAction = NSLocalizedString("Action", comment:"")
+      localNotification.soundName = "\(stopSoundFileName).\(stopSoundFileExt)"
+      localNotification.alertBody = NSLocalizedString("\(selectedStop!.name) is the next one!", comment: "")
+      localNotification.alertAction = NSLocalizedString("Action", comment:"")
       localNotification.repeatInterval = nil
       UIApplication.sharedApplication().scheduleLocalNotification(localNotification)
     }
