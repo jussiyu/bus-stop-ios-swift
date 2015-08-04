@@ -199,11 +199,8 @@ extension CLLocation {
 
 extension UITableView {
   func scrollToTop(#animated: Bool) {
-    if (numberOfSections() > 0 ) {
-      
-      var top = NSIndexPath(forRow: Foundation.NSNotFound, inSection: 0);
-      scrollToRowAtIndexPath(top, atScrollPosition: UITableViewScrollPosition.Top, animated: animated);
-    }
+    // This is trigger didscroll messages
+    self.setContentOffset(CGPoint(x: 0,y: 0), animated: true)
   }
 }
 

@@ -13,6 +13,7 @@ import XCGLogger
   
   // data functions
   func numberOfItemsInHorizontalScroller(horizontalScroller: HorizontalScroller) -> Int
+  func horizontalScroller(horizontalScroller: HorizontalScroller, existingViewAtIndexPath indexPath: Int) -> UIView?
   func horizontalScroller(horizontalScroller: HorizontalScroller, viewAtIndexPath indexPath: Int) -> UIView
   func horizontalScrollerNoDataView(horizontalScroller: HorizontalScroller) -> UIView
 
@@ -32,8 +33,8 @@ class HorizontalScroller: UIView {
   weak var delegate: HorizontalScrollerDelegate?
   
   private var scroller: UIScrollView!
-  private var scrollerSubviews = [UIView]()
-  private var reusableSubviews = [UIView]()
+  private var scrollerSubviews = [Int:UIView]()
+  private var reusableSubviews = [Int:UIView]()
   
   private var singleTapRecognizer: UITapGestureRecognizer?
   private var multiTapRecognizer: UITapGestureRecognizer?
@@ -41,7 +42,7 @@ class HorizontalScroller: UIView {
   private let noncurrentViewAlpha: CGFloat = 0.5
   
   var currentViewIndex: Int? {
-    if let scrollViewPageWidth = scrollerSubviews.first?.bounds.width where scrollViewPageWidth > 0 {
+    if let scrollViewPageWidth = scrollerSubviews[0]?.bounds.width where scrollViewPageWidth > 0 {
       let page = Double((scroller.contentOffset.x + scrollViewPageWidth / 2) / scrollViewPageWidth)
       return max(page.toInt() - 1, 0)
     } else { // no subviews
@@ -60,8 +61,6 @@ class HorizontalScroller: UIView {
   var viewCount: Int {
     return scrollerSubviews.count
   }
-
-  static let subviewConstraintSidePadding = "subviewConstraintSidePadding"
 
   required init(coder aDecoder: NSCoder) {
     super.init(coder: aDecoder)
@@ -105,16 +104,19 @@ class HorizontalScroller: UIView {
     if scrollerSubviews.count > index {
       // center the header with index to the scroller
       let scrollViewWidth = bounds.width
-      let currentViewCenter = scrollerSubviews[index].frame.midX
-      let newOffset = currentViewCenter - scrollViewWidth / 2
-      log.debug("Scrolling to view with index \(index); from offset \(self.scroller.contentOffset) to \(newOffset)")
-      scroller.setContentOffset(CGPoint(x: CGFloat(newOffset), y: 0), animated: animated)
+      if let currentViewCenter = scrollerSubviews[index]?.frame.midX {
+        let newOffset = currentViewCenter - scrollViewWidth / 2
+        log.debug("Scrolling to view with index \(index); from offset \(self.scroller.contentOffset) to \(newOffset)")
+        scroller.setContentOffset(CGPoint(x: CGFloat(newOffset), y: 0), animated: animated)
+      }
     }
   }
   
-  func dequeueReusableView() -> UIView? {
+  func dequeueReusableView(index: Int) -> UIView? {
     if reusableSubviews.count > 0 {
-      return reusableSubviews.removeAtIndex(reusableSubviews.count - 1)
+      let view = reusableSubviews[index]
+      reusableSubviews[index] = nil
+      return view
     } else {
       return nil
     }
@@ -123,34 +125,40 @@ class HorizontalScroller: UIView {
   func reloadData() {
     if let delegate = delegate {
 
-      // move old views to reuse list 
-      while scrollerSubviews.count > 0 {
-        let view = scrollerSubviews.removeAtIndex(scrollerSubviews.count - 1)
-        reusableSubviews.append(view)
-        view.removeFromSuperview()
+      let subViewCount = delegate.numberOfItemsInHorizontalScroller(self)
+
+      // move old views to reuse list
+      for (index, view) in enumerate(scrollerSubviews) {
+        if index < subViewCount {
+          // recycle view
+          reusableSubviews[index] = scrollerSubviews[index]
+        } else {
+          // remove an extra views
+          scrollerSubviews[index]?.removeFromSuperview()
+        }
+        scrollerSubviews[index] = nil
       }
       
       // Create all the subviews
-      for index in 0..<delegate.numberOfItemsInHorizontalScroller(self) {
-        let subview = delegate.horizontalScroller(self, viewAtIndexPath: index)
-        subview.setTranslatesAutoresizingMaskIntoConstraints(false)
-        scroller.addSubview(subview)
-        scroller.addConstraint(NSLayoutConstraint(item: subview, attribute: .Top, relatedBy: .Equal, toItem: scroller, attribute: .Top, multiplier: 1.0, constant: 0))
-        if index == 0 {
-          scroller.addConstraint(NSLayoutConstraint(item: subview, attribute: .CenterX, relatedBy: .Equal, toItem: scroller, attribute: .CenterX, multiplier: 1.0, constant: 0))
+      for index in 0..<subViewCount {
+        if let subview = delegate.horizontalScroller(self, existingViewAtIndexPath: index) {
+          // An existing view on the same location so lets use it
+          scrollerSubviews[index] = subview
+          
         } else {
-          let left = NSLayoutConstraint(item: subview, attribute: .Leading, relatedBy: .Equal, toItem: scrollerSubviews.last!, attribute: .Trailing, multiplier: 1.0, constant: 0)
-          left.identifier = HorizontalScroller.subviewConstraintSidePadding
-          scroller.addConstraint(left)
+          // A new view view needs to be created with new constraints
+          let subview = delegate.horizontalScroller(self, viewAtIndexPath: index)
+          subview.setTranslatesAutoresizingMaskIntoConstraints(false)
+          scroller.addSubview(subview)
+          scroller.addConstraint(NSLayoutConstraint(item: subview, attribute: .Top, relatedBy: .Equal, toItem: scroller, attribute: .Top, multiplier: 1.0, constant: 0))
+          if index == 0 {
+            scroller.addConstraint(NSLayoutConstraint(item: subview, attribute: .CenterX, relatedBy: .Equal, toItem: scroller, attribute: .CenterX, multiplier: 1.0, constant: 0))
+          } else {
+            let left = NSLayoutConstraint(item: subview, attribute: .Leading, relatedBy: .Equal, toItem: scrollerSubviews[index - 1]!, attribute: .Trailing, multiplier: 1.0, constant: 0)
+            scroller.addConstraint(left)
+          }
+          scrollerSubviews[index] = subview
         }
-
-        if index == currentViewIndex ?? 0 {
-          subview.alpha = 1
-        } else {
-          subview.alpha = self.noncurrentViewAlpha
-        }
-
-        scrollerSubviews.append(subview)
       }
       
       // Create no-data view if no other subviews
@@ -160,16 +168,25 @@ class HorizontalScroller: UIView {
         scroller.addSubview(subview)
         scroller.addConstraint(NSLayoutConstraint(item: subview, attribute: .Top, relatedBy: .Equal, toItem: scroller, attribute: .Top, multiplier: 1.0, constant: 0))
         scroller.addConstraint(NSLayoutConstraint(item: subview, attribute: .CenterX, relatedBy: .Equal, toItem: scroller, attribute: .CenterX, multiplier: 1.0, constant: 0))
-        scrollerSubviews.append(subview)
+        scrollerSubviews[0] = subview
       }
 
       // Force layout so that we can use leading padding for calculating the trailing padding
+      shrinkViewByOffset(0)
       setNeedsLayout()
       layoutIfNeeded()
+      updateViewFade()
 
-      if scrollerSubviews.count > 0 {
-        scroller.addConstraint(NSLayoutConstraint(item: scrollerSubviews.last!, attribute: .Bottom, relatedBy: .Equal, toItem: scroller, attribute: .Bottom, multiplier: 1.0, constant: 0))
-        scroller.addConstraint(NSLayoutConstraint(item: scrollerSubviews.last!, attribute: .Trailing, relatedBy: .Equal, toItem: scroller, attribute: .Trailing, multiplier: 1.0, constant: -scrollerSubviews.first!.frame.minX))
+      // set the bottom and trailing constraints from the last subview to the super view - first remove old ones
+      let lastViewConstraintId = "last-view-to-superview"
+      scroller.removeConstraints(constraintsWithIdentifier(lastViewConstraintId))
+      if let lastSubview = scrollerSubviews[subViewCount - 1] where scrollerSubviews.count > 0 {
+        let bottom = NSLayoutConstraint(item: lastSubview, attribute: .Bottom, relatedBy: .Equal, toItem: scroller, attribute: .Bottom, multiplier: 1.0, constant: 0)
+        bottom.identifier = lastViewConstraintId
+        scroller.addConstraint(bottom)
+        let trailing = NSLayoutConstraint(item: lastSubview, attribute: .Trailing, relatedBy: .Equal, toItem: scroller, attribute: .Trailing, multiplier: 1.0, constant: -scrollerSubviews[0]!.frame.minX)
+        trailing.identifier = lastViewConstraintId
+        scroller.addConstraint(trailing)
       }
 
       if let initialViewIndex = delegate.initialViewIndex?(self) {
@@ -199,8 +216,8 @@ class HorizontalScroller: UIView {
   
   override func intrinsicContentSize() -> CGSize {
     // Calculate height based on the first subview bounds
-    log.verbose("viewArray.first?.bounds.height: \(self.scrollerSubviews.first?.bounds.height)")
-    return CGSize(width: UIViewNoIntrinsicMetric, height: scrollerSubviews.first?.bounds.height ?? UIViewNoIntrinsicMetric)
+    log.verbose("viewArray.first?.bounds.height: \(self.scrollerSubviews[0]?.bounds.height)")
+    return CGSize(width: UIViewNoIntrinsicMetric, height: scrollerSubviews[0]?.bounds.height ?? UIViewNoIntrinsicMetric)
   }
   
   
@@ -224,6 +241,16 @@ class HorizontalScroller: UIView {
         }
     }
   }
+
+  private func updateViewFade() {
+    for index in 0 ..< scrollerSubviews.count {
+      if index == currentViewIndex {
+        UIView.animateWithDuration(0.2) {scrollerSubviews[index]?.alpha = 1}
+      } else {
+        UIView.animateWithDuration(0.2) {scrollerSubviews[index]?.alpha = self.noncurrentViewAlpha}
+      }
+    }
+  }
 }
 
 //             ----- -----
@@ -232,13 +259,7 @@ class HorizontalScroller: UIView {
 extension HorizontalScroller: UIScrollViewDelegate {
 
   private func scrollViewDidSomehowEndScrolling(scrollView: UIScrollView) {
-    for (index, view) in enumerate(scrollerSubviews) {
-      if index == currentViewIndex {
-        UIView.animateWithDuration(0.2) {view.alpha = 1}
-      } else {
-        UIView.animateWithDuration(0.2) {view.alpha = self.noncurrentViewAlpha}
-      }
-    }
+    updateViewFade()
     if let currentViewIndex = currentViewIndex {
       delegate?.horizontalScroller?(self, didScrollToViewAtIndex: currentViewIndex)
     }
@@ -255,7 +276,7 @@ extension HorizontalScroller: UIScrollViewDelegate {
   // paging for scrollview
   func scrollViewWillEndDragging(scrollView: UIScrollView, withVelocity velocity: CGPoint, targetContentOffset: UnsafeMutablePointer<CGPoint>) {
     
-    if let scrollViewPageWidth = scrollerSubviews.first?.bounds.width where scrollViewPageWidth > 0 {
+    if let scrollViewPageWidth = scrollerSubviews[0]?.bounds.width where scrollViewPageWidth > 0 {
       var currentOffset = CGFloat(scrollView.contentOffset.x)
       var targetOffset = CGFloat(targetContentOffset.memory.x)
       

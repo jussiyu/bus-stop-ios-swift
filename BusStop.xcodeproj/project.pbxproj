@@ -19,6 +19,7 @@
 		4A2BB8111B4AEAB900F350C7 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = 4A2BB80F1B4AEAB900F350C7 /* Localizable.strings */; };
 		4A2FA8571B5533720088C00F /* UIFontDescriptorExt.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A2FA8561B5533720088C00F /* UIFontDescriptorExt.swift */; };
 		4A3DF9A91B4B0A9900CF1345 /* Localizable.stringsdict in Resources */ = {isa = PBXBuildFile; fileRef = 4A3DF9A71B4B0A9900CF1345 /* Localizable.stringsdict */; };
+		4A4336F61B6FE205005E9C29 /* StopSound.aif in Resources */ = {isa = PBXBuildFile; fileRef = 4A4336F51B6FE205005E9C29 /* StopSound.aif */; };
 		4A4D12B91B2AC01900B6B757 /* VehicleActivity.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A4D12B81B2AC01900B6B757 /* VehicleActivity.swift */; };
 		4A532E1A1B68C5AB00A80544 /* APIControllerLocal.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A532E191B68C5AB00A80544 /* APIControllerLocal.swift */; };
 		4A532E281B68D7DE00A80544 /* testdata in CopyFiles */ = {isa = PBXBuildFile; fileRef = 4A532E251B68D6A700A80544 /* testdata */; };
@@ -74,6 +75,7 @@
 		4A3DF9A21B4AF90500CF1345 /* fi */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fi; path = fi.lproj/Localizable.strings; sourceTree = "<group>"; };
 		4A3DF9A81B4B0A9900CF1345 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.xml; name = en; path = en.lproj/Localizable.stringsdict; sourceTree = "<group>"; };
 		4A3DF9AA1B4B0AA000CF1345 /* fi */ = {isa = PBXFileReference; lastKnownFileType = text.xml; name = fi; path = fi.lproj/Localizable.stringsdict; sourceTree = "<group>"; };
+		4A4336F51B6FE205005E9C29 /* StopSound.aif */ = {isa = PBXFileReference; lastKnownFileType = file; name = StopSound.aif; path = BusStop/StopSound.aif; sourceTree = "<group>"; };
 		4A4D12B81B2AC01900B6B757 /* VehicleActivity.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = VehicleActivity.swift; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.swift; };
 		4A532E191B68C5AB00A80544 /* APIControllerLocal.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = APIControllerLocal.swift; sourceTree = "<group>"; };
 		4A532E251B68D6A700A80544 /* testdata */ = {isa = PBXFileReference; lastKnownFileType = folder; name = testdata; path = BusStop/testdata; sourceTree = "<group>"; };
@@ -134,6 +136,7 @@
 		4A0EA3501B21C0B000F747D0 = {
 			isa = PBXGroup;
 			children = (
+				4A4336F51B6FE205005E9C29 /* StopSound.aif */,
 				4A532E251B68D6A700A80544 /* testdata */,
 				4A0EA35B1B21C0B000F747D0 /* BusStop */,
 				4A0EA3711B21C0B000F747D0 /* BusStopTests */,
@@ -336,6 +339,7 @@
 				4A2BB8111B4AEAB900F350C7 /* Localizable.strings in Resources */,
 				4A0EA3691B21C0B000F747D0 /* LaunchScreen.xib in Resources */,
 				4A3DF9A91B4B0A9900CF1345 /* Localizable.stringsdict in Resources */,
+				4A4336F61B6FE205005E9C29 /* StopSound.aif in Resources */,
 				4A0EA3661B21C0B000F747D0 /* Images.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

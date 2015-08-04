@@ -39,7 +39,8 @@ class MainViewController: UIViewController {
   //
   let defaultCellIdentifier: String = "StopCell"
   let selectedCellIdentifier: String = "SelectedStopCell"
-  var systemSoundID: SystemSoundID?
+  var systemSoundID: SystemSoundID = 0
+  let stopSoundFileName = "StopSound", stopSoundFileExt = "aif"
   var userNotifiedForSelectedStop = false
   var autoRefresh:Bool = false
   var autoRefreshTimer: NSTimer?
@@ -100,10 +101,19 @@ class MainViewController: UIViewController {
         vehicleScrollView.scrollToViewWithIndex(selectedVehicleIndex, animated: true)
         if let selectedStop = selectedStop {
           if let selectedStopRow = rowForStop(selectedStop) {
-            expandStopAtIndexPath(NSIndexPath(forRow: selectedStopRow, inSection: 0))
+//            unexpandSelectedStop()
+//            expandStopAtIndexPath(NSIndexPath(forRow: selectedStopRow, inSection: 0))
           } else {
-            unexpandSelectedStop()
-            log.info("selected stop does not exist anymore so unexpanding")
+            log.debug("Unexpaning the lost stop \(selectedStop.id)")
+            Async.main {
+              var title = NSLocalizedString("Lost your stop.", comment:"")
+              var message = NSLocalizedString("Your stop was already passed. Stopped tracking your stop.", comment:"")
+              let alert = UIAlertController(title: title, message: message, preferredStyle: UIAlertControllerStyle.Alert)
+              alert.addAction(UIAlertAction(title: NSLocalizedString("OK", comment: "Alert OK"), style: UIAlertActionStyle.Default, handler: nil))
+              self.presentViewController(alert, animated: true, completion: {
+                self.unexpandSelectedStop()
+              })
+            }
           }
         }
       }
@@ -310,6 +320,7 @@ class MainViewController: UIViewController {
     q.tasks +=! {
       if self.selectedStop == nil {
         log.info("Task: show closest vehicle headers")
+        self.stopTableView.scrollToTop(animated: true)
         self.vehicleScrollView.reloadData()
       }
     }
@@ -321,6 +332,7 @@ class MainViewController: UIViewController {
     
     q.tasks +=! {
       log.info("Task: Show stops for the selected vehicle")
+//      self.stopTableView.scrollToTop(animated: true)
       self.stopTableView.reloadData()
 //      self.stopTableView.reloadSections(NSIndexSet(index: 0), withRowAnimation: .Fade)
     }
@@ -421,9 +433,9 @@ class MainViewController: UIViewController {
   
   override func didReceiveMemoryWarning() {
     super.didReceiveMemoryWarning()
-    if systemSoundID != nil {
-      AudioServicesDisposeSystemSoundID(systemSoundID!)
-      systemSoundID = nil
+    if systemSoundID != 0 {
+      AudioServicesDisposeSystemSoundID(systemSoundID)
+      systemSoundID = 0
     }
     // Dispose of any resources that can be recreated.
   }
@@ -431,6 +443,11 @@ class MainViewController: UIViewController {
   deinit {
     log.verbose("deinit")
     NSNotificationCenter.defaultCenter().removeObserver(self)
+    
+    if systemSoundID != 0 {
+      AudioServicesDisposeSystemSoundID(systemSoundID)
+      self.systemSoundID = 0
+    }
   }
 
   
@@ -625,10 +642,9 @@ class MainViewController: UIViewController {
       UIApplication.sharedApplication().cancelAllLocalNotifications()
       let localNotification = UILocalNotification()
       localNotification.fireDate = nil
-      localNotification.alertAction = nil
-      localNotification.soundName = UILocalNotificationDefaultSoundName
-      localNotification.alertBody = NSLocalizedString("\(selectedStop!.name) is the next one!", comment: "")
-      localNotification.alertAction = NSLocalizedString("Action", comment:"")
+//      localNotification.soundName = "\(stopSoundFileName).\(stopSoundFileExt)"
+//      localNotification.alertBody = NSLocalizedString("\(selectedStop!.name) is the next one!", comment: "")
+//      localNotification.alertAction = NSLocalizedString("Action", comment:"")
       localNotification.repeatInterval = nil
       UIApplication.sharedApplication().scheduleLocalNotification(localNotification)
     }
@@ -636,23 +652,25 @@ class MainViewController: UIViewController {
 
   
   private func playSelectedStopReachedAlert() {
-    if systemSoundID  == nil {
-      systemSoundID = SystemSoundID(kSystemSoundID_Vibrate)
-//      let alertSound = NSURL(fileURLWithPath: NSBundle.mainBundle().pathForResource("pulse", ofType: "m4r")!)
-//      if let alertSound = alertSound {
-//        AudioServicesCreateSystemSoundID(alertSound, &systemSoundID!)
-//      } else {
-//        log.debug("failed to find alertSound")
-//        return
-//      }
-    }
+    let vibrateSystemSoundID = SystemSoundID(kSystemSoundID_Vibrate)
+    AudioServicesPlayAlertSound(vibrateSystemSoundID)
     
-    if let systemSoundID = systemSoundID {
-      AudioServicesPlayAlertSound(systemSoundID)
+    if systemSoundID == 0 {
+      if let alertSoundURL = NSBundle.mainBundle().URLForResource(stopSoundFileName, withExtension: stopSoundFileExt) {
+        let status = AudioServicesCreateSystemSoundID(alertSoundURL, &systemSoundID)
+        if status != 0 {
+          log.error("Failed to create system sound for stop alert: \(status)")
+        }
+      } else {
+        log.error("Failed to find system sound file for stop alert")
+        return
+      }
+    }
+
+    if systemSoundID != 0 {
+      AudioServicesPlaySystemSound(systemSoundID)
     }
   }
-  
-
 }
 
 
@@ -844,6 +862,10 @@ extension MainViewController: UITableViewDelegate {
 
   }
   
+  func scrollViewDidEndScrollingAnimation(scrollView: UIScrollView) {
+    
+  }
+
   func scrollViewDidScroll(scrollView: UIScrollView) {
     // Dim the vehicle scroller and move it up
     // Also slide adjacent headers to the side
@@ -906,6 +928,7 @@ extension MainViewController: UITableViewDelegate {
     stopTableView.deselectRowAtIndexPath(indexPath, animated: true)
     
     vehicleScrollView.touchEnabled = false
+    stopTableView.scrollEnabled = false
 
     // no row was selected when the row was tapped => remove other rows
     
@@ -956,7 +979,10 @@ extension MainViewController: UITableViewDelegate {
   private func unexpandSelectedStop() {
     autoUnexpandTaskQueue?.cancel()
     
+    appDelegate.stopUpdatingLocation(handleReceivedLocations: false)
+    
     vehicleScrollView.touchEnabled = true
+    stopTableView.scrollEnabled = true
 
     stopTableView.deselectRowAtIndexPath(NSIndexPath(forRow: 0, inSection: 0), animated: true)
     // the tapped (and only) row was already selected => add other rows back
@@ -1088,6 +1114,28 @@ extension MainViewController {
 extension MainViewController: HorizontalScrollerDelegate {
   
   // MARK: - Data source functions
+  func horizontalScroller(horizontalScroller: HorizontalScroller, existingViewAtIndexPath indexPath: Int) -> UIView? {
+    var view: UIView?
+    if let userLocation = userLocation where closestVehicles.count > indexPath {
+      
+      let veh = closestVehicles[indexPath]
+      let lineRef = String(format: NSLocalizedString("Line %@", comment: "Line name header"), veh.lineRef)
+      let vehicleRef = veh.formattedVehicleRef
+      let distance: String = veh.distanceFromUserLocation(userLocation)
+      
+      view = horizontalScroller.dequeueReusableView(indexPath) as? VehicleHeaderView
+      if view != nil {
+        VehicleHeaderView.initWithReusedView(view as! VehicleHeaderView, lineRef: lineRef, vehicleRef: vehicleRef, distance: distance)
+      }
+    } else {
+      log.error("No user location or vehicle found!")
+      view = UIView()
+    }
+    
+//    log.debug("subView at index \(indexPath): \(view)")
+    return view
+  }
+  
   func horizontalScroller(horizontalScroller: HorizontalScroller, viewAtIndexPath indexPath: Int) -> UIView {
     var view: UIView?
     if let userLocation = userLocation where closestVehicles.count > indexPath {
@@ -1097,12 +1145,7 @@ extension MainViewController: HorizontalScrollerDelegate {
       let vehicleRef = veh.formattedVehicleRef
       let distance: String = veh.distanceFromUserLocation(userLocation)
       
-      view = horizontalScroller.dequeueReusableView() as? VehicleHeaderView
-      if view != nil {
-        VehicleHeaderView.initWithReusedView(view as! VehicleHeaderView, lineRef: lineRef, vehicleRef: vehicleRef, distance: distance)
-      } else {
-        view = VehicleHeaderView(lineRef: lineRef, vehicleRef: vehicleRef, distance: distance)
-      }
+      view = VehicleHeaderView(lineRef: lineRef, vehicleRef: vehicleRef, distance: distance)
     } else {
       log.error("No user location or vehicle found!")
       view = UIView()
@@ -1117,7 +1160,7 @@ extension MainViewController: HorizontalScrollerDelegate {
     let vehicleRef = NSLocalizedString("No busses near you", comment: "show as vehicle label when no busses near or no user location known")
     let distance = NSLocalizedString("Tap to refresh", comment: "")
 
-    var noDataView = horizontalScroller.dequeueReusableView() as? VehicleHeaderView
+    var noDataView = horizontalScroller.dequeueReusableView(0) as? VehicleHeaderView
     if noDataView != nil {
       VehicleHeaderView.initWithReusedView(noDataView!, lineRef: lineRef, vehicleRef: vehicleRef, distance: distance)
     } else {
