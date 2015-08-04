@@ -123,8 +123,15 @@ class HorizontalScroller: UIView {
   }
   
   func reloadData() {
+    UIView.animateWithDuration(0.2, delay: 0, options: UIViewAnimationOptions.CurveEaseIn, animations: {self.alpha = 0}, completion: {_ in
+      self.doReloadData()
+      UIView.animateWithDuration(0.2, delay: 0, options: UIViewAnimationOptions.CurveEaseOut, animations: {self.alpha = 1}, completion: {_ in 0})
+    })
+  }
+  
+  private func doReloadData() {
     if let delegate = delegate {
-
+     
       let subViewCount = delegate.numberOfItemsInHorizontalScroller(self)
 
       // move old views to reuse list
@@ -195,7 +202,7 @@ class HorizontalScroller: UIView {
 
       // force intrisic size calculation now that all subviews have been created
       invalidateIntrinsicContentSize()
-      
+
 //      setNeedsLayout()
 //      layoutIfNeeded()
 //      
