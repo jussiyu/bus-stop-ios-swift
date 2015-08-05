@@ -112,7 +112,8 @@ class MainViewController: UIViewController {
     }
   }
 
-  var stops: [String: Stop] = [:]
+  /// a thread specific instance - do not reuse across threads
+  var stopDBManager: StopDBManager { return StopDBManager.sharedInstance }
   var selectedStop: Stop? {
     didSet {
       userNotifiedForSelectedStop = false
@@ -212,7 +213,8 @@ class MainViewController: UIViewController {
       override func didReceiveAPIResults(results: JSON, next: ApiControllerDelegateNextTask?) {
         if results["status"] == "success" {
           Async.background {
-            self.ref.stops = Stop.StopsFromJSON(results["body"])
+            self.ref.stopDBManager.initFromJSON(results["body"])
+//            self.ref.stops = Stop.StopsFromJSON(results["body"])
             next?(nil)
           }
         } else { // status != success
@@ -481,6 +483,12 @@ class MainViewController: UIViewController {
   private func refreshStops(#queue: TaskQueue?, next: ApiControllerDelegateNextTask?) {
     log.verbose("")
     
+    if stopDBManager.stopCount > 0 {
+      log.debug("Stops already in DB")
+      next?(nil)
+      return
+    }
+    
     if reachability.isReachable() {
       api.getStops(next)
     } else {
@@ -585,7 +593,7 @@ class MainViewController: UIViewController {
   func stopForRow(row: Int) -> Stop? {
     if let selectedVehicle = selectedVehicle where selectedVehicle.stops.count > row {
       let vehicleActivityStop = selectedVehicle.stops[row]
-      if let stop = stops[vehicleActivityStop.id] {
+      if let stop = stopDBManager.stopWithId(vehicleActivityStop.id) {
         return stop
       } else {
         log.warning("Stop for row \(row) does exist in the stop list")
@@ -763,7 +771,7 @@ extension MainViewController: UITableViewDataSource {
       // Favourite button
       cell.favoriteButton.selected = selectedStop.favorite
       cell.favoriteButton.removeTarget(nil, action: nil, forControlEvents: .TouchUpInside)
-      cell.favoriteButton.addTarget(self, action: "selectedStopFavouriteButtonPressed:", forControlEvents: .TouchUpInside)
+      cell.favoriteButton.addTarget(self, action: "selectedStopFavoriteButtonPressed:", forControlEvents: .TouchUpInside)
     
       return cell
 
@@ -795,11 +803,14 @@ extension MainViewController: UITableViewDataSource {
     unexpandSelectedStop()
   }
 
-  func selectedStopFavouriteButtonPressed(sender: AnyObject) {
+  func selectedStopFavoriteButtonPressed(sender: AnyObject) {
     log.verbose("")
   
     if let button = sender as? UIButton {
       button.selected = !button.selected
+      if let selectedStop = selectedStop {
+        stopDBManager.setFavoriteForStop(selectedStop, favorite: button.selected)
+      }
     }
   }
   

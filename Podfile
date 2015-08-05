@@ -9,6 +9,7 @@ target 'BusStop' do
   pod 'XCGLogger', '~> 2.1'
   pod 'Async', :git => 'https://github.com/duemunk/Async.git'
   pod 'TaskQueue', :git => 'file:///Users/jussi/dev/iOS/TaskQueue', :branch => 'accesscontrol'
+  pod 'RealmSwift', '~> 0.94'
 end
 
 target 'BusStopTests' do
