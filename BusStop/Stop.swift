@@ -16,6 +16,7 @@ struct Stop : Printable {
   let id: String
   let name: String
   let location: CLLocation?
+  var favourite = false
   
   init(id: String, name: String, ref: String = "", location: CLLocation?) {
     self.id = id

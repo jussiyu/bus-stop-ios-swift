@@ -36,7 +36,7 @@
 		</dict>
 	</dict>
   
-  <key>"%d stop(s) before your stop</key>
+  <key>%d stop(s) before your stop</key>
   <dict>
     <key>NSStringLocalizedFormatKey</key>
     <string>%#@stops@</string>
@@ -49,11 +49,11 @@
       <key>zero</key>
       <string>Seuraava pysäkki on sinun pysäkkisi!</string>
       <key>one</key>
-      <string>Vain yksi pysäkki ennen sinun pysäkkiäsi.</string>
+      <string>pysäkki ennen sinun pysäkkiäsi.</string>
       <key>two</key>
-      <string>Kaksi pysäkkiä ennen sinun pysäkkiäsi.</string>
+      <string>pysäkkiä ennen sinun pysäkkiäsi.</string>
       <key>other</key>
-      <string>Vielä %d pysäkkiä ennen sinun pysäkkiäsi.</string>
+      <string>pysäkkiä ennen sinun pysäkkiäsi.</string>
     </dict>
   </dict>
 

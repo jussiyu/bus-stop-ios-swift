@@ -715,13 +715,13 @@ extension MainViewController: UITableViewDataSource {
       cell.stopNameLabel.attributedText = string
       let stopNameLabelFont = UIFont(descriptor: UIFontDescriptor.preferredDescriptorWithStyle(UIFontTextStyleHeadline, oversizedBy: 16), size: 0)
       cell.stopNameLabel.font = stopNameLabelFont
+      let stopCountLabelFont = UIFont(descriptor: UIFontDescriptor.preferredDescriptorWithStyle(UIFontTextStyleHeadline, oversizedBy: 20), size: 0)
+      cell.stopCountLabel.font = stopCountLabelFont
       
 
       if let selectedStopIndex = selectedVehicle.stopIndexById(selectedStop.id) {
-        var stopDistance: String?
-        if let userLocationInVehicle = selectedVehicle.location {
-            stopDistance = selectedStop.distanceFromUserLocation(userLocationInVehicle)
-        }
+        cell.stopCountLabel.text = String(selectedStopIndex)
+
         var distanceHintText = String(format: NSLocalizedString("%d stop(s) before your stop", comment: ""), selectedStopIndex)
         
         if selectedStopIndex < selectedVehicle.stops.count {
@@ -742,6 +742,7 @@ extension MainViewController: UITableViewDataSource {
             "\\n", withString: "\n", options: nil)
       } else {
         cell.distanceHintLabel.text = autoUnexpandTaskQueueProgress ?? ""
+        cell.stopCountLabel.text = ""
       }
 
       // Delay message
@@ -759,6 +760,11 @@ extension MainViewController: UITableViewDataSource {
       cell.closeButton.setTitle(NSLocalizedString("Stop tracking", comment: ""), forState: .Normal)
       cell.closeButton.removeTarget(nil, action: nil, forControlEvents: .TouchUpInside)
       cell.closeButton.addTarget(self, action: "selectedStopCloseButtonPressed:", forControlEvents: .TouchUpInside)
+    
+      // Favourite button
+      cell.favouriteButton.selected = selectedStop.favourite
+      cell.favouriteButton.removeTarget(nil, action: nil, forControlEvents: .TouchUpInside)
+      cell.favouriteButton.addTarget(self, action: "selectedStopFavouriteButtonPressed:", forControlEvents: .TouchUpInside)
     
       return cell
 
@@ -789,12 +795,20 @@ extension MainViewController: UITableViewDataSource {
   
     unexpandSelectedStop()
   }
+
+  func selectedStopFavouriteButtonPressed(sender: AnyObject) {
+    log.verbose("")
+  
+    if let button = sender as? UIButton {
+      button.selected = !button.selected
+    }
+  }
   
 }
 
 
-//
 // MARK: - UITableViewDelegate
+//
 //
 extension MainViewController: UITableViewDelegate {
   
