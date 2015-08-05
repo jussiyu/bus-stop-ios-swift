@@ -87,7 +87,7 @@
                                                         <constraint firstItem="nLM-hV-c62" firstAttribute="top" secondItem="DjE-1F-ebN" secondAttribute="bottom" constant="8" id="tOB-Hh-afm"/>
                                                     </constraints>
                                                 </view>
-                                                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" reversesTitleShadowWhenHighlighted="YES" adjustsImageWhenHighlighted="NO" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Jua-3l-Sry" userLabel="favouriteButton">
+                                                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" reversesTitleShadowWhenHighlighted="YES" adjustsImageWhenHighlighted="NO" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Jua-3l-Sry" userLabel="favoriteButton">
                                                     <rect key="frame" x="510" y="8" width="50" height="62"/>
                                                     <fontDescription key="fontDescription" type="system" pointSize="35"/>
                                                     <inset key="contentEdgeInsets" minX="10" minY="10" maxX="10" maxY="10"/>
@@ -147,7 +147,7 @@
                                             <outlet property="closeButton" destination="Czf-NX-pHh" id="6bn-4Y-Pad"/>
                                             <outlet property="delayLabel" destination="F0u-il-tg2" id="Cpc-TG-k2S"/>
                                             <outlet property="distanceHintLabel" destination="nLM-hV-c62" id="QfF-cS-M0X"/>
-                                            <outlet property="favouriteButton" destination="Jua-3l-Sry" id="Rbk-hG-P0B"/>
+                                            <outlet property="favoriteButton" destination="Jua-3l-Sry" id="Rbk-hG-P0B"/>
                                             <outlet property="stopCountLabel" destination="DjE-1F-ebN" id="ecb-yt-fO8"/>
                                             <outlet property="stopNameLabel" destination="kfY-uu-hrM" id="YhA-An-yTZ"/>
                                         </connections>

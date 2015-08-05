@@ -717,10 +717,9 @@ extension MainViewController: UITableViewDataSource {
       cell.stopNameLabel.font = stopNameLabelFont
       let stopCountLabelFont = UIFont(descriptor: UIFontDescriptor.preferredDescriptorWithStyle(UIFontTextStyleHeadline, oversizedBy: 20), size: 0)
       cell.stopCountLabel.font = stopCountLabelFont
-      
 
       if let selectedStopIndex = selectedVehicle.stopIndexById(selectedStop.id) {
-        cell.stopCountLabel.text = String(selectedStopIndex)
+          cell.stopCountLabel.text = String(selectedStopIndex)
 
         var distanceHintText = String(format: NSLocalizedString("%d stop(s) before your stop", comment: ""), selectedStopIndex)
         
@@ -762,9 +761,9 @@ extension MainViewController: UITableViewDataSource {
       cell.closeButton.addTarget(self, action: "selectedStopCloseButtonPressed:", forControlEvents: .TouchUpInside)
     
       // Favourite button
-      cell.favouriteButton.selected = selectedStop.favourite
-      cell.favouriteButton.removeTarget(nil, action: nil, forControlEvents: .TouchUpInside)
-      cell.favouriteButton.addTarget(self, action: "selectedStopFavouriteButtonPressed:", forControlEvents: .TouchUpInside)
+      cell.favoriteButton.selected = selectedStop.favorite
+      cell.favoriteButton.removeTarget(nil, action: nil, forControlEvents: .TouchUpInside)
+      cell.favoriteButton.addTarget(self, action: "selectedStopFavouriteButtonPressed:", forControlEvents: .TouchUpInside)
     
       return cell
 
@@ -946,9 +945,6 @@ extension MainViewController: UITableViewDelegate {
       }
     }
     
-    // Maximize the table view
-    expandStopTableView()
-    
     // perform the correct update operation
     stopTableView.beginUpdates()
     if let header = stopTableViewHeader {
@@ -958,6 +954,9 @@ extension MainViewController: UITableViewDelegate {
     stopTableView.deleteRowsAtIndexPaths(indexPathsOnBelow, withRowAnimation: .Fade)
     
     stopTableView.endUpdates()
+    
+    // Maximize the table view
+    expandStopTableView()
     stopTableView.reloadRowsAtIndexPaths([NSIndexPath(forRow: 0, inSection: 0)], withRowAnimation: .Fade)
     
     autoRefresh = true
