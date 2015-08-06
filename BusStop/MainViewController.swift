@@ -97,7 +97,7 @@ class MainViewController: UIViewController {
   
   var selectedVehicle: VehicleActivity? {
     didSet {
-      selectedStop = nil
+      selectedStopId = nil
       
 //      if selectedVehicle != nil {
 //        defaults.setObject(selectedVehicle?.vehicleRef, forKey: selectedVehicleKey)
@@ -112,8 +112,16 @@ class MainViewController: UIViewController {
     }
   }
 
-  var stops: [String: Stop] = [:]
+  /// a thread specific instance - do not reuse across threads
+  var stopDBManager: StopDBManager { return StopDBManager.sharedInstance }
   var selectedStop: Stop? {
+    if let selectedStopId = selectedStopId {
+      return stopDBManager.stopWithId(selectedStopId)
+    } else {
+      return nil
+    }
+  }
+  var selectedStopId: String? {
     didSet {
       userNotifiedForSelectedStop = false
     }
@@ -212,7 +220,8 @@ class MainViewController: UIViewController {
       override func didReceiveAPIResults(results: JSON, next: ApiControllerDelegateNextTask?) {
         if results["status"] == "success" {
           Async.background {
-            self.ref.stops = Stop.StopsFromJSON(results["body"])
+            self.ref.stopDBManager.initFromJSON(results["body"])
+//            self.ref.stops = Stop.StopsFromJSON(results["body"])
             next?(nil)
           }
         } else { // status != success
@@ -481,6 +490,12 @@ class MainViewController: UIViewController {
   private func refreshStops(#queue: TaskQueue?, next: ApiControllerDelegateNextTask?) {
     log.verbose("")
     
+    if stopDBManager.stopCount > 0 {
+      log.debug("Stops already in DB")
+      next?(nil)
+      return
+    }
+    
     if reachability.isReachable() {
       api.getStops(next)
     } else {
@@ -585,7 +600,7 @@ class MainViewController: UIViewController {
   func stopForRow(row: Int) -> Stop? {
     if let selectedVehicle = selectedVehicle where selectedVehicle.stops.count > row {
       let vehicleActivityStop = selectedVehicle.stops[row]
-      if let stop = stops[vehicleActivityStop.id] {
+      if let stop = stopDBManager.stopWithId(vehicleActivityStop.id) {
         return stop
       } else {
         log.warning("Stop for row \(row) does exist in the stop list")
@@ -657,8 +672,6 @@ extension MainViewController {
   func applicationWillResignActive(notification: NSNotification) {
     log.verbose("")
     
-    NSNotificationCenter.defaultCenter().removeObserver(self, name: AppDelegate.newLocationNotificationName, object: nil)
-    
     if initialRefreshTaskQueue?.state == .Running {
       initialRefreshTaskQueue?.pause()
     }
@@ -666,6 +679,10 @@ extension MainViewController {
     // start location updates if user has selected a stop
     if selectedStop != nil {
       appDelegate.startUpdatingLocation()
+    } else {
+      // no stop selected so ignore updates from now on
+      appDelegate.stopUpdatingLocation(handleReceivedLocations: false)
+      NSNotificationCenter.defaultCenter().removeObserver(self, name: AppDelegate.newLocationNotificationName, object: nil)
     }
   }
   
@@ -679,7 +696,7 @@ extension MainViewController {
   }
   
   func applicationWillTerminate(notification: NSNotification) {
-    log.verbose("")
+    println("MainViewController:applicationWillTerminate")
   }
 }
 
@@ -715,13 +732,12 @@ extension MainViewController: UITableViewDataSource {
       cell.stopNameLabel.attributedText = string
       let stopNameLabelFont = UIFont(descriptor: UIFontDescriptor.preferredDescriptorWithStyle(UIFontTextStyleHeadline, oversizedBy: 16), size: 0)
       cell.stopNameLabel.font = stopNameLabelFont
-      
+      let stopCountLabelFont = UIFont(descriptor: UIFontDescriptor.preferredDescriptorWithStyle(UIFontTextStyleHeadline, oversizedBy: 20), size: 0)
+      cell.stopCountLabel.font = stopCountLabelFont
 
       if let selectedStopIndex = selectedVehicle.stopIndexById(selectedStop.id) {
-        var stopDistance: String?
-        if let userLocationInVehicle = selectedVehicle.location {
-            stopDistance = selectedStop.distanceFromUserLocation(userLocationInVehicle)
-        }
+          cell.stopCountLabel.text = String(selectedStopIndex)
+
         var distanceHintText = String(format: NSLocalizedString("%d stop(s) before your stop", comment: ""), selectedStopIndex)
         
         if selectedStopIndex < selectedVehicle.stops.count {
@@ -742,6 +758,7 @@ extension MainViewController: UITableViewDataSource {
             "\\n", withString: "\n", options: nil)
       } else {
         cell.distanceHintLabel.text = autoUnexpandTaskQueueProgress ?? ""
+        cell.stopCountLabel.text = ""
       }
 
       // Delay message
@@ -759,6 +776,11 @@ extension MainViewController: UITableViewDataSource {
       cell.closeButton.setTitle(NSLocalizedString("Stop tracking", comment: ""), forState: .Normal)
       cell.closeButton.removeTarget(nil, action: nil, forControlEvents: .TouchUpInside)
       cell.closeButton.addTarget(self, action: "selectedStopCloseButtonPressed:", forControlEvents: .TouchUpInside)
+    
+      // Favourite button
+      cell.favoriteButton.selected = selectedStop.favorite
+      cell.favoriteButton.removeTarget(nil, action: nil, forControlEvents: .TouchUpInside)
+      cell.favoriteButton.addTarget(self, action: "selectedStopFavoriteButtonPressed:", forControlEvents: .TouchUpInside)
     
       return cell
 
@@ -789,12 +811,23 @@ extension MainViewController: UITableViewDataSource {
   
     unexpandSelectedStop()
   }
+
+  func selectedStopFavoriteButtonPressed(sender: AnyObject) {
+    log.verbose("")
+  
+    if let button = sender as? UIButton {
+      button.selected = !button.selected
+      if let selectedStop = selectedStop {
+        stopDBManager.setFavoriteForStop(selectedStop, favorite: button.selected)
+      }
+    }
+  }
   
 }
 
 
-//
 // MARK: - UITableViewDelegate
+//
 //
 extension MainViewController: UITableViewDelegate {
   
@@ -908,8 +941,8 @@ extension MainViewController: UITableViewDelegate {
     // no row was selected when the row was tapped => remove other rows
     
     // store the stop for the selected row
-    selectedStop = stopForRow(indexPath.row)
-    if selectedStop == nil {
+    selectedStopId = stopForRow(indexPath.row)?.id
+    if selectedStopId == nil {
       // Ignore unknown stops
       return
     }
@@ -932,9 +965,6 @@ extension MainViewController: UITableViewDelegate {
       }
     }
     
-    // Maximize the table view
-    expandStopTableView()
-    
     // perform the correct update operation
     stopTableView.beginUpdates()
     if let header = stopTableViewHeader {
@@ -944,6 +974,9 @@ extension MainViewController: UITableViewDelegate {
     stopTableView.deleteRowsAtIndexPaths(indexPathsOnBelow, withRowAnimation: .Fade)
     
     stopTableView.endUpdates()
+    
+    // Maximize the table view
+    expandStopTableView()
     stopTableView.reloadRowsAtIndexPaths([NSIndexPath(forRow: 0, inSection: 0)], withRowAnimation: .Fade)
     
     autoRefresh = true
@@ -966,7 +999,7 @@ extension MainViewController: UITableViewDelegate {
     var newRowForSelectedStop = selectedStop != nil ? rowForStop(selectedStop!) : nil
     
     // reset the selection
-    selectedStop = nil
+    selectedStopId = nil
     
     // pick all the rows but the currently selected one (assume as already moved to the new row)
     var indexPathsOnAbove = [NSIndexPath]()

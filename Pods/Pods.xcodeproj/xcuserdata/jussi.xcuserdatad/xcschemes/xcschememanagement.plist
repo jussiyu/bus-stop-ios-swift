@@ -2,49 +2,6 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
-	<key>SchemeUserState</key>
-	<dict>
-		<key>Async.xcscheme</key>
-		<dict>
-			<key>isShown</key>
-			<false/>
-		</dict>
-		<key>MediumProgressView.xcscheme</key>
-		<dict>
-			<key>isShown</key>
-			<false/>
-		</dict>
-		<key>Pods-BusStop.xcscheme</key>
-		<dict>
-			<key>isShown</key>
-			<false/>
-		</dict>
-		<key>Pods-BusStopTests.xcscheme</key>
-		<dict>
-			<key>isShown</key>
-			<false/>
-		</dict>
-		<key>ReachabilitySwift.xcscheme</key>
-		<dict>
-			<key>isShown</key>
-			<false/>
-		</dict>
-		<key>SwiftyJSON.xcscheme</key>
-		<dict>
-			<key>isShown</key>
-			<false/>
-		</dict>
-		<key>TaskQueue.xcscheme</key>
-		<dict>
-			<key>isShown</key>
-			<false/>
-		</dict>
-		<key>XCGLogger.xcscheme</key>
-		<dict>
-			<key>isShown</key>
-			<false/>
-		</dict>
-	</dict>
 	<key>SuppressBuildableAutocreation</key>
 	<dict>
 		<key>055A8EDCCDDF781D13FF7842A8082377</key>
@@ -82,11 +39,6 @@
 			<key>primary</key>
 			<true/>
 		</dict>
-		<key>78F423D0123D9890A174B65FACE90375</key>
-		<dict>
-			<key>primary</key>
-			<true/>
-		</dict>
 		<key>8530DEDBC37DD75056E54EB064F88745</key>
 		<dict>
 			<key>primary</key>
@@ -98,16 +50,6 @@
 			<true/>
 		</dict>
 		<key>BEF34B5033790D4B558623E603E376A4</key>
-		<dict>
-			<key>primary</key>
-			<true/>
-		</dict>
-		<key>D62192BC208E63BA2E4475E9EE80A857</key>
-		<dict>
-			<key>primary</key>
-			<true/>
-		</dict>
-		<key>EF5BCE226921DA453DC9873CCB796E75</key>
 		<dict>
 			<key>primary</key>
 			<true/>

@@ -11,9 +11,11 @@ import UIKit
 class SelectedStopTableViewCell: UITableViewCell {
 
   @IBOutlet weak var stopNameLabel: UILabel!
+  @IBOutlet weak var stopCountLabel: UILabel!
   @IBOutlet weak var distanceHintLabel: UILabel!
   @IBOutlet weak var closeButton: UIButton!
   @IBOutlet weak var delayLabel: UILabel!
+  @IBOutlet weak var favoriteButton: UIButton!
   
   override func awakeFromNib() {
         super.awakeFromNib()

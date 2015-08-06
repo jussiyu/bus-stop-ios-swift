@@ -49,9 +49,9 @@
 			<key>zero</key>
 			<string>Your stop is the next one!</string>
 			<key>one</key>
-			<string>Only one stop before your stop.</string>
+			<string>stop before your stop.</string>
       <key>other</key>
-			<string>Still %d stops before your stop.</string>
+			<string>stops before your stop.</string>
 		</dict>
 	</dict>
 

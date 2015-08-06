@@ -29,7 +29,7 @@
                                     </mask>
                                 </variation>
                             </view>
-                            <tableView hidden="YES" clipsSubviews="YES" contentMode="scaleToFill" verticalHuggingPriority="100" verticalCompressionResistancePriority="749" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="44" sectionHeaderHeight="22" sectionFooterHeight="22" translatesAutoresizingMaskIntoConstraints="NO" id="gZm-hb-9Zh">
+                            <tableView clipsSubviews="YES" contentMode="scaleToFill" verticalHuggingPriority="100" verticalCompressionResistancePriority="749" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="44" sectionHeaderHeight="22" sectionFooterHeight="22" translatesAutoresizingMaskIntoConstraints="NO" id="gZm-hb-9Zh">
                                 <rect key="frame" x="16" y="219" width="568" height="381"/>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                 <prototypes>
@@ -50,57 +50,105 @@
                                             </subviews>
                                         </tableViewCellContentView>
                                     </tableViewCell>
-                                    <tableViewCell contentMode="scaleToFill" selectionStyle="none" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="SelectedStopCell" rowHeight="200" id="Bpu-8t-O9I" customClass="SelectedStopTableViewCell" customModule="BusStop" customModuleProvider="target">
+                                    <tableViewCell contentMode="scaleToFill" selectionStyle="none" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="SelectedStopCell" rowHeight="300" id="Bpu-8t-O9I" customClass="SelectedStopTableViewCell" customModule="BusStop" customModuleProvider="target">
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="Bpu-8t-O9I" id="6dr-5Q-vdJ">
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
-                                                <label opaque="NO" userInteractionEnabled="NO" tag="1" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="3" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="kfY-uu-hrM" userLabel="stopNameLabel">
-                                                    <rect key="frame" x="8" y="8" width="552" height="88"/>
+                                                <label opaque="NO" userInteractionEnabled="NO" tag="1" contentMode="left" text="Label" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="3" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="kfY-uu-hrM" userLabel="stopNameLabel">
+                                                    <rect key="frame" x="8" y="8" width="552" height="122"/>
                                                     <fontDescription key="fontDescription" style="UICTFontTextStyleHeadline"/>
                                                     <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
                                                     <nil key="highlightedColor"/>
                                                 </label>
-                                                <label opaque="NO" userInteractionEnabled="NO" tag="2" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="nLM-hV-c62" userLabel="distanceHintLabel">
-                                                    <rect key="frame" x="8" y="104" width="552" height="87"/>
-                                                    <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                                <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="d6D-Du-Kwc" userLabel="distanceView">
+                                                    <rect key="frame" x="8" y="130" width="560" height="121"/>
+                                                    <subviews>
+                                                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="750" text="Label" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="DjE-1F-ebN" userLabel="stopCountLabel">
+                                                            <rect key="frame" x="260" y="8" width="41" height="20"/>
+                                                            <fontDescription key="fontDescription" style="UICTFontTextStyleHeadline"/>
+                                                            <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
+                                                            <nil key="highlightedColor"/>
+                                                        </label>
+                                                        <label opaque="NO" userInteractionEnabled="NO" tag="2" contentMode="left" verticalHuggingPriority="750" text="Label" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="nLM-hV-c62" userLabel="distanceHintLabel">
+                                                            <rect key="frame" x="0.0" y="36" width="560" height="21"/>
+                                                            <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                                            <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
+                                                            <nil key="highlightedColor"/>
+                                                        </label>
+                                                    </subviews>
+                                                    <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                                    <constraints>
+                                                        <constraint firstItem="DjE-1F-ebN" firstAttribute="top" secondItem="d6D-Du-Kwc" secondAttribute="top" constant="8" id="2rP-V8-34e"/>
+                                                        <constraint firstAttribute="centerX" secondItem="DjE-1F-ebN" secondAttribute="centerX" id="9gm-bC-xHe"/>
+                                                        <constraint firstItem="nLM-hV-c62" firstAttribute="leading" secondItem="d6D-Du-Kwc" secondAttribute="leading" id="Jn2-pi-mUK"/>
+                                                        <constraint firstAttribute="bottom" secondItem="nLM-hV-c62" secondAttribute="bottom" priority="750" id="TsG-tX-Ass"/>
+                                                        <constraint firstAttribute="trailing" secondItem="nLM-hV-c62" secondAttribute="trailing" id="pBK-H8-jDc"/>
+                                                        <constraint firstItem="nLM-hV-c62" firstAttribute="top" secondItem="DjE-1F-ebN" secondAttribute="bottom" constant="8" id="tOB-Hh-afm"/>
+                                                    </constraints>
+                                                </view>
+                                                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" reversesTitleShadowWhenHighlighted="YES" adjustsImageWhenHighlighted="NO" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Jua-3l-Sry" userLabel="favoriteButton">
+                                                    <rect key="frame" x="510" y="8" width="50" height="62"/>
+                                                    <fontDescription key="fontDescription" type="system" pointSize="35"/>
+                                                    <inset key="contentEdgeInsets" minX="10" minY="10" maxX="10" maxY="10"/>
+                                                    <state key="normal" title="❤︎">
+                                                        <color key="titleColor" white="0.66666666666666663" alpha="1" colorSpace="calibratedWhite"/>
+                                                        <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                                                    </state>
+                                                    <state key="disabled" title="❤︎"/>
+                                                    <state key="selected" title="❤︎">
+                                                        <color key="titleColor" red="0.0" green="0.47843137250000001" blue="1" alpha="1" colorSpace="calibratedRGB"/>
+                                                    </state>
+                                                    <state key="highlighted" title="❤︎">
+                                                        <color key="titleColor" red="0.0" green="0.47843137250000001" blue="1" alpha="1" colorSpace="calibratedRGB"/>
+                                                    </state>
+                                                </button>
+                                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" horizontalCompressionResistancePriority="250" text="Label" lineBreakMode="tailTruncation" numberOfLines="2" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="F0u-il-tg2" userLabel="delayLabel">
+                                                    <rect key="frame" x="8" y="251" width="31" height="40"/>
+                                                    <fontDescription key="fontDescription" style="UICTFontTextStyleFootnote"/>
                                                     <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
                                                     <nil key="highlightedColor"/>
                                                 </label>
-                                                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Czf-NX-pHh" userLabel="closeButton">
-                                                    <rect key="frame" x="442" y="151" width="118" height="40"/>
+                                                <button opaque="NO" contentMode="scaleToFill" verticalHuggingPriority="750" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Czf-NX-pHh" userLabel="closeButton">
+                                                    <rect key="frame" x="442" y="251" width="118" height="40"/>
                                                     <fontDescription key="fontDescription" style="UICTFontTextStyleBody"/>
                                                     <inset key="contentEdgeInsets" minX="10" minY="10" maxX="10" maxY="10"/>
                                                     <state key="normal" title="Stop tracking">
                                                         <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
                                                     </state>
                                                 </button>
-                                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" lineBreakMode="tailTruncation" numberOfLines="2" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="F0u-il-tg2" userLabel="delayLabel">
-                                                    <rect key="frame" x="8" y="176" width="31" height="15"/>
-                                                    <fontDescription key="fontDescription" style="UICTFontTextStyleFootnote"/>
-                                                    <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
-                                                    <nil key="highlightedColor"/>
-                                                </label>
                                             </subviews>
                                             <constraints>
+                                                <constraint firstAttribute="trailingMargin" secondItem="d6D-Du-Kwc" secondAttribute="trailingMargin" id="2Ig-mW-4Qi"/>
+                                                <constraint firstItem="d6D-Du-Kwc" firstAttribute="leading" secondItem="6dr-5Q-vdJ" secondAttribute="leadingMargin" id="6rO-59-l3d"/>
+                                                <constraint firstItem="Czf-NX-pHh" firstAttribute="leading" relation="greaterThanOrEqual" secondItem="F0u-il-tg2" secondAttribute="trailing" id="9TE-W0-4I3"/>
+                                                <constraint firstItem="Jua-3l-Sry" firstAttribute="top" secondItem="6dr-5Q-vdJ" secondAttribute="topMargin" id="CkV-5O-WWe"/>
                                                 <constraint firstItem="kfY-uu-hrM" firstAttribute="top" secondItem="6dr-5Q-vdJ" secondAttribute="topMargin" id="Fdh-fF-HvC"/>
                                                 <constraint firstItem="kfY-uu-hrM" firstAttribute="leading" secondItem="6dr-5Q-vdJ" secondAttribute="leadingMargin" id="GkP-vk-zo3"/>
-                                                <constraint firstItem="nLM-hV-c62" firstAttribute="trailing" secondItem="6dr-5Q-vdJ" secondAttribute="trailingMargin" id="L2g-0a-whR"/>
-                                                <constraint firstItem="kfY-uu-hrM" firstAttribute="height" secondItem="nLM-hV-c62" secondAttribute="height" id="U7J-vL-gdA"/>
-                                                <constraint firstItem="nLM-hV-c62" firstAttribute="bottom" secondItem="6dr-5Q-vdJ" secondAttribute="bottomMargin" id="UgM-Ga-Oqn"/>
+                                                <constraint firstItem="Czf-NX-pHh" firstAttribute="top" secondItem="d6D-Du-Kwc" secondAttribute="bottom" id="bV1-mb-6O2"/>
                                                 <constraint firstAttribute="bottomMargin" secondItem="Czf-NX-pHh" secondAttribute="bottom" id="by5-7Y-VfD"/>
                                                 <constraint firstAttribute="trailingMargin" secondItem="kfY-uu-hrM" secondAttribute="trailing" id="ffb-Tl-JEy"/>
+                                                <constraint firstAttribute="bottomMargin" secondItem="d6D-Du-Kwc" secondAttribute="bottom" priority="750" id="fzU-oO-gIl"/>
+                                                <constraint firstItem="F0u-il-tg2" firstAttribute="height" secondItem="Czf-NX-pHh" secondAttribute="height" id="hAA-Ee-7eq"/>
+                                                <constraint firstItem="d6D-Du-Kwc" firstAttribute="top" secondItem="kfY-uu-hrM" secondAttribute="bottom" id="jf4-T3-sFp"/>
                                                 <constraint firstItem="F0u-il-tg2" firstAttribute="leading" secondItem="6dr-5Q-vdJ" secondAttribute="leadingMargin" id="jxL-6t-waY"/>
-                                                <constraint firstItem="nLM-hV-c62" firstAttribute="top" secondItem="kfY-uu-hrM" secondAttribute="bottom" constant="8" id="krt-u8-ISA"/>
-                                                <constraint firstItem="nLM-hV-c62" firstAttribute="leading" secondItem="6dr-5Q-vdJ" secondAttribute="leadingMargin" id="sdl-Dh-2MR"/>
+                                                <constraint firstItem="kfY-uu-hrM" firstAttribute="height" secondItem="d6D-Du-Kwc" secondAttribute="height" id="rzE-Zx-t8X"/>
+                                                <constraint firstItem="Jua-3l-Sry" firstAttribute="trailing" secondItem="6dr-5Q-vdJ" secondAttribute="trailingMargin" id="wjC-lu-Mvt"/>
                                                 <constraint firstItem="Czf-NX-pHh" firstAttribute="trailing" secondItem="6dr-5Q-vdJ" secondAttribute="trailingMargin" id="xx4-ff-TyQ"/>
                                                 <constraint firstItem="F0u-il-tg2" firstAttribute="bottom" secondItem="6dr-5Q-vdJ" secondAttribute="bottomMargin" id="zeJ-EW-tAr"/>
                                             </constraints>
+                                            <variation key="default">
+                                                <mask key="constraints">
+                                                    <exclude reference="fzU-oO-gIl"/>
+                                                </mask>
+                                            </variation>
                                         </tableViewCellContentView>
                                         <connections>
                                             <outlet property="closeButton" destination="Czf-NX-pHh" id="6bn-4Y-Pad"/>
                                             <outlet property="delayLabel" destination="F0u-il-tg2" id="Cpc-TG-k2S"/>
                                             <outlet property="distanceHintLabel" destination="nLM-hV-c62" id="QfF-cS-M0X"/>
+                                            <outlet property="favoriteButton" destination="Jua-3l-Sry" id="Rbk-hG-P0B"/>
+                                            <outlet property="stopCountLabel" destination="DjE-1F-ebN" id="ecb-yt-fO8"/>
                                             <outlet property="stopNameLabel" destination="kfY-uu-hrM" id="YhA-An-yTZ"/>
                                         </connections>
                                     </tableViewCell>

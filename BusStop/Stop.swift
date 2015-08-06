@@ -10,48 +10,39 @@ import Foundation
 import CoreLocation
 import SwiftyJSON
 import XCGLogger
+import RealmSwift
 
 
-struct Stop : Printable {
-  let id: String
-  let name: String
-  let location: CLLocation?
+class Stop : Object, Printable {
+  dynamic var id: String = ""
+  dynamic var name: String = ""
+  dynamic var latitude: CLLocationDegrees = 0.0
+  dynamic var longitude: CLLocationDegrees = 0.0
+  dynamic var location: CLLocation {return CLLocation(latitude: latitude, longitude: longitude)}
+  dynamic var favorite = false
   
-  init(id: String, name: String, ref: String = "", location: CLLocation?) {
+  convenience init(id: String, name: String, ref: String = "", location: CLLocation? = nil) {
+    self.init()
+
     self.id = id
     self.name = name
-    self.location = location
-  }
-  
-    static func StopsFromJSON(result: JSON) -> [String: Stop]{
-    var stops = [String: Stop]()
-    
-    for (index: String, subJson: JSON) in result {
-      if let id = subJson["shortName"].string, name = subJson["name"].string where !id.isEmpty {
+    latitude = location?.coordinate.latitude ?? 0.0
+    longitude = location?.coordinate.longitude ?? 0.0
 
-        let locString = subJson["location"].string
-        let coordinates = locString?.componentsSeparatedByString(",")
-        var location: CLLocation? = nil
-        if let coordinates = coordinates where coordinates.count == 2 {
-          if let lat = coordinates[0].fromPOSIXStringToDouble(),
-            lon = coordinates[1].fromPOSIXStringToDouble() {
-              let locTest = CLLocationCoordinate2DMake(lat, lon)
-              if CLLocationCoordinate2DIsValid(locTest) {
-                location = CLLocation(latitude: lat, longitude: lon)
-              }
-          }
-        }
-        
-        var s = Stop(id: id, name: name, location: location)
-        stops[id] = s
-      }
-    }
-    log.debug("Parsed \(stops.count) stops")
-    return stops
   }
 
+//  required init() {
+//    self.id = ""
+//    self.name = ""
+//    latitude = 0
+//    longitude = 0
+//    
+//    super.init()
+//  }
+//  
   func distanceFromUserLocation(userLocation: CLLocation) -> String {
-    if let dist = location?.distanceFromLocation(userLocation) {
+    if latitude != 0 && longitude != 0 {
+      let dist = location.distanceFromLocation(userLocation)
       if dist < 1000 {
         return NSString.localizedStringWithFormat(
           NSLocalizedString("%d meter(s) from your location", comment: "distance in meters"), lround(dist)) as String
@@ -65,7 +56,15 @@ struct Stop : Printable {
     
   }
   
-  var description: String {
+  override class func primaryKey() -> String? {
+    return "id"
+  }
+  
+  override class func ignoredProperties() -> [String] {
+    return ["location"]
+  }
+  
+  override var description: String {
     return name
   }
 
