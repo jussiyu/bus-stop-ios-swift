@@ -696,7 +696,7 @@ extension MainViewController {
   }
   
   func applicationWillTerminate(notification: NSNotification) {
-    log.verbose("")
+    println("MainViewController:applicationWillTerminate")
   }
 }
 
