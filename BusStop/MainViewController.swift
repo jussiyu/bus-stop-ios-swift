@@ -97,7 +97,7 @@ class MainViewController: UIViewController {
   
   var selectedVehicle: VehicleActivity? {
     didSet {
-      selectedStop = nil
+      selectedStopId = nil
       
 //      if selectedVehicle != nil {
 //        defaults.setObject(selectedVehicle?.vehicleRef, forKey: selectedVehicleKey)
@@ -115,6 +115,13 @@ class MainViewController: UIViewController {
   /// a thread specific instance - do not reuse across threads
   var stopDBManager: StopDBManager { return StopDBManager.sharedInstance }
   var selectedStop: Stop? {
+    if let selectedStopId = selectedStopId {
+      return stopDBManager.stopWithId(selectedStopId)
+    } else {
+      return nil
+    }
+  }
+  var selectedStopId: String? {
     didSet {
       userNotifiedForSelectedStop = false
     }
@@ -665,8 +672,6 @@ extension MainViewController {
   func applicationWillResignActive(notification: NSNotification) {
     log.verbose("")
     
-    NSNotificationCenter.defaultCenter().removeObserver(self, name: AppDelegate.newLocationNotificationName, object: nil)
-    
     if initialRefreshTaskQueue?.state == .Running {
       initialRefreshTaskQueue?.pause()
     }
@@ -674,6 +679,10 @@ extension MainViewController {
     // start location updates if user has selected a stop
     if selectedStop != nil {
       appDelegate.startUpdatingLocation()
+    } else {
+      // no stop selected so ignore updates from now on
+      appDelegate.stopUpdatingLocation(handleReceivedLocations: false)
+      NSNotificationCenter.defaultCenter().removeObserver(self, name: AppDelegate.newLocationNotificationName, object: nil)
     }
   }
   
@@ -932,8 +941,8 @@ extension MainViewController: UITableViewDelegate {
     // no row was selected when the row was tapped => remove other rows
     
     // store the stop for the selected row
-    selectedStop = stopForRow(indexPath.row)
-    if selectedStop == nil {
+    selectedStopId = stopForRow(indexPath.row)?.id
+    if selectedStopId == nil {
       // Ignore unknown stops
       return
     }
@@ -990,7 +999,7 @@ extension MainViewController: UITableViewDelegate {
     var newRowForSelectedStop = selectedStop != nil ? rowForStop(selectedStop!) : nil
     
     // reset the selection
-    selectedStop = nil
+    selectedStopId = nil
     
     // pick all the rows but the currently selected one (assume as already moved to the new row)
     var indexPathsOnAbove = [NSIndexPath]()
