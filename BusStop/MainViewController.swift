@@ -512,7 +512,7 @@ class MainViewController: UIViewController {
     log.verbose("")
     
     if stopDBManager.stopCount > 0 {
-      log.debug("Stops already in DB")
+      log.debug("Stops already in DB. No need to reload from network")
       next?(nil)
       return
     }
