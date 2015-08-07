@@ -43,8 +43,8 @@ class HorizontalScroller: UIView {
   
   var currentViewIndex: Int? {
     if let scrollViewPageWidth = scrollerSubviews[0]?.bounds.width where scrollViewPageWidth > 0 {
-      let page = Double((scroller.contentOffset.x + scrollViewPageWidth / 2) / scrollViewPageWidth)
-      return max(page.toInt() - 1, 0)
+      let page = Double(scroller.contentOffset.x / scrollViewPageWidth)
+      return max(page.toInt(), 0)
     } else { // no subviews
       return nil
     }
@@ -250,11 +250,13 @@ class HorizontalScroller: UIView {
   }
 
   private func updateViewFade() {
-    for index in 0 ..< scrollerSubviews.count {
-      if index == currentViewIndex {
-        UIView.animateWithDuration(0.2) {scrollerSubviews[index]?.alpha = 1}
-      } else {
-        UIView.animateWithDuration(0.2) {scrollerSubviews[index]?.alpha = self.noncurrentViewAlpha}
+    if let currentViewIndex = currentViewIndex {
+      for index in 0 ..< scrollerSubviews.count {
+        if index == currentViewIndex {
+          UIView.animateWithDuration(0.2) {scrollerSubviews[index]?.alpha = 1}
+        } else {
+          UIView.animateWithDuration(0.2) {scrollerSubviews[index]?.alpha = self.noncurrentViewAlpha}
+        }
       }
     }
   }
@@ -273,7 +275,9 @@ extension HorizontalScroller: UIScrollViewDelegate {
   }
 
   func scrollViewDidEndScrollingAnimation(scrollView: UIScrollView) {
-    scrollViewDidSomehowEndScrolling(scrollView)
+    if !scrollView.decelerating {
+      scrollViewDidSomehowEndScrolling(scrollView)
+    }
   }
   
   func scrollViewDidEndDecelerating(scrollView: UIScrollView) {

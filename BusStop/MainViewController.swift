@@ -71,14 +71,14 @@ class MainViewController: UIViewController {
   
   var closestVehicles: [VehicleActivity] = [] {
     didSet {
-      if selectedVehicle == nil {
-        self.selectedVehicle = closestVehicles.first
+      if selectedStopId == nil {
+        self.selectedVehicleRef = closestVehicles.first?.vehicleRef
         self.vehicleScrollView.scrollToViewWithIndex(0, animated: true)
         log.info("Selected vehicle reset to first")
         return
       }
       
-      if selectedStop != nil && find(closestVehicles, selectedVehicle!) == nil {
+      if selectedStopId != nil && find(closestVehicles, selectedVehicle!) == nil {
         log.info("Unexpaning the lost selected stop \(self.selectedStop?.id)")
         Async.main {
           var title = NSLocalizedString("Lost your stop.", comment:"")
@@ -87,7 +87,7 @@ class MainViewController: UIViewController {
           alert.addAction(UIAlertAction(title: NSLocalizedString("OK", comment: "Alert OK"), style: UIAlertActionStyle.Default, handler: nil))
           self.presentViewController(alert, animated: true, completion: {
             self.unexpandSelectedStop()
-            self.selectedVehicle = self.closestVehicles.first
+            self.selectedVehicleRef = self.closestVehicles.first?.vehicleRef
             self.vehicleScrollView.scrollToViewWithIndex(0, animated: true)
           })
         }
@@ -95,15 +95,26 @@ class MainViewController: UIViewController {
     }
   }
   
-  var selectedVehicle: VehicleActivity? {
+  var selectedVehicleRef: String? {
     didSet {
       selectedStopId = nil
       
-//      if selectedVehicle != nil {
-//        defaults.setObject(selectedVehicle?.vehicleRef, forKey: selectedVehicleKey)
-//      }
+      //      if selectedVehicle != nil {
+      //        defaults.setObject(selectedVehicle?.vehicleRef, forKey: selectedVehicleKey)
+      //      }
     }
   }
+  
+  // Not retained as a strong reference in order to avoid duplicates after an vehicles refresh
+  var selectedVehicle: VehicleActivity? {
+    for v in closestVehicles {
+      if v.vehicleRef == selectedVehicleRef {
+        return v
+      }
+    }
+    return nil
+  }
+
   var selectedVehicleIndex: Int? {
     if let selectedVehicle = selectedVehicle {
       return closestVehicles.indexOf(selectedVehicle)
@@ -114,6 +125,15 @@ class MainViewController: UIViewController {
 
   /// a thread specific instance - do not reuse across threads
   var stopDBManager: StopDBManager { return StopDBManager.sharedInstance }
+
+  var selectedStopId: String? {
+    didSet {
+      log.debug("SelectedStopId set to \(self.selectedStop)")
+      userNotifiedForSelectedStop = false
+    }
+  }
+
+  // Not retained as a strong reference in order to avoid duplicates after an vehicles refresh
   var selectedStop: Stop? {
     if let selectedStopId = selectedStopId {
       return stopDBManager.stopWithId(selectedStopId)
@@ -121,11 +141,7 @@ class MainViewController: UIViewController {
       return nil
     }
   }
-  var selectedStopId: String? {
-    didSet {
-      userNotifiedForSelectedStop = false
-    }
-  }
+  
   var userLocation: CLLocation? {
     didSet {
       if let userLocation = userLocation {
@@ -136,7 +152,7 @@ class MainViewController: UIViewController {
     }
   }
   
-  lazy var apiDelegate: [String: APIControllerDelegate] = {
+  lazy var apiDelegate: Delegates = {
 
     // Common functionality
     class APIDelegateBase: APIControllerDelegate {
@@ -171,10 +187,8 @@ class MainViewController: UIViewController {
     class VehicleDelegate :APIDelegateBase {
       override func didReceiveAPIResults(results: JSON, next: ApiControllerDelegateNextTask?) {
         if results["status"] == "success" {
-          Async.background {
-            self.ref.vehicles = Vehicles(fromJSON: results["body"])
-            next?(nil)
-          }
+          self.ref.vehicles = Vehicles(fromJSON: results["body"])
+          next?(nil)
         } else { // status != success
           handleError(results, next: next)
         }
@@ -184,14 +198,13 @@ class MainViewController: UIViewController {
     class VehicleStopsDelegate :APIDelegateBase {
       override func didReceiveAPIResults(results: JSON, next: ApiControllerDelegateNextTask?) {
         if results["status"] == "success" {
-          Async.background {
-            self.ref.vehicles.setStopsFromJSON(results["body"])
-            self.ref.vehicles.setLocationsFromJSON(results["body"])
-          }.main {
+          self.ref.vehicles.setStopsFromJSON(results["body"])
+          self.ref.vehicles.setLocationsFromJSON(results["body"])
+          Async.main {
             self.ref.stopTableView.reloadSections(NSIndexSet(index: 0), withRowAnimation: .Fade)
 
             // Check if the selected stop is still on the stop list
-            if self.ref.selectedStop != nil {
+            if self.ref.selectedStopId != nil {
               let selectedStopRow = self.ref.rowForStop(self.ref.selectedStop!)
               if selectedStopRow == nil {
                 log.debug("Selected stop \(self.ref.selectedStop!.name) passed")
@@ -219,26 +232,34 @@ class MainViewController: UIViewController {
       
       override func didReceiveAPIResults(results: JSON, next: ApiControllerDelegateNextTask?) {
         if results["status"] == "success" {
-          Async.background {
-            self.ref.stopDBManager.initFromJSON(results["body"])
-//            self.ref.stops = Stop.StopsFromJSON(results["body"])
-            next?(nil)
-          }
+          self.ref.stopDBManager.initFromJSON(results["body"])
+          next?(nil)
         } else { // status != success
           handleError(results, next: next)
         }
       }
     }
     
-    return ["vehicleDelegate": VehicleDelegate(ref: self), "vehicleStopsDelegate": VehicleStopsDelegate(ref: self), "stopsDelegate": StopsDelegate(ref: self)]
+    return Delegates(
+      vehicleDelegate: VehicleDelegate(ref: self),
+      stopsDelegate: StopsDelegate(ref: self),
+      vehicleStopsDelegate: VehicleStopsDelegate(ref: self))
   }()
 
   // Define real remote and and test apis to switch between at runtime
   lazy var localApi: APIControllerProtocol = {
-    return APIControllerLocal(vehDelegate: self.apiDelegate["vehicleDelegate"]!, stopsDelegate: self.apiDelegate["stopsDelegate"]!, vehStopsDelegate: self.apiDelegate["vehicleStopsDelegate"]!)
+    let api = APIControllerLocal.sharedInstance() as! APIControllerLocal
+    api.vehicleDelegate = self.apiDelegate.vehicleDelegate
+    api.stopsDelegate = self.apiDelegate.stopsDelegate
+    api.vehicleStopsDelegate = self.apiDelegate.vehicleStopsDelegate
+    return api
   }()
   lazy var remoteApi: APIControllerProtocol = {
-    return APIController(vehDelegate: self.apiDelegate["vehicleDelegate"]!, stopsDelegate: self.apiDelegate["stopsDelegate"]!, vehStopsDelegate: self.apiDelegate["vehicleStopsDelegate"]!)
+    let api = APIController.sharedInstance() as! APIController
+    api.vehicleDelegate = self.apiDelegate.vehicleDelegate
+    api.stopsDelegate = self.apiDelegate.stopsDelegate
+    api.vehicleStopsDelegate = self.apiDelegate.vehicleStopsDelegate
+    return api
   }()
   lazy var api: APIControllerProtocol = self.remoteApi
   
@@ -302,7 +323,7 @@ class MainViewController: UIViewController {
     }
     
     q.tasks +=! {
-      if self.selectedStop == nil {
+      if self.selectedStopId == nil {
         log.info("Task: show closest vehicle headers")
         self.stopTableView.scrollToTop(animated: true)
         self.vehicleScrollView.reloadData()
@@ -315,9 +336,9 @@ class MainViewController: UIViewController {
     }
     
     q.tasks +=! {
-      log.info("Task: Show stops for the selected vehicle")
+//      log.info("Task: Show stops for the selected vehicle")
 //      self.stopTableView.scrollToTop(animated: true)
-      self.stopTableView.reloadData()
+//      self.stopTableView.reloadData()
 //      self.stopTableView.reloadSections(NSIndexSet(index: 0), withRowAnimation: .Fade)
     }
     
@@ -677,7 +698,7 @@ extension MainViewController {
     }
     
     // start location updates if user has selected a stop
-    if selectedStop != nil {
+    if selectedStopId != nil {
       appDelegate.startUpdatingLocation()
     } else {
       // no stop selected so ignore updates from now on
@@ -834,7 +855,7 @@ extension MainViewController: UITableViewDelegate {
   func tableView(tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
     stopTableViewHeader = UILabel()
     if closestVehicles.count > 0 {
-      if selectedStop == nil {
+      if selectedStopId == nil {
         stopTableViewHeader!.text = NSLocalizedString("Choose your stop", comment: "")
       } else {
         stopTableViewHeader!.text = NSLocalizedString("Now tracking your stop", comment: "")
@@ -852,7 +873,7 @@ extension MainViewController: UITableViewDelegate {
   }
   
   func tableView(tableView: UITableView, heightForRowAtIndexPath indexPath: NSIndexPath) -> CGFloat {
-    if selectedStop == nil {
+    if selectedStopId == nil {
       return tableView.rowHeight
     } else {
       return tableView.bounds.height - (stopTableViewHeader?.bounds.height ?? 0)
@@ -862,7 +883,7 @@ extension MainViewController: UITableViewDelegate {
   func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
     log.verbose("vehicleScrollView:didSelectRowAtIndexPath: \(indexPath.row)")
 
-    if selectedStop == nil {
+    if selectedStopId == nil {
       expandStopAtIndexPath(indexPath)
     } else {
       // There is a dedicated close button on the view so do nothing here
@@ -996,7 +1017,7 @@ extension MainViewController: UITableViewDelegate {
     // the tapped (and only) row was already selected => add other rows back
     
     // calculate the final row for the selected stop (or nil)
-    var newRowForSelectedStop = selectedStop != nil ? rowForStop(selectedStop!) : nil
+    var newRowForSelectedStop = selectedStopId != nil ? rowForStop(selectedStop!) : nil
     
     // reset the selection
     selectedStopId = nil
@@ -1062,6 +1083,9 @@ extension MainViewController: UITableViewDelegate {
     if let newRowForSelectedStop = newRowForSelectedStop {
       stopTableView.scrollToRowAtIndexPath(NSIndexPath(forRow: newRowForSelectedStop, inSection: 0), atScrollPosition: .None, animated: true)
     }
+    // Refresh vehicle as they are not updated while stop was selected
+    progressViewManager.showProgress()
+    refreshVehicles(queue: nil) {_ in self.progressViewManager.hideProgress()}
     
     autoRefresh = false
     initAutoRefreshTimer()
@@ -1180,7 +1204,7 @@ extension MainViewController: HorizontalScrollerDelegate {
 
   // MARK: - Notification functions
   func numberOfItemsInHorizontalScroller(horizontalScroller: HorizontalScroller) -> Int {
-    let count = min(maxVisibleVehicleCount, vehicles.count)
+    let count = min(maxVisibleVehicleCount, closestVehicles.count)
     log.debug("numberOfItemsInHorizontalScroller: \(count)")
     return count
   }
@@ -1189,15 +1213,16 @@ extension MainViewController: HorizontalScrollerDelegate {
     log.verbose("horizontalScroller(_:didScrollToViewAtIndex: \(didScrollToViewAtIndex))")
 
     if closestVehicles.count > didScrollToViewAtIndex {
-      selectedVehicle = closestVehicles[didScrollToViewAtIndex]
+      selectedVehicleRef = closestVehicles[didScrollToViewAtIndex].vehicleRef
     } else {
       if closestVehicles.count > 0 {
         log.error("vehicle with invalid index selected")
       }
-      selectedVehicle = nil
+      selectedVehicleRef = nil
     }
 
-    if selectedVehicle != nil {
+    if selectedVehicleRef != nil {
+      progressViewManager.showProgress()
       refreshStopsForSelectedVehicle(queue: nil) {_ in Async.main {self.progressViewManager.hideProgress()} }
     }
   }
@@ -1213,7 +1238,7 @@ extension MainViewController: HorizontalScrollerDelegate {
     
     if numberOfTaps == 3 {
       // Switch between remote and local test data
-      selectedVehicle = nil
+      selectedVehicleRef = nil
         // TODO: switch to local APIController
       if api is APIController {
         self.api = self.localApi
@@ -1226,7 +1251,7 @@ extension MainViewController: HorizontalScrollerDelegate {
     stopTableView.scrollToTop(animated: true)
     resetVehicleScrollView()
 
-    if selectedStop != nil {
+    if selectedStopId != nil {
         appDelegate.startUpdatingLocationForWhile()
     }
     refreshAll()

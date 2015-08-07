@@ -16,7 +16,7 @@ import Async
 class StopDBManager {
   
   // Multiton instance per thread
-  static var instances: [mach_port_t: StopDBManager] = [:]
+  private static var instances: [mach_port_t: StopDBManager] = [:]
   
   /// A thread specific instance of StipDBManager
   static var sharedInstance: StopDBManager {

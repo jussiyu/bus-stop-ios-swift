@@ -27,12 +27,19 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
   static let newLocationResult = "newLocationResult"
   let locationUpdateDurationSeconds = 5.0
   var locations: [CLLocation] = []
-  
+
+  var cacheDirectory: NSURL {
+    let urls = NSFileManager.defaultManager().URLsForDirectory(.CachesDirectory, inDomains: .UserDomainMask)
+    return urls[urls.endIndex-1] as! NSURL
+  }
+
   func application(application: UIApplication, didFinishLaunchingWithOptions launchOptions: [NSObject: AnyObject]?) -> Bool {
     
     // Logger configuration
     #if DEBUG
-      log.setup(logLevel: .Verbose, showLogLevel: true, showFileNames: true, showLineNumbers: true, writeToFile: nil, fileLogLevel: .None)
+      
+      let logPath : NSURL = self.cacheDirectory.URLByAppendingPathComponent("XCGLogger_Log.txt")
+      log.setup(logLevel: .Verbose, showLogLevel: true, showFileNames: true, showLineNumbers: true, writeToFile: logPath, fileLogLevel: .Debug)
       let shortLogDateFormatter = NSDateFormatter()
       shortLogDateFormatter.locale = NSLocale.currentLocale()
       shortLogDateFormatter.dateFormat = "HH:mm:ss.SSS"

@@ -22,20 +22,22 @@ import TaskQueue
 
 class APIControllerLocal : APIControllerProtocol {
   
-  let vehDelegate, stopsDelegate, vehStopsDelegate: APIControllerDelegate
+  private static var _sharedInstance = APIControllerLocal()
+
+  weak var vehicleDelegate, stopsDelegate, vehicleStopsDelegate: APIControllerDelegate?
   let journeysAPIbaseURL = "testdata/"
   let journeysAPIDataFormat = "json"
   
-  init(vehDelegate: APIControllerDelegate, stopsDelegate: APIControllerDelegate, vehStopsDelegate: APIControllerDelegate) {
-    self.vehDelegate = vehDelegate
-    self.stopsDelegate = stopsDelegate
-    self.vehStopsDelegate = vehStopsDelegate
-    
-    log.info("!!! Using test data from folder '\(self.journeysAPIbaseURL)' !!!")
+  private init() {
+    log.info("!!! Created local API controller using test data from folder '\(self.journeysAPIbaseURL)' !!!")
+  }
+  
+  static func sharedInstance() -> APIControllerProtocol {
+    return _sharedInstance
   }
   
   func getVehicleActivitiesForLine(lineId: Int, next: ApiControllerDelegateNextTask?) {
-    doGetOnPath("journeysAPIbaseURL?lineRef", delegate: vehDelegate, next: next)
+    doGetOnPath("journeysAPIbaseURL?lineRef", delegate: vehicleDelegate, next: next)
   }
   
   //  func getVehicleActivities() {
@@ -43,11 +45,11 @@ class APIControllerLocal : APIControllerProtocol {
   //  }
   
   func getVehicleActivityStopsForVehicle(vehicleRef: String, next: ApiControllerDelegateNextTask?) {
-    doGetOnPath("\(journeysAPIbaseURL)vehicle-activity", delegate: vehStopsDelegate, cachingEnabled: false, next: next)
+    doGetOnPath("\(journeysAPIbaseURL)vehicle-activity", delegate: vehicleStopsDelegate, cachingEnabled: false, next: next)
   }
   
   func getVehicleActivityHeaders(#next: ApiControllerDelegateNextTask?) {
-    doGetOnPath("\(journeysAPIbaseURL)vehicle-activity", delegate: vehDelegate, cachingEnabled: false, next: next)
+    doGetOnPath("\(journeysAPIbaseURL)vehicle-activity", delegate: vehicleDelegate, cachingEnabled: false, next: next)
   }
   
   func getStops(next: ApiControllerDelegateNextTask?) {
@@ -58,7 +60,11 @@ class APIControllerLocal : APIControllerProtocol {
     return true
   }
   
-  private func doGetOnPath(filePath: String, delegate: APIControllerDelegate, cachingEnabled: Bool = true, next: ApiControllerDelegateNextTask?) {
+  private func doGetOnPath(filePath: String, delegate: APIControllerDelegate?, cachingEnabled: Bool = true, next: ApiControllerDelegateNextTask?) {
+    if delegate == nil {
+      log.error("Delegate not set!")
+    }
+    
     UIApplication.sharedApplication().networkActivityIndicatorVisible = true
 
     if let path = NSBundle.mainBundle().pathForResource(filePath, ofType: journeysAPIDataFormat) {
@@ -67,12 +73,12 @@ class APIControllerLocal : APIControllerProtocol {
         UIApplication.sharedApplication().networkActivityIndicatorVisible = false
         log.debug("Local data loaded completed successfully: \(filePath).\(self.journeysAPIDataFormat)")
         let json = JSON(data: data)
-        delegate.didReceiveAPIResults(json, next: next)
+        delegate?.didReceiveAPIResults(json, next: next)
       } else {
         if let error = error {
           log.error("Local data loaded unsuccessfully: \(filePath).\(self.journeysAPIDataFormat)")
           log.error(error.localizedDescription)
-          delegate.didReceiveError(error, next: next)
+          delegate?.didReceiveError(error, next: next)
         }
         return
       }

@@ -13,37 +13,44 @@ import TaskQueue
 
 typealias ApiControllerDelegateNextTask = (AnyObject?) -> Void
 
-protocol APIControllerDelegate {
+protocol APIControllerDelegate: class {
 
   func didReceiveAPIResults(results: JSON, next: ApiControllerDelegateNextTask?)
   func didReceiveError(urlerror: NSError, next: ApiControllerDelegateNextTask?)
 }
 
+struct Delegates {
+  let vehicleDelegate, stopsDelegate, vehicleStopsDelegate: APIControllerDelegate
+}
+
 protocol APIControllerProtocol {
   
-//    init(vehDelegate: APIControllerDelegate, stopsDelegate: APIControllerDelegate, vehStopsDelegate: APIControllerDelegate)
+  static func sharedInstance() -> APIControllerProtocol
   
-    func getVehicleActivitiesForLine(lineId: Int, next: ApiControllerDelegateNextTask?)
-    func getVehicleActivityStopsForVehicle(vehicleRef: String, next: ApiControllerDelegateNextTask?)
-    func getVehicleActivityHeaders(#next: ApiControllerDelegateNextTask?)
-    func getStops(next: ApiControllerDelegateNextTask?)
-    func connectedToNetwork() -> Bool
+  func getVehicleActivitiesForLine(lineId: Int, next: ApiControllerDelegateNextTask?)
+  func getVehicleActivityStopsForVehicle(vehicleRef: String, next: ApiControllerDelegateNextTask?)
+  func getVehicleActivityHeaders(#next: ApiControllerDelegateNextTask?)
+  func getStops(next: ApiControllerDelegateNextTask?)
+  func connectedToNetwork() -> Bool
 }
 
 class APIController : APIControllerProtocol {
   
-
-  let vehDelegate, stopsDelegate, vehStopsDelegate: APIControllerDelegate
+  private static var _sharedInstance = APIController()
+  
+  weak var vehicleDelegate, stopsDelegate, vehicleStopsDelegate: APIControllerDelegate?
   let journeysAPIbaseURL = "http://data.itsfactory.fi/journeys/api/1/"
   
-  init(vehDelegate: APIControllerDelegate, stopsDelegate: APIControllerDelegate, vehStopsDelegate: APIControllerDelegate) {
-    self.vehDelegate = vehDelegate
-    self.stopsDelegate = stopsDelegate
-    self.vehStopsDelegate = vehStopsDelegate
+  private init() {
+    log.info("Created remote API controller using test data from folder '\(self.journeysAPIbaseURL)'")
+  }
+  
+  static func sharedInstance() -> APIControllerProtocol {
+    return _sharedInstance
   }
   
   func getVehicleActivitiesForLine(lineId: Int, next: ApiControllerDelegateNextTask?) {
-    doGetOnPath("journeysAPIbaseURL?lineRef=\(lineId)", delegate: vehDelegate, next: next)
+    doGetOnPath("journeysAPIbaseURL?lineRef=\(lineId)", delegate: vehicleDelegate, next: next)
   }
 
 //  func getVehicleActivities() {
@@ -51,11 +58,11 @@ class APIController : APIControllerProtocol {
 //  }
 
   func getVehicleActivityStopsForVehicle(vehicleRef: String, next: ApiControllerDelegateNextTask?) {
-    doGetOnPath("\(journeysAPIbaseURL)vehicle-activity?vehicleRef=\(vehicleRef)", delegate: vehStopsDelegate, cachingEnabled: false, next: next)
+    doGetOnPath("\(journeysAPIbaseURL)vehicle-activity?vehicleRef=\(vehicleRef)", delegate: vehicleStopsDelegate, cachingEnabled: false, next: next)
   }
 
   func getVehicleActivityHeaders(#next: ApiControllerDelegateNextTask?) {
-    doGetOnPath("\(journeysAPIbaseURL)vehicle-activity?exclude-fields=monitoredVehicleJourney.onwardCalls", delegate: vehDelegate, cachingEnabled: false, next: next)
+    doGetOnPath("\(journeysAPIbaseURL)vehicle-activity?exclude-fields=monitoredVehicleJourney.onwardCalls", delegate: vehicleDelegate, cachingEnabled: false, next: next)
   }
 
   func getStops(next: ApiControllerDelegateNextTask?) {
@@ -81,7 +88,11 @@ class APIController : APIControllerProtocol {
     return (isReachable && !needsConnection)
   }
   
-  private func doGetOnPath(urlPath: String, delegate: APIControllerDelegate, cachingEnabled: Bool = true, next: ApiControllerDelegateNextTask?) {
+  private func doGetOnPath(urlPath: String, delegate: APIControllerDelegate?, cachingEnabled: Bool = true, next: ApiControllerDelegateNextTask?) {
+    if delegate == nil {
+      log.error("Delegate not set!")
+    }
+
     UIApplication.sharedApplication().networkActivityIndicatorVisible = true
 
     let url = NSURL(string: urlPath)
@@ -91,7 +102,7 @@ class APIController : APIControllerProtocol {
         if let cachedResponse = NSURLCache.sharedURLCache().cachedResponseForRequest(request) {
           log.debug("Using cached response for \(urlPath)")
           let json = JSON(data: cachedResponse.data)
-          delegate.didReceiveAPIResults(json, next: next)
+          delegate?.didReceiveAPIResults(json, next: next)
           return
         }
       } else {
@@ -112,12 +123,12 @@ class APIController : APIControllerProtocol {
         if(urlError != nil) {
           log.error("Task completed unsuccessfully: " + urlPath)
           log.error(urlError.localizedDescription)
-          delegate.didReceiveError(urlError, next: next)
+          delegate?.didReceiveError(urlError, next: next)
           return
         } else {
           log.debug("Task completed successfully: " + urlPath)
           let json = JSON(data: data)
-          delegate.didReceiveAPIResults(json, next: next)
+          delegate?.didReceiveAPIResults(json, next: next)
         }
       })
       
