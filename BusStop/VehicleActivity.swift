@@ -29,6 +29,7 @@ class VehicleActivity : Equatable {
   var description: String {
     return "vehicleRef: \(vehicleRef), loc: \(location?.coordinate.latitude.toString(fractionDigits: 2)):\(location?.coordinate.longitude.toString(fractionDigits: 2))"
   }
+  var lastUpdated = NSDate()
  
   var formattedVehicleRef: String {
     let comps = vehicleRef.componentsSeparatedByString("_")
@@ -78,7 +79,7 @@ class VehicleActivity : Equatable {
     if let vehicleRef = monVeh["vehicleRef"].string, lineRef = monVeh["lineRef"].string where !vehicleRef.isEmpty && !lineRef.isEmpty {
       self.vehicleRef = vehicleRef
       self.lineRef = lineRef
-      
+
       let delayString = monVeh["delay"].string
       self.delay = delayString?.fromStringToTimeInterval() ?? 0
       
@@ -86,6 +87,7 @@ class VehicleActivity : Equatable {
       setStopsFromJSON(monVeh)
       
     } else {
+      lastUpdated = NSDate()
       log.error("failed to parse vehicle activity from JSON: \(monVeh)")
       self.vehicleRef = ""
       self.lineRef = ""
@@ -118,6 +120,7 @@ class VehicleActivity : Equatable {
         log.error("Failed to create vehicle activity stop from JSON\n\(subJSON)")
       }
     }
+    lastUpdated = NSDate()
 //    log.info("onwardCalls count: \(stops.count)")
   }
 
@@ -130,6 +133,7 @@ class VehicleActivity : Equatable {
         self.location = CLLocation(latitude: lat, longitude: lon)
       }
     }
+    lastUpdated = NSDate()
   }
 
   func distanceFromUserLocation(userLocation: CLLocation) -> String {

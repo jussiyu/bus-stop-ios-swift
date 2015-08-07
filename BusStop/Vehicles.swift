@@ -19,6 +19,8 @@ class Vehicles {
     return vehicles.count
   }
   
+  var lastUpdated = NSDate()
+  
   init () {
   }
   
@@ -35,7 +37,8 @@ class Vehicles {
         }
       }
     }
-        log.debug("Vehicles read: \(self.vehicles.count)")
+    lastUpdated = NSDate()
+    log.debug("Vehicles read: \(self.vehicles.count)")
   }
  
   // TODO does not make sense
@@ -66,6 +69,7 @@ class Vehicles {
       }
       ++vehicleCount
     }
+    lastUpdated = NSDate()
     log.debug("Location for vehicles read: \(vehicleCount)")
   }
   
@@ -80,6 +84,7 @@ class Vehicles {
       }
       ++vehicleCount
     }
+    lastUpdated = NSDate()
   }
 }
 

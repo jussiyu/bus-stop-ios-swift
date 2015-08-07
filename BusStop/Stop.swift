@@ -28,18 +28,8 @@ class Stop : Object, Printable {
     self.name = name
     latitude = location?.coordinate.latitude ?? 0.0
     longitude = location?.coordinate.longitude ?? 0.0
-
   }
 
-//  required init() {
-//    self.id = ""
-//    self.name = ""
-//    latitude = 0
-//    longitude = 0
-//    
-//    super.init()
-//  }
-//  
   func distanceFromUserLocation(userLocation: CLLocation) -> String {
     if latitude != 0 && longitude != 0 {
       let dist = location.distanceFromLocation(userLocation)
