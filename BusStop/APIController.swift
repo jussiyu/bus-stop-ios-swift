@@ -32,21 +32,55 @@ protocol APIControllerProtocol {
   func getVehicleActivityHeaders(#next: ApiControllerDelegateNextTask?)
   func getStops(next: ApiControllerDelegateNextTask?)
   func connectedToNetwork() -> Bool
+  func invalidateSessions()
 }
 
-class APIController : APIControllerProtocol {
+class APIController : NSObject, APIControllerProtocol {
   
   private static var _sharedInstance = APIController()
+  lazy var defaultSession: NSURLSession = {
+    var defaultConfiguration = NSURLSessionConfiguration.defaultSessionConfiguration()
+    return NSURLSession(configuration: defaultConfiguration, delegate: self, delegateQueue: nil)
+  }()
+  lazy var cachedSession: NSURLSession  = {
+    var cachedConfiguration = NSURLSessionConfiguration.defaultSessionConfiguration()
+    cachedConfiguration.URLCache = nil
+    cachedConfiguration.requestCachePolicy = .ReloadIgnoringLocalCacheData
+    return NSURLSession(configuration: cachedConfiguration)
+  }()
   
   weak var vehicleDelegate, stopsDelegate, vehicleStopsDelegate: APIControllerDelegate?
   let journeysAPIbaseURL = "http://data.itsfactory.fi/journeys/api/1/"
   
-  private init() {
+  /// Tasks that are either .Suspended, .Running or .Cancelling
+  var activeTasks = [NSURLSessionDataTask]()
+  
+  override private init() {
+    super.init()
     log.info("Created remote API controller using test data from folder '\(self.journeysAPIbaseURL)'")
+  }
+  
+  deinit {
+    invalidateSessions()
+  }
+  
+  /// Cancel all active tasks
+  func cancelTasks() {
+    synchronize(activeTasks) {
+      while !self.activeTasks.isEmpty {
+        self.activeTasks.removeLast().cancel()
+      }
+    }
   }
   
   static func sharedInstance() -> APIControllerProtocol {
     return _sharedInstance
+  }
+
+  func invalidateSessions() {
+    log.verbose("")
+    defaultSession.invalidateAndCancel()
+    cachedSession.invalidateAndCancel()
   }
   
   func getVehicleActivitiesForLine(lineId: Int, next: ApiControllerDelegateNextTask?) {
@@ -99,6 +133,7 @@ class APIController : APIControllerProtocol {
     if let url = url {
       let request = NSMutableURLRequest(URL: url, cachePolicy: cachingEnabled ? .UseProtocolCachePolicy : .ReloadIgnoringLocalCacheData, timeoutInterval: 30.0)
       if cachingEnabled {
+        request.addValue("no-cache", forHTTPHeaderField: "Cache-Control")
         if let cachedResponse = NSURLCache.sharedURLCache().cachedResponseForRequest(request) {
           log.debug("Using cached response for \(urlPath)")
           let json = JSON(data: cachedResponse.data)
@@ -111,32 +146,42 @@ class APIController : APIControllerProtocol {
           NSURLCache.sharedURLCache().removeCachedResponseForRequest(request)
         }
       }
-      var configuration = NSURLSessionConfiguration.defaultSessionConfiguration()
-      if !cachingEnabled {
-        configuration.URLCache = nil
-        configuration.requestCachePolicy = .ReloadIgnoringLocalCacheData
-        request.addValue("no-cache", forHTTPHeaderField: "Cache-Control")
-      }
+
+      let session = cachingEnabled ? cachedSession : defaultSession
       
-      let task = NSURLSession(configuration: configuration).dataTaskWithURL(url, completionHandler: {data, response, urlError -> Void in
+      let task = session.dataTaskWithURL(url, completionHandler: {data, response, error -> Void in
         UIApplication.sharedApplication().networkActivityIndicatorVisible = false
-        if(urlError != nil) {
-          log.error("Task completed unsuccessfully: " + urlPath)
-          log.error(urlError.localizedDescription)
-          delegate?.didReceiveError(urlError, next: next)
-          return
-        } else {
+        let response = response as! NSHTTPURLResponse
+        if error == nil && response.statusCode == 200 {
           log.debug("Task completed successfully: " + urlPath)
           let json = JSON(data: data)
           delegate?.didReceiveAPIResults(json, next: next)
+        } else {
+          log.error("Task completed unsuccessfully: " + urlPath)
+          log.error(error.localizedDescription)
+          delegate?.didReceiveError(error, next: next)
+          return
         }
       })
       
-      // The task is just an object with all these properties set
-      // In order to actually make the web request, we need to "resume"
       task.resume()
+      synchronize(activeTasks) {
+        if task.state == .Running {
+          self.activeTasks.append(task)
+        }
+      }
+      log.debug("Started datatask with id \(task.taskIdentifier))")
     } else {
       log.severe("Invalid URL: " + urlPath)
+    }
+  }
+}
+
+extension APIController: NSURLSessionDataDelegate {
+  func URLSession(session: NSURLSession, task: NSURLSessionTask, didCompleteWithError error: NSError?) {
+    log.debug("didCompleteWithError: \(task.taskIdentifier)")
+    synchronize(activeTasks) {
+      self.activeTasks.remove(task)
     }
   }
 }

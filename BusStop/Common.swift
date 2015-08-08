@@ -17,21 +17,21 @@ func cap<T : Comparable>(value: T, min minimum: T, max maximum: T) -> T {
 }
 
 extension String {
-  static var localeNumberFormatter: NSNumberFormatter = {
+  static let localeNumberFormatter: NSNumberFormatter = {
     let f = NSNumberFormatter()
     f.locale = NSLocale.currentLocale()
     f.numberStyle = NSNumberFormatterStyle.DecimalStyle
     return f
   }()
 
-  static var posixNumberFormatter: NSNumberFormatter = {
+  static let posixNumberFormatter: NSNumberFormatter = {
     let f = NSNumberFormatter()
     f.locale = NSLocale(localeIdentifier: "en_US_POSIX")
     f.numberStyle = NSNumberFormatterStyle.DecimalStyle
     return f
   }()
 
-  static var iso8601DateFormatter: NSDateFormatter = {
+  static let iso8601DateFormatter: NSDateFormatter = {
     // 2015-07-13T14:32:00+03:00
     let f = NSDateFormatter()
     f.locale = NSLocale(localeIdentifier: "en_US_POSIX")
@@ -163,6 +163,15 @@ extension Array{
     for (index,obj) in enumerate(self) {
       if obj as? T == object {
         return index
+      }
+    }
+    return nil
+  }
+
+  mutating func remove<T : Equatable>(object:T) -> Int? {
+    for (index,obj) in enumerate(self) {
+      if obj as? T == object {
+        self.removeAtIndex(index)
       }
     }
     return nil

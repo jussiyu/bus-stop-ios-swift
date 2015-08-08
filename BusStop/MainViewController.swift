@@ -446,13 +446,15 @@ class MainViewController: UIViewController {
   }
 
   deinit {
-    log.verbose("deinit")
+    log.verbose("")
     NSNotificationCenter.defaultCenter().removeObserver(self)
     
     if systemSoundID != 0 {
       AudioServicesDisposeSystemSoundID(systemSoundID)
       self.systemSoundID = 0
     }
+    
+    api.invalidateSessions()
   }
 
   

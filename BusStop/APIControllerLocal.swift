@@ -36,6 +36,8 @@ class APIControllerLocal : APIControllerProtocol {
     return _sharedInstance
   }
   
+  func invalidateSessions() {}
+
   func getVehicleActivitiesForLine(lineId: Int, next: ApiControllerDelegateNextTask?) {
     doGetOnPath("journeysAPIbaseURL?lineRef", delegate: vehicleDelegate, next: next)
   }
