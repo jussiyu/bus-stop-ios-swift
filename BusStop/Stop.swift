@@ -13,15 +13,15 @@ import XCGLogger
 import RealmSwift
 
 
-class Stop : Object, Printable {
-  dynamic var id: String = ""
-  dynamic var name: String = ""
-  dynamic var latitude: CLLocationDegrees = 0.0
-  dynamic var longitude: CLLocationDegrees = 0.0
-  dynamic var location: CLLocation {return CLLocation(latitude: latitude, longitude: longitude)}
-  dynamic var favorite = false
+public class Stop : Object, Printable {
+  public dynamic var id: String = ""
+  public dynamic var name: String = ""
+  public dynamic var latitude: CLLocationDegrees = 0.0
+  public dynamic var longitude: CLLocationDegrees = 0.0
+  public dynamic var location: CLLocation {return CLLocation(latitude: latitude, longitude: longitude)}
+  public dynamic var favorite = false
   
-  convenience init(id: String, name: String, ref: String = "", location: CLLocation? = nil) {
+  public convenience init(id: String, name: String, ref: String = "", location: CLLocation? = nil) {
     self.init()
 
     self.id = id
@@ -30,7 +30,7 @@ class Stop : Object, Printable {
     longitude = location?.coordinate.longitude ?? 0.0
   }
 
-  func distanceFromUserLocation(userLocation: CLLocation) -> String {
+  public func distanceFromUserLocation(userLocation: CLLocation) -> String {
     if latitude != 0 && longitude != 0 {
       let dist = location.distanceFromLocation(userLocation)
       if dist < 1000 {
@@ -46,15 +46,15 @@ class Stop : Object, Printable {
     
   }
   
-  override class func primaryKey() -> String? {
+  override public class func primaryKey() -> String? {
     return "id"
   }
   
-  override class func ignoredProperties() -> [String] {
+  override public class func ignoredProperties() -> [String] {
     return ["location"]
   }
   
-  override var description: String {
+  override public var description: String {
     return name
   }
 
