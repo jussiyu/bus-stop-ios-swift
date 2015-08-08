@@ -20,7 +20,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
   var window: UIWindow?
 
-  var locationManager: CLLocationManager?
+  lazy var locationManager = CLLocationManager()
+
   var locationUpdateTimer: Async?
   var locationUpdateStartTime: NSDate?
   static let newLocationNotificationName = "newLocationNotification"
@@ -66,7 +67,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
     if CLLocationManager.locationServicesEnabled() {
       // Request location usage in async if needed
-      locationManager?.requestWhenInUseAuthorization()
+      locationManager.requestWhenInUseAuthorization()
     } else {
       locationServiceDisabledAlert()
     }
@@ -83,7 +84,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     log.verbose("")
     
     // Maximize battery on background
-    locationManager?.desiredAccuracy = kCLLocationAccuracyThreeKilometers
+    locationManager.desiredAccuracy = kCLLocationAccuracyThreeKilometers
 
     // Sent when the application is about to move from active to inactive state. This can occur for certain types of temporary interruptions (such as an incoming phone call or SMS message) or when the user quits the application and it begins the transition to the background state.
     // Use this method to pause ongoing tasks, disable timers, and throttle down OpenGL ES frame rates. Games should use this method to pause the game.
@@ -104,7 +105,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     log.verbose("")
 
     // reset the default accuracy
-    locationManager?.desiredAccuracy = kCLLocationAccuracyNearestTenMeters
+    locationManager.desiredAccuracy = kCLLocationAccuracyNearestTenMeters
 
     
     // Restart any tasks that were paused (or not yet started) while the application was inactive. If the application was previously in the background, optionally refresh the user interface.
@@ -135,7 +136,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
   func applicationWillTerminate(application: UIApplication) {
     // Called when the application is about to terminate. Save data if appropriate. See also applicationDidEnterBackground:.
-    locationManager?.stopUpdatingLocation()
+    locationManager.stopUpdatingLocation()
   }
   
   func applicationDidReceiveMemoryWarning(application: UIApplication) {
@@ -148,20 +149,17 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
     if status == .AuthorizedWhenInUse {
       
-      locationManager = locationManager ?? CLLocationManager()
-      if let locationManager = locationManager {
-        locationManager.delegate = self
-        locationManager.desiredAccuracy = kCLLocationAccuracyNearestTenMeters
-        locationManager.activityType = CLActivityType.AutomotiveNavigation
-        locationManager.distanceFilter = 10 // meters
-        
-        startUpdatingLocationForWhile()
-      }
+      locationManager.delegate = self
+      locationManager.desiredAccuracy = kCLLocationAccuracyNearestTenMeters
+      locationManager.activityType = CLActivityType.AutomotiveNavigation
+      locationManager.distanceFilter = 10 // meters
+      
+      startUpdatingLocationForWhile()
 
     } else {
       // User disapproved location updates so make sure that we no more use it
-      locationManager?.stopUpdatingLocation()
-      locationManager?.stopMonitoringSignificantLocationChanges()
+      locationManager.stopUpdatingLocation()
+      locationManager.stopMonitoringSignificantLocationChanges()
       log.error("Location service not authorized by the user")
       locationServiceDisabledAlert(authorizationStatus: status)
     }
@@ -169,7 +167,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
   }
   
   func startUpdatingLocation() {
-    locationManager?.startUpdatingLocation()
+    locationManager.startUpdatingLocation()
   }
   
   
@@ -183,7 +181,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     if CLLocationManager.locationServicesEnabled() &&
       CLLocationManager.authorizationStatus() == CLAuthorizationStatus.AuthorizedWhenInUse {
         locations = []
-        locationManager?.startUpdatingLocation()
+        locationManager.startUpdatingLocation()
         log.debug("started location monitoring")
         locationUpdateStartTime = NSDate()
         locationUpdateTimer = Async.background(after: locationUpdateDurationSeconds, block: handleReceivedLocations)
@@ -194,7 +192,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
   
   func stopUpdatingLocation(handleReceivedLocations handle: Bool) {
     log.verbose("")
-    locationManager?.stopUpdatingLocation()
+    locationManager.stopUpdatingLocation()
     locationUpdateTimer?.cancel()
     if locationUpdateTimer != nil && handle {
       handleReceivedLocations()
@@ -213,7 +211,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
     let monitoringDuration = abs(locationUpdateStartTime?.timeIntervalSinceNow ?? 0)
     log.debug("Location monitoring stopped after \(monitoringDuration) seconds and \(self.locations.count) locations")
-    locationManager?.stopUpdatingLocation()
+    locationManager.stopUpdatingLocation()
     let initialLocation = CLLocation()
     var bestLocation: CLLocation? =
     locations.reduce(nil as CLLocation?) { (best, candidate) in
@@ -303,7 +301,7 @@ extension AppDelegate: CLLocationManagerDelegate {
     log.error("Location Manager didFailWithError: \(error)")
 
     if error == CLError.Denied.rawValue || error == CLError.LocationUnknown.rawValue {
-      locationManager?.stopUpdatingLocation()
+      locationManager.stopUpdatingLocation()
     }
   }
   
