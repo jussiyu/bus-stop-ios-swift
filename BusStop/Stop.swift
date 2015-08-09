@@ -33,7 +33,9 @@ public class Stop : Object, Printable {
   public func distanceFromUserLocation(userLocation: CLLocation) -> String {
     if latitude != 0 && longitude != 0 {
       let dist = location.distanceFromLocation(userLocation)
-      if dist < 1000 {
+      if dist == 0 {
+        return NSLocalizedString("Exactly at your location", comment: "")
+      } else if dist < 1000 {
         return NSString.localizedStringWithFormat(
           NSLocalizedString("%d meter(s) from your location", comment: "distance in meters"), lround(dist)) as String
       } else {
