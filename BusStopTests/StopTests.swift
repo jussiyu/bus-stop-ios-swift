@@ -4,31 +4,73 @@ import CoreLocation
 import XCGLogger
 
 
-class StopTests: XCTestCase {
+class StopTests: QuickSpec {
   
-  override func setUp() {
-    super.setUp()
-    setUpLog()
-  }
-//  override func spec() {
-//    
+//  override func setUp() {
+//    super.setUp()
+//    setUpLog()
 //  }
-  
-  func testInit_createsObjectWithMandatoryProperties() {
-    let stop = Stop(id: "id", name: "name")
-    XCTAssertEqual(stop.id, "id", "Stop created with id")
-    XCTAssertEqual(stop.name, "name", "Stop created with name")
-    XCTAssertEqual(stop.longitude, 0, "Stop created with zero longitude")
-    XCTAssertEqual(stop.latitude, 0, "Stop created with zero latitude")
-    XCTAssertEqual(stop.favorite, false, "Stop created as non-favorite")
-  }
-  
-  func testInit_createsObjectWithAllProperties() {
-    let stop = Stop(id: "id", name: "name", location: CLLocation(latitude: 10, longitude: 20))
-    XCTAssertEqual(stop.id, "id", "Stop created with id")
-    XCTAssertEqual(stop.name, "name", "Stop created with name")
-    XCTAssertEqual(stop.latitude, 10, "Stop created with non-zero latitude")
-    XCTAssertEqual(stop.longitude, 20, "Stop created with non-zero longitude")
-    XCTAssertEqual(stop.favorite, false, "Stop created as non-favorite")
+  override func spec() {
+    beforeSuite {
+      setUpLog()
+    }
+
+    describe("a new stop") {
+      var stop: Stop!
+      
+      describe("to be created using mandatory parameters") {
+
+        beforeEach {
+          stop = Stop(id: "id", name: "name")
+        }
+        
+        it("with id") {
+          expect(stop.id).to(equal("id"))
+        }
+
+        it("with name") {
+          expect(stop.name).to(equal("name"))
+        }
+
+        it("without valid latitude") {
+          expect(stop.latitude).to(equal(0.0))
+        }
+        
+        it("without valid longitude") {
+          expect(stop.longitude).to(equal(0.0))
+        }
+      }
+
+      describe("to be created using location") {
+
+        beforeEach {
+          stop = Stop(id: "id", name: "name", location: CLLocation(latitude: 10, longitude: 20))
+        }
+        
+        it("with coordinate with latitude") {
+          expect(stop.location.coordinate.latitude).to(equal(10))
+        }
+        it("with coordinate with longitude") {
+          expect(stop.location.coordinate.longitude).to(equal(20))
+        }
+      }
+    
+      describe("is distance from a location") {
+        var stop: Stop!
+        beforeEach {
+          stop = Stop(id: "id", name: "name", location: CLLocation(latitude: -23, longitude: 61))
+        }
+        
+        it("of 0 meters") {
+          let sameLocation = CLLocation(latitude: -23, longitude: 61)
+          expect(stop.distanceFromUserLocation(sameLocation)).to(equal(NSLocalizedString("exactly in your location", comment: "")))
+        }
+        
+        it("of x meters") {
+          let differentLocation = CLLocation(latitude: -23, longitude: 62)
+          expect(stop.distanceFromUserLocation(differentLocation)).to(contain("from your location"))
+        }
+      }
+    }
   }
 }
