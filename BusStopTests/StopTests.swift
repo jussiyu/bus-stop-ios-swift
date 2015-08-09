@@ -63,7 +63,7 @@ class StopTests: QuickSpec {
         
         it("of 0 meters") {
           let sameLocation = CLLocation(latitude: -23, longitude: 61)
-          expect(stop.distanceFromUserLocation(sameLocation)).to(equal(NSLocalizedString("exactly in your location", comment: "")))
+          expect(stop.distanceFromUserLocation(sameLocation)).to(equal(NSLocalizedString("Exactly at your location", comment: "")))
         }
         
         it("of x meters") {
