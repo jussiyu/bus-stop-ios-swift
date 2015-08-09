@@ -21,7 +21,7 @@ public class Stop : Object, Printable {
   public dynamic var location: CLLocation {return CLLocation(latitude: latitude, longitude: longitude)}
   public dynamic var favorite = false
   
-  public convenience init(id: String, name: String, ref: String = "", location: CLLocation? = nil) {
+  public convenience init(id: String, name: String, location: CLLocation? = nil) {
     self.init()
 
     self.id = id

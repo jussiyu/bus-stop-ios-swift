@@ -7,12 +7,13 @@ target 'BusStop' do
   pod 'MediumProgressView', :git => 'file:///Users/jussi/dev/iOS/mediumprogressview/'
   pod 'ReachabilitySwift', '~> 1.1'
   pod 'XCGLogger', '~> 2.1'
-  pod 'Async', :git => 'https://github.com/duemunk/Async.git'
+  #  pod 'Async', :git => 'https://github.com/duemunk/Async.git'
   pod 'TaskQueue', :git => 'file:///Users/jussi/dev/iOS/TaskQueue', :branch => 'accesscontrol'
   pod 'RealmSwift', '~> 0.94'
 end
 
 target 'BusStopTests' do
-  pod 'SwiftyJSON', '~> 2.2'
+  pod 'Quick', '~>0.3.0'
+  pod 'Nimble', '~>1.0.0'
 end
 

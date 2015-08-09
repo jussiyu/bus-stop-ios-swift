@@ -11,7 +11,6 @@ import CoreLocation
 import SwiftyJSON
 import XCGLogger
 import RealmSwift
-import Async
 
 class StopDBManager {
   

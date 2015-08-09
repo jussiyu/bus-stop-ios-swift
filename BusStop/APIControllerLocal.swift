@@ -75,7 +75,11 @@ class APIControllerLocal : APIControllerProtocol {
         UIApplication.sharedApplication().networkActivityIndicatorVisible = false
         log.debug("Local data loaded completed successfully: \(filePath).\(self.journeysAPIDataFormat)")
         let json = JSON(data: data)
-        delegate?.didReceiveAPIResults(json, next: next)
+        if let jsonError = json.error {
+          log.error("Error parsing JSON: \(jsonError)")
+        } else {
+          delegate?.didReceiveAPIResults(json, next: next)
+        }
       } else {
         if let error = error {
           log.error("Local data loaded unsuccessfully: \(filePath).\(self.journeysAPIDataFormat)")

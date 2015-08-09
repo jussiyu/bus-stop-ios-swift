@@ -12,7 +12,7 @@ import CoreLocation
 import MediumProgressView
 import ReachabilitySwift
 import XCGLogger
-import Async
+import AsyncLegacy
 import TaskQueue
 import AudioToolbox
 
@@ -261,7 +261,7 @@ class MainViewController: UIViewController {
     api.vehicleStopsDelegate = self.apiDelegate.vehicleStopsDelegate
     return api
   }()
-  lazy var api: APIControllerProtocol = self.remoteApi
+  lazy var api: APIControllerProtocol = self.appDelegate.useTestData ? self.localApi : self.remoteApi
   
   var initialRefreshTaskQueue: TaskQueue?
   

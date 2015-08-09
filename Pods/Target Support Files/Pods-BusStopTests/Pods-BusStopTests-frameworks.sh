@@ -52,8 +52,10 @@ code_sign_if_enabled() {
 
 
 if [[ "$CONFIGURATION" == "Debug" ]]; then
-  install_framework 'Pods-BusStopTests/SwiftyJSON.framework'
+  install_framework 'Pods-BusStopTests/Nimble.framework'
+  install_framework 'Pods-BusStopTests/Quick.framework'
 fi
 if [[ "$CONFIGURATION" == "Release" ]]; then
-  install_framework 'Pods-BusStopTests/SwiftyJSON.framework'
+  install_framework 'Pods-BusStopTests/Nimble.framework'
+  install_framework 'Pods-BusStopTests/Quick.framework'
 fi

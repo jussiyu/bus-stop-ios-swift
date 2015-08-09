@@ -4,6 +4,21 @@
 <dict>
 	<key>SchemeUserState</key>
 	<dict>
+		<key>AsyncLegacy.xcscheme</key>
+		<dict>
+			<key>orderHint</key>
+			<integer>14</integer>
+		</dict>
+		<key>BusStop copy.xcscheme</key>
+		<dict>
+			<key>orderHint</key>
+			<integer>2</integer>
+		</dict>
+		<key>BusStop with dummy location.xcscheme</key>
+		<dict>
+			<key>orderHint</key>
+			<integer>1</integer>
+		</dict>
 		<key>BusStop.xcscheme</key>
 		<dict>
 			<key>orderHint</key>
@@ -18,6 +33,31 @@
 			<true/>
 		</dict>
 		<key>4A0EA36D1B21C0B000F747D0</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>4A15474F1B7761EC0004688F</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>4A15477A1B7766C60004688F</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>4A1547841B7766C60004688F</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>4A1547971B7767BA0004688F</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>4A1547A11B7767BB0004688F</key>
 		<dict>
 			<key>primary</key>
 			<true/>

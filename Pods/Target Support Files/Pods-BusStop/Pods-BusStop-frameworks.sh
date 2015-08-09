@@ -52,7 +52,6 @@ code_sign_if_enabled() {
 
 
 if [[ "$CONFIGURATION" == "Debug" ]]; then
-  install_framework 'Pods-BusStop/Async.framework'
   install_framework 'Pods-BusStop/MediumProgressView.framework'
   install_framework 'Pods-BusStop/ReachabilitySwift.framework'
   install_framework 'Pods-BusStop/Realm.framework'
@@ -62,7 +61,6 @@ if [[ "$CONFIGURATION" == "Debug" ]]; then
   install_framework 'Pods-BusStop/XCGLogger.framework'
 fi
 if [[ "$CONFIGURATION" == "Release" ]]; then
-  install_framework 'Pods-BusStop/Async.framework'
   install_framework 'Pods-BusStop/MediumProgressView.framework'
   install_framework 'Pods-BusStop/ReachabilitySwift.framework'
   install_framework 'Pods-BusStop/Realm.framework'

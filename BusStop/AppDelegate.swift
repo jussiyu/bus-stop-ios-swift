@@ -11,7 +11,7 @@ import UIKit
 import CoreLocation
 import ReachabilitySwift
 import XCGLogger
-import Async
+import AsyncLegacy
 
 let log = XCGLogger.defaultInstance()
 
@@ -28,6 +28,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
   static let newLocationResult = "newLocationResult"
   let locationUpdateDurationSeconds = 5.0
   var locations: [CLLocation] = []
+  var useTestData = false
 
   var cacheDirectory: NSURL {
     let urls = NSFileManager.defaultManager().URLsForDirectory(.CachesDirectory, inDomains: .UserDomainMask)
@@ -51,10 +52,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
       log.setup(logLevel: .Severe, showLogLevel: true, showFileNames: true, showLineNumbers: true, writeToFile: nil, fileLogLevel: .None)
     #endif
 
-    if let launchOptions = launchOptions,
-      localNotification = launchOptions[UIApplicationLaunchOptionsLocalNotificationKey] as? UILocalNotification {
-      log.debug("local notification received: \(localNotification)")
-    } else {
+    if let launchOptions = launchOptions {
+      if let localNotification = launchOptions[UIApplicationLaunchOptionsLocalNotificationKey] as? UILocalNotification {
+        log.debug("Launched with local notification:\n \(localNotification)")
+      }
     }
     
     // reset badge if allowed
@@ -72,6 +73,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
       locationServiceDisabledAlert()
     }
 
+    useTestData = NSUserDefaults().boolForKey("UseTestData")
 
 //    // URL cache
 //    let URLCache = NSURLCache(memoryCapacity: 4 * 1024 * 1024, diskCapacity: 4 * 1024 * 1024, diskPath: "nsurlcache")
