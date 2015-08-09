@@ -1,12 +1,18 @@
 import Quick
 import Nimble
-import BusStop
 import CoreLocation
+import XCGLogger
 
-class StopTests: QuickSpec {
-    override func spec() {
 
-    }
+class StopTests: XCTestCase {
+  
+  override func setUp() {
+    super.setUp()
+    setUpLog()
+  }
+//  override func spec() {
+//    
+//  }
   
   func testInit_createsObjectWithMandatoryProperties() {
     let stop = Stop(id: "id", name: "name")
@@ -21,8 +27,8 @@ class StopTests: QuickSpec {
     let stop = Stop(id: "id", name: "name", location: CLLocation(latitude: 10, longitude: 20))
     XCTAssertEqual(stop.id, "id", "Stop created with id")
     XCTAssertEqual(stop.name, "name", "Stop created with name")
-    XCTAssertEqual(stop.longitude, 10, "Stop created with non-zero longitude")
-    XCTAssertEqual(stop.latitude, 20, "Stop created with non-zero latitude")
+    XCTAssertEqual(stop.latitude, 10, "Stop created with non-zero latitude")
+    XCTAssertEqual(stop.longitude, 20, "Stop created with non-zero longitude")
     XCTAssertEqual(stop.favorite, false, "Stop created as non-favorite")
   }
 }

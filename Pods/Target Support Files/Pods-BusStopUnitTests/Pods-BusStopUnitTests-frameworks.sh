@@ -52,18 +52,18 @@ code_sign_if_enabled() {
 
 
 if [[ "$CONFIGURATION" == "Debug" ]]; then
-  install_framework 'Pods-BusStopTests/Realm.framework'
-  install_framework 'Pods-BusStopTests/RealmSwift.framework'
-  install_framework 'Pods-BusStopTests/SwiftyJSON.framework'
-  install_framework 'Pods-BusStopTests/XCGLogger.framework'
-  install_framework 'Pods-BusStopTests/Nimble.framework'
-  install_framework 'Pods-BusStopTests/Quick.framework'
+  install_framework 'Pods-BusStopUnitTests/Realm.framework'
+  install_framework 'Pods-BusStopUnitTests/RealmSwift.framework'
+  install_framework 'Pods-BusStopUnitTests/SwiftyJSON.framework'
+  install_framework 'Pods-BusStopUnitTests/XCGLogger.framework'
+  install_framework 'Pods-BusStopUnitTests/Nimble.framework'
+  install_framework 'Pods-BusStopUnitTests/Quick.framework'
 fi
 if [[ "$CONFIGURATION" == "Release" ]]; then
-  install_framework 'Pods-BusStopTests/Realm.framework'
-  install_framework 'Pods-BusStopTests/RealmSwift.framework'
-  install_framework 'Pods-BusStopTests/SwiftyJSON.framework'
-  install_framework 'Pods-BusStopTests/XCGLogger.framework'
-  install_framework 'Pods-BusStopTests/Nimble.framework'
-  install_framework 'Pods-BusStopTests/Quick.framework'
+  install_framework 'Pods-BusStopUnitTests/Realm.framework'
+  install_framework 'Pods-BusStopUnitTests/RealmSwift.framework'
+  install_framework 'Pods-BusStopUnitTests/SwiftyJSON.framework'
+  install_framework 'Pods-BusStopUnitTests/XCGLogger.framework'
+  install_framework 'Pods-BusStopUnitTests/Nimble.framework'
+  install_framework 'Pods-BusStopUnitTests/Quick.framework'
 fi

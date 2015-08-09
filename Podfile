@@ -13,6 +13,17 @@ target 'BusStop' do
 end
 
 target 'BusStopTests' do
+  pod 'RealmSwift', '~> 0.94'
+  pod 'XCGLogger', '~> 2.1'
+  pod 'SwiftyJSON', '~> 2.2'
+  pod 'Quick', '~>0.3.0'
+  pod 'Nimble', '~>1.0.0'
+end
+
+target 'BusStopUnitTests' do
+  pod 'RealmSwift', '~> 0.94'
+  pod 'XCGLogger', '~> 2.1'
+  pod 'SwiftyJSON', '~> 2.2'
   pod 'Quick', '~>0.3.0'
   pod 'Nimble', '~>1.0.0'
 end

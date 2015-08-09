@@ -48,7 +48,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
       log.dateFormatter = shortLogDateFormatter
       log.xcodeColorsEnabled = true
       log.xcodeColors[XCGLogger.LogLevel.Info] = XCGLogger.XcodeColor(fg: (147, 147, 255))
-      #else
+    #else
       log.setup(logLevel: .Severe, showLogLevel: true, showFileNames: true, showLineNumbers: true, writeToFile: nil, fileLogLevel: .None)
     #endif
 

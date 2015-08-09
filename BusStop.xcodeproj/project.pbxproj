@@ -10,7 +10,6 @@
 		4A0EA35F1B21C0B000F747D0 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A0EA35E1B21C0B000F747D0 /* AppDelegate.swift */; };
 		4A0EA3661B21C0B000F747D0 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 4A0EA3651B21C0B000F747D0 /* Images.xcassets */; };
 		4A0EA3691B21C0B000F747D0 /* LaunchScreen.xib in Resources */ = {isa = PBXBuildFile; fileRef = 4A0EA3671B21C0B000F747D0 /* LaunchScreen.xib */; };
-		4A0EA3751B21C0B000F747D0 /* BusStopTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A0EA3741B21C0B000F747D0 /* BusStopTests.swift */; };
 		4A0EA37F1B23234100F747D0 /* MainViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A0EA37E1B23234100F747D0 /* MainViewController.swift */; };
 		4A0EA3811B23235800F747D0 /* APIController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A0EA3801B23235800F747D0 /* APIController.swift */; };
 		4A10E1EE1B2F03B900231417 /* CoreLocation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4A10E1ED1B2F03B900231417 /* CoreLocation.framework */; };
@@ -19,6 +18,14 @@
 		4A15479D1B7767BB0004688F /* AsyncLegacy.h in Headers */ = {isa = PBXBuildFile; fileRef = 4A15479C1B7767BB0004688F /* AsyncLegacy.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		4A1547B01B7767BC0004688F /* AsyncLegacy.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 4A1547981B7767BA0004688F /* AsyncLegacy.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		4A1547B81B7767C20004688F /* AsyncLegacy.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A1547741B7762B40004688F /* AsyncLegacy.swift */; };
+		4A1547E21B7795A50004688F /* Stop.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A141B9F1B2B15890009DED9 /* Stop.swift */; };
+		4A1547E31B7795A50004688F /* StopDBManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A1B1EB41B7237FD001C61D9 /* StopDBManager.swift */; };
+		4A1547E41B7795A50004688F /* VehicleActivity.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A4D12B81B2AC01900B6B757 /* VehicleActivity.swift */; };
+		4A1547E51B7795A50004688F /* Vehicles.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4AC2E4791B483DB600D8F20E /* Vehicles.swift */; };
+		4A1547E61B7795A50004688F /* Common.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A10E1F11B30214100231417 /* Common.swift */; };
+		4A1547E71B7795A50004688F /* StopTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A6712261B7654730098ED3D /* StopTests.swift */; };
+		4A1547EA1B7796F70004688F /* CoreLocation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4A10E1ED1B2F03B900231417 /* CoreLocation.framework */; };
+		4A1547EF1B779F5F0004688F /* BusStopHelpers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A1547ED1B779E300004688F /* BusStopHelpers.swift */; };
 		4A1B1EB51B7237FD001C61D9 /* StopDBManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A1B1EB41B7237FD001C61D9 /* StopDBManager.swift */; };
 		4A2BB8111B4AEAB900F350C7 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = 4A2BB80F1B4AEAB900F350C7 /* Localizable.strings */; };
 		4A2FA8571B5533720088C00F /* UIFontDescriptorExt.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A2FA8561B5533720088C00F /* UIFontDescriptorExt.swift */; };
@@ -27,13 +34,13 @@
 		4A4D12B91B2AC01900B6B757 /* VehicleActivity.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A4D12B81B2AC01900B6B757 /* VehicleActivity.swift */; };
 		4A532E1A1B68C5AB00A80544 /* APIControllerLocal.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A532E191B68C5AB00A80544 /* APIControllerLocal.swift */; };
 		4A532E281B68D7DE00A80544 /* testdata in CopyFiles */ = {isa = PBXBuildFile; fileRef = 4A532E251B68D6A700A80544 /* testdata */; };
-		4A6712271B7654730098ED3D /* StopTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A6712261B7654730098ED3D /* StopTests.swift */; };
 		4A6BC41F1B53B0DC0095FC71 /* VehicleHeaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A6BC41E1B53B0DC0095FC71 /* VehicleHeaderView.swift */; };
 		4A84A0461B61011A005931B0 /* SelectedStopTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A84A0451B61011A005931B0 /* SelectedStopTableViewCell.swift */; };
 		4AAFBABB1B236791008F488D /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 4AAFBABA1B236791008F488D /* Main.storyboard */; };
 		4ABEDB131B539FBF00C29E5C /* HorizontalScroller.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4ABEDB121B539FBF00C29E5C /* HorizontalScroller.swift */; };
 		4AC2E47A1B483DB600D8F20E /* Vehicles.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4AC2E4791B483DB600D8F20E /* Vehicles.swift */; };
 		64A12E5854F293C1C1F594F3 /* Pods_BusStop.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = EAB3E59295EC798745861F0F /* Pods_BusStop.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
+		BC271C1312D7A8DE7BC4ED43 /* Pods_BusStopUnitTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 88DABB17A3ADAF8C5007BFEB /* Pods_BusStopUnitTests.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
 		CF471BB10972F3F919CA0F3E /* Pods_BusStopTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A27665056396F0B6312A24B3 /* Pods_BusStopTests.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
 /* End PBXBuildFile section */
 
@@ -93,11 +100,16 @@
 		4A10E1ED1B2F03B900231417 /* CoreLocation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreLocation.framework; path = System/Library/Frameworks/CoreLocation.framework; sourceTree = SDKROOT; };
 		4A10E1F11B30214100231417 /* Common.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Common.swift; sourceTree = "<group>"; };
 		4A141B9F1B2B15890009DED9 /* Stop.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Stop.swift; sourceTree = "<group>"; };
-		4A1547711B7761EC0004688F /* BusStop copy-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; name = "BusStop copy-Info.plist"; path = "/Users/jussi/dev/iOS/BusStop/BusStop copy-Info.plist"; sourceTree = "<absolute>"; };
+		4A1547711B7761EC0004688F /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; name = Info.plist; path = /Users/jussi/dev/iOS/BusStop/BusStopUnitTests/Info.plist; sourceTree = "<group>"; };
 		4A1547741B7762B40004688F /* AsyncLegacy.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = AsyncLegacy.swift; path = AsyncLegacy/AsyncLegacy.swift; sourceTree = SOURCE_ROOT; };
 		4A1547981B7767BA0004688F /* AsyncLegacy.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = AsyncLegacy.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		4A15479B1B7767BB0004688F /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		4A15479C1B7767BB0004688F /* AsyncLegacy.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AsyncLegacy.h; sourceTree = "<group>"; };
+		4A1547D71B7795580004688F /* BusStopUnitTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = BusStopUnitTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		4A1547DA1B7795580004688F /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		4A1547E81B7796E60004688F /* Pods_BusStopTests.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Pods_BusStopTests.framework; path = "Pods/../build/Debug-iphoneos/Pods_BusStopTests.framework"; sourceTree = "<group>"; };
+		4A1547EB1B7798C60004688F /* SwiftyJSON.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SwiftyJSON.framework; path = "Pods/../build/Debug-iphoneos/SwiftyJSON.framework"; sourceTree = "<group>"; };
+		4A1547ED1B779E300004688F /* BusStopHelpers.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BusStopHelpers.swift; sourceTree = "<group>"; };
 		4A1B1EB41B7237FD001C61D9 /* StopDBManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StopDBManager.swift; sourceTree = "<group>"; };
 		4A2BB8101B4AEAB900F350C7 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/Localizable.strings; sourceTree = "<group>"; };
 		4A2FA8561B5533720088C00F /* UIFontDescriptorExt.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UIFontDescriptorExt.swift; sourceTree = "<group>"; };
@@ -108,7 +120,7 @@
 		4A4D12B81B2AC01900B6B757 /* VehicleActivity.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = VehicleActivity.swift; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.swift; };
 		4A532E191B68C5AB00A80544 /* APIControllerLocal.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = APIControllerLocal.swift; sourceTree = "<group>"; };
 		4A532E251B68D6A700A80544 /* testdata */ = {isa = PBXFileReference; lastKnownFileType = folder; name = testdata; path = BusStop/testdata; sourceTree = "<group>"; };
-		4A6712261B7654730098ED3D /* StopTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StopTests.swift; sourceTree = "<group>"; };
+		4A6712261B7654730098ED3D /* StopTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = StopTests.swift; path = ../BusStopTests/StopTests.swift; sourceTree = "<group>"; };
 		4A6BC41E1B53B0DC0095FC71 /* VehicleHeaderView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = VehicleHeaderView.swift; sourceTree = "<group>"; };
 		4A75298AA8FC50C4F94424EA /* Pods-BusStop.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-BusStop.release.xcconfig"; path = "Pods/Target Support Files/Pods-BusStop/Pods-BusStop.release.xcconfig"; sourceTree = "<group>"; };
 		4A84A0451B61011A005931B0 /* SelectedStopTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SelectedStopTableViewCell.swift; sourceTree = "<group>"; };
@@ -116,9 +128,12 @@
 		4ABEDB121B539FBF00C29E5C /* HorizontalScroller.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HorizontalScroller.swift; sourceTree = "<group>"; };
 		4AC2E4791B483DB600D8F20E /* Vehicles.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = Vehicles.swift; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.swift; };
 		68165916DDC3CE30254FD679 /* Pods_BusStopForSimulator.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_BusStopForSimulator.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		88DABB17A3ADAF8C5007BFEB /* Pods_BusStopUnitTests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_BusStopUnitTests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		943E961222DF8A313F9D305B /* Pods-BusStopTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-BusStopTests.release.xcconfig"; path = "Pods/Target Support Files/Pods-BusStopTests/Pods-BusStopTests.release.xcconfig"; sourceTree = "<group>"; };
+		951568420F134954525C81E0 /* Pods-BusStopUnitTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-BusStopUnitTests.debug.xcconfig"; path = "Pods/Target Support Files/Pods-BusStopUnitTests/Pods-BusStopUnitTests.debug.xcconfig"; sourceTree = "<group>"; };
 		A27665056396F0B6312A24B3 /* Pods_BusStopTests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_BusStopTests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		AB0C6C690533FAB9B7CD8A0B /* Pods-BusStop.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-BusStop.debug.xcconfig"; path = "Pods/Target Support Files/Pods-BusStop/Pods-BusStop.debug.xcconfig"; sourceTree = "<group>"; };
+		D11EBF3F0D6B50BA4C481C3C /* Pods-BusStopUnitTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-BusStopUnitTests.release.xcconfig"; path = "Pods/Target Support Files/Pods-BusStopUnitTests/Pods-BusStopUnitTests.release.xcconfig"; sourceTree = "<group>"; };
 		EAB3E59295EC798745861F0F /* Pods_BusStop.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_BusStop.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
@@ -147,16 +162,28 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		4A1547D41B7795580004688F /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				4A1547EA1B7796F70004688F /* CoreLocation.framework in Frameworks */,
+				BC271C1312D7A8DE7BC4ED43 /* Pods_BusStopUnitTests.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
 		3D46AF4CBA289C7B981D62FC /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				4A1547EB1B7798C60004688F /* SwiftyJSON.framework */,
+				4A1547E81B7796E60004688F /* Pods_BusStopTests.framework */,
 				4A10E1ED1B2F03B900231417 /* CoreLocation.framework */,
 				EAB3E59295EC798745861F0F /* Pods_BusStop.framework */,
 				A27665056396F0B6312A24B3 /* Pods_BusStopTests.framework */,
 				68165916DDC3CE30254FD679 /* Pods_BusStopForSimulator.framework */,
+				88DABB17A3ADAF8C5007BFEB /* Pods_BusStopUnitTests.framework */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -168,6 +195,8 @@
 				4A75298AA8FC50C4F94424EA /* Pods-BusStop.release.xcconfig */,
 				21E9CFEBB044447E7E089058 /* Pods-BusStopTests.debug.xcconfig */,
 				943E961222DF8A313F9D305B /* Pods-BusStopTests.release.xcconfig */,
+				951568420F134954525C81E0 /* Pods-BusStopUnitTests.debug.xcconfig */,
+				D11EBF3F0D6B50BA4C481C3C /* Pods-BusStopUnitTests.release.xcconfig */,
 			);
 			name = Pods;
 			sourceTree = "<group>";
@@ -179,11 +208,12 @@
 				4A532E251B68D6A700A80544 /* testdata */,
 				4A0EA35B1B21C0B000F747D0 /* BusStop */,
 				4A0EA3711B21C0B000F747D0 /* BusStopTests */,
+				4A1547D81B7795580004688F /* BusStopUnitTests */,
 				4A1547991B7767BA0004688F /* AsyncLegacy */,
 				4A0EA35A1B21C0B000F747D0 /* Products */,
 				48E646FB0E105059211C2A8C /* Pods */,
 				3D46AF4CBA289C7B981D62FC /* Frameworks */,
-				4A1547711B7761EC0004688F /* BusStop copy-Info.plist */,
+				4A1547711B7761EC0004688F /* Info.plist */,
 			);
 			sourceTree = "<group>";
 		};
@@ -193,6 +223,7 @@
 				4A0EA3591B21C0B000F747D0 /* BusStop.app */,
 				4A0EA36E1B21C0B000F747D0 /* BusStopTests.xctest */,
 				4A1547981B7767BA0004688F /* AsyncLegacy.framework */,
+				4A1547D71B7795580004688F /* BusStopUnitTests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -225,7 +256,6 @@
 		4A0EA3711B21C0B000F747D0 /* BusStopTests */ = {
 			isa = PBXGroup;
 			children = (
-				4A6712261B7654730098ED3D /* StopTests.swift */,
 				4A0EA3741B21C0B000F747D0 /* BusStopTests.swift */,
 				4A0EA3721B21C0B000F747D0 /* Supporting Files */,
 			);
@@ -254,6 +284,24 @@
 			isa = PBXGroup;
 			children = (
 				4A15479B1B7767BB0004688F /* Info.plist */,
+			);
+			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
+		4A1547D81B7795580004688F /* BusStopUnitTests */ = {
+			isa = PBXGroup;
+			children = (
+				4A6712261B7654730098ED3D /* StopTests.swift */,
+				4A1547ED1B779E300004688F /* BusStopHelpers.swift */,
+				4A1547D91B7795580004688F /* Supporting Files */,
+			);
+			path = BusStopUnitTests;
+			sourceTree = "<group>";
+		};
+		4A1547D91B7795580004688F /* Supporting Files */ = {
+			isa = PBXGroup;
+			children = (
+				4A1547DA1B7795580004688F /* Info.plist */,
 			);
 			name = "Supporting Files";
 			sourceTree = "<group>";
@@ -375,6 +423,26 @@
 			productReference = 4A1547981B7767BA0004688F /* AsyncLegacy.framework */;
 			productType = "com.apple.product-type.framework";
 		};
+		4A1547D61B7795580004688F /* BusStopUnitTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 4A1547DF1B7795580004688F /* Build configuration list for PBXNativeTarget "BusStopUnitTests" */;
+			buildPhases = (
+				3361B05ED9ECE5DF570FDE52 /* Check Pods Manifest.lock */,
+				4A1547D31B7795580004688F /* Sources */,
+				4A1547D41B7795580004688F /* Frameworks */,
+				4A1547D51B7795580004688F /* Resources */,
+				676A7EA8602106B265D5E786 /* Embed Pods Frameworks */,
+				BEFA408847B5AA3B4A2DE762 /* Copy Pods Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = BusStopUnitTests;
+			productName = BusStopUnitTests;
+			productReference = 4A1547D71B7795580004688F /* BusStopUnitTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
@@ -405,6 +473,9 @@
 						CreatedOnToolsVersion = 6.4;
 						DevelopmentTeam = 6WHEET3Y5F;
 					};
+					4A1547D61B7795580004688F = {
+						CreatedOnToolsVersion = 6.4;
+					};
 				};
 			};
 			buildConfigurationList = 4A0EA3541B21C0B000F747D0 /* Build configuration list for PBXProject "BusStop" */;
@@ -424,6 +495,7 @@
 				4A0EA3581B21C0B000F747D0 /* BusStop */,
 				4A0EA36D1B21C0B000F747D0 /* BusStopTests */,
 				4A1547971B7767BA0004688F /* AsyncLegacy */,
+				4A1547D61B7795580004688F /* BusStopUnitTests */,
 			);
 		};
 /* End PBXProject section */
@@ -456,9 +528,46 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		4A1547D51B7795580004688F /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXShellScriptBuildPhase section */
+		3361B05ED9ECE5DF570FDE52 /* Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "Check Pods Manifest.lock";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_ROOT}/../Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [[ $? != 0 ]] ; then\n    cat << EOM\nerror: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\nEOM\n    exit 1\nfi\n";
+			showEnvVarsInLog = 0;
+		};
+		676A7EA8602106B265D5E786 /* Embed Pods Frameworks */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "Embed Pods Frameworks";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-BusStopUnitTests/Pods-BusStopUnitTests-frameworks.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
 		97AB2CBA6BAF3F845FC3849C /* Embed Pods Frameworks */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
@@ -534,6 +643,21 @@
 			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-BusStop/Pods-BusStop-resources.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
+		BEFA408847B5AA3B4A2DE762 /* Copy Pods Resources */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "Copy Pods Resources";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-BusStopUnitTests/Pods-BusStopUnitTests-resources.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
 		C5F377C469C5C4420AE009FB /* Copy Pods Resources */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
@@ -576,8 +700,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				4A6712271B7654730098ED3D /* StopTests.swift in Sources */,
-				4A0EA3751B21C0B000F747D0 /* BusStopTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -586,6 +708,20 @@
 			buildActionMask = 2147483647;
 			files = (
 				4A1547B81B7767C20004688F /* AsyncLegacy.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		4A1547D31B7795580004688F /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				4A1547EF1B779F5F0004688F /* BusStopHelpers.swift in Sources */,
+				4A1547E21B7795A50004688F /* Stop.swift in Sources */,
+				4A1547E31B7795A50004688F /* StopDBManager.swift in Sources */,
+				4A1547E41B7795A50004688F /* VehicleActivity.swift in Sources */,
+				4A1547E51B7795A50004688F /* Vehicles.swift in Sources */,
+				4A1547E61B7795A50004688F /* Common.swift in Sources */,
+				4A1547E71B7795A50004688F /* StopTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -831,6 +967,40 @@
 			};
 			name = Release;
 		};
+		4A1547E01B7795580004688F /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 951568420F134954525C81E0 /* Pods-BusStopUnitTests.debug.xcconfig */;
+			buildSettings = {
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(SDKROOT)/Developer/Library/Frameworks",
+					"$(inherited)",
+					"$(PROJECT_DIR)/build/Debug-iphoneos",
+				);
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				INFOPLIST_FILE = BusStopUnitTests/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Debug;
+		};
+		4A1547E11B7795580004688F /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = D11EBF3F0D6B50BA4C481C3C /* Pods-BusStopUnitTests.release.xcconfig */;
+			buildSettings = {
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(SDKROOT)/Developer/Library/Frameworks",
+					"$(inherited)",
+					"$(PROJECT_DIR)/build/Debug-iphoneos",
+				);
+				INFOPLIST_FILE = BusStopUnitTests/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Release;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -841,7 +1011,7 @@
 				4A0EA3771B21C0B000F747D0 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
+			defaultConfigurationName = Debug;
 		};
 		4A0EA3781B21C0B000F747D0 /* Build configuration list for PBXNativeTarget "BusStop" */ = {
 			isa = XCConfigurationList;
@@ -850,7 +1020,7 @@
 				4A0EA37A1B21C0B000F747D0 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
+			defaultConfigurationName = Debug;
 		};
 		4A0EA37B1B21C0B000F747D0 /* Build configuration list for PBXNativeTarget "BusStopTests" */ = {
 			isa = XCConfigurationList;
@@ -859,7 +1029,7 @@
 				4A0EA37D1B21C0B000F747D0 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
+			defaultConfigurationName = Debug;
 		};
 		4A1547B11B7767BC0004688F /* Build configuration list for PBXNativeTarget "AsyncLegacy" */ = {
 			isa = XCConfigurationList;
@@ -868,6 +1038,16 @@
 				4A1547B31B7767BC0004688F /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		4A1547DF1B7795580004688F /* Build configuration list for PBXNativeTarget "BusStopUnitTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				4A1547E01B7795580004688F /* Debug */,
+				4A1547E11B7795580004688F /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
 		};
 /* End XCConfigurationList section */
 	};

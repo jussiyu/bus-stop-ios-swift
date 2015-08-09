@@ -10,12 +10,12 @@ import Foundation
 import UIKit
 import XCGLogger
 import CoreLocation
-import TaskQueue
 
 func cap<T : Comparable>(value: T, min minimum: T, max maximum: T) -> T {
   return max( min(maximum, value), minimum)
 }
 
+// MARK: - String
 extension String {
   static let localeNumberFormatter: NSNumberFormatter = {
     let f = NSNumberFormatter()
@@ -84,6 +84,7 @@ extension String {
   
 }
 
+// MARK: - Double
 extension Double {
   static var f: NSNumberFormatter = {
     let f = NSNumberFormatter()
@@ -108,14 +109,7 @@ extension Double {
   }
 }
 
-func delay(delay:Double, closure:()->()) {
-  
-  dispatch_after(
-    dispatch_time( DISPATCH_TIME_NOW, Int64(delay * Double(NSEC_PER_SEC))), dispatch_get_main_queue(), closure)
-  
-  
-}
-
+// MARK: - NSObject
 public extension NSObject{
   public class var nameOfClass: String{
     return NSStringFromClass(self).componentsSeparatedByString(".").last!
@@ -126,6 +120,7 @@ public extension NSObject{
   }
 }
 
+// MARK: - NSLayoutConstraint
 extension NSLayoutConstraint {  
   class func constraintsWithVisualFormat(format: String, options opts: NSLayoutFormatOptions = nil, metrics: [String : AnyObject] = [:], views: [String : AnyObject] = [:], active: Bool) -> [NSLayoutConstraint] {
     let constraints = NSLayoutConstraint.constraintsWithVisualFormat(format, options: opts, metrics: metrics, views: views) as! [NSLayoutConstraint]
@@ -136,6 +131,7 @@ extension NSLayoutConstraint {
   }
 }
 
+// MARK: - UIView
 extension UIView {
   func constraintsWithIdentifier(identifier: String) -> [NSLayoutConstraint] {
     var matching = [NSLayoutConstraint]()
@@ -150,6 +146,7 @@ extension UIView {
   }
 }
 
+// MARK: - Array
 extension Array{
   func each(each: (T) -> (T)) -> [T]{
     var result = [T]()
@@ -178,13 +175,7 @@ extension Array{
   }
 }
 
-var startTime = NSDate()
-func TICK(){ startTime =  NSDate() }
-func TOCK(function: String = __FUNCTION__, file: String = __FILE__, line: Int = __LINE__){
-  log.debug("\(function) Time: \(startTime.timeIntervalSinceNow)\nLine:\(line) File: \(file)")
-}
-
-
+// MARK: - CLLocation
 extension CLLocation {
   func moreAccurateThanLocation(other: CLLocation) -> Bool {
     return self.horizontalAccuracy < other.horizontalAccuracy
@@ -195,17 +186,7 @@ extension CLLocation {
   }
 }
 
-//
-// The task gets executed on a low prio queueu
-//
-//func +=~ (inout tasks: [TaskQueue.ClosureNoResultNext], task: TaskQueue.ClosureWithResultNext) {
-//  tasks += [{
-//    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_LOW, 0), {
-//      task(nil, next)
-//    })
-//  }]
-//}
-
+// MARK: - UITableView
 extension UITableView {
   func scrollToTop(#animated: Bool) {
     // This is trigger didscroll messages
@@ -213,10 +194,11 @@ extension UITableView {
   }
 }
 
-extension UIViewController {
-  var appDelegate: AppDelegate {
-    return UIApplication.sharedApplication().delegate as! AppDelegate
-  }
+// MARK: - Threading functions
+func delay(delay:Double, closure:()->()) {
+  
+  dispatch_after(
+    dispatch_time( DISPATCH_TIME_NOW, Int64(delay * Double(NSEC_PER_SEC))), dispatch_get_main_queue(), closure)
 }
 
 func synchronize<T>(lockObj: AnyObject!, closure: ()->T) -> T
@@ -233,3 +215,10 @@ func synchronize(lockObj: AnyObject!, closure: () -> ())
   closure()
   objc_sync_exit(lockObj)
 }
+
+var TICKTOCKStartTime = NSDate()
+func TICK(){ TICKTOCKStartTime =  NSDate() }
+func TOCK(function: String = __FUNCTION__, file: String = __FILE__, line: Int = __LINE__){
+  log.debug("\(function) Time: \(TICKTOCKStartTime.timeIntervalSinceNow)\nLine:\(line) File: \(file)")
+}
+
