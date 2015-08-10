@@ -18,7 +18,15 @@ public class Stop : Object, Printable {
   public dynamic var name: String = ""
   public dynamic var latitude: CLLocationDegrees = 0.0
   public dynamic var longitude: CLLocationDegrees = 0.0
-  public dynamic var location: CLLocation {return CLLocation(latitude: latitude, longitude: longitude)}
+  public dynamic var location: CLLocation {
+    get {
+      return CLLocation(latitude: latitude, longitude: longitude)
+    }
+    set {
+      latitude = newValue.coordinate.latitude
+      longitude = newValue.coordinate.longitude
+    }
+  }
   public dynamic var favorite = false
   
   public convenience init(id: String, name: String, location: CLLocation? = nil) {
@@ -31,7 +39,8 @@ public class Stop : Object, Printable {
   }
 
   public func distanceFromUserLocation(userLocation: CLLocation) -> String {
-    if latitude != 0 && longitude != 0 {
+    if latitude != 0 && longitude != 0 &&
+        userLocation.coordinate.latitude != 0 && userLocation.coordinate.longitude != 0{
       let dist = location.distanceFromLocation(userLocation)
       if dist == 0 {
         return NSLocalizedString("Exactly at your location", comment: "")
