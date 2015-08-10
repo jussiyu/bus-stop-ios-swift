@@ -2,6 +2,7 @@ import Quick
 import Nimble
 import CoreLocation
 import XCGLogger
+import RealmSwift
 
 
 class StopTests: QuickSpec {
@@ -39,6 +40,12 @@ class StopTests: QuickSpec {
         it("without valid longitude") {
           expect(stop.longitude).to(equal(0.0))
         }
+        
+        it("to be from invalid distance to anywhere") {
+          let anyLocation = CLLocation(latitude: -23, longitude: 61)
+          expect(stop.distanceFromUserLocation(anyLocation)).to(equal("--"))
+        }
+
       }
 
       describe("to be created using location") {
@@ -57,19 +64,111 @@ class StopTests: QuickSpec {
     
       describe("is distance from a location") {
         var stop: Stop!
+        let location = CLLocation(latitude: -23, longitude: 61)
         beforeEach {
-          stop = Stop(id: "id", name: "name", location: CLLocation(latitude: -23, longitude: 61))
+          stop = Stop(id: "id", name: "name", location: location)
         }
         
         it("of 0 meters") {
-          let sameLocation = CLLocation(latitude: -23, longitude: 61)
-          expect(stop.distanceFromUserLocation(sameLocation)).to(equal(NSLocalizedString("Exactly at your location", comment: "")))
+          let sameLocation = location
+          expect(stop.distanceFromUserLocation(sameLocation)).to(equal("Exactly at your location"))
         }
         
-        it("of x meters") {
+        it("of a lot of kilometers") {
           let differentLocation = CLLocation(latitude: -23, longitude: 62)
-          expect(stop.distanceFromUserLocation(differentLocation)).to(contain("from your location"))
+          expect(stop.distanceFromUserLocation(differentLocation)).to(contain(" km(s) from your location"))
         }
+        
+        it("of few meters") {
+          let anotherCoordinates = location.coordinateWithDirection(40.0, distance: 50)
+          let differentLocation = CLLocation(latitude: anotherCoordinates.latitude, longitude: anotherCoordinates.longitude)
+          expect(stop.distanceFromUserLocation(differentLocation)).to(contain("50 meter(s) from your location"))
+        }
+        
+        it("to invalid distance") {
+          let invalidLocation = CLLocation()
+          expect(stop.distanceFromUserLocation(invalidLocation)).to(equal("--"))
+        }
+      }
+    }
+    
+    describe("A stop added to database") {
+      beforeSuite {
+        setUpDatabase()
+        Realm().write {
+          Realm().deleteAll()
+        }
+      }
+      
+      var stop: Stop!
+      beforeEach {
+        stop = Stop(id: "9999", name: "myname", location: CLLocation(latitude: -23, longitude: 62))
+        Realm().write {
+          Realm().add(stop)
+        }
+      }
+      afterEach {
+        Realm().write {
+          Realm().deleteAll()
+        }
+      }
+      
+      it("can be read back from database with same propery values") {
+        let stopFromDatabase = Realm().objects(Stop).first!
+        expect(stopFromDatabase.id).to(equal("9999"))
+        expect(stopFromDatabase.name).to(equal("myname"))
+        expect(stopFromDatabase.latitude).to(equal(-23))
+        expect(stopFromDatabase.longitude).to(equal(62))
+        expect(stopFromDatabase.favorite).to(beFalsy())
+      }
+
+      it("can be read back from database using primary key") {
+        expect(Realm().objectForPrimaryKey(Stop.self, key: "9999")).to(equal(stop))
+      }
+    }
+    
+    describe("A stop in database") {
+      beforeSuite {
+        setUpDatabase()
+        Realm().write {
+          Realm().deleteAll()
+        }
+      }
+      
+      var stop: Stop!
+      beforeEach {
+        stop = Stop(id: "9999", name: "myname", location: CLLocation(latitude: -23, longitude: 62))
+        Realm().write {
+          Realm().add(stop)
+        }
+      }
+      afterEach {
+        Realm().write {
+          Realm().deleteAll()
+        }
+      }
+      
+      it("can be set as favorite") {
+        Realm().write {
+          stop.favorite = true
+        }
+        expect(Realm().objectForPrimaryKey(Stop.self, key: "9999")!.favorite).to(beTruthy())
+      }
+      
+      it("can be renamed") {
+        Realm().write {
+          stop.name = "newname"
+        }
+        expect(Realm().objectForPrimaryKey(Stop.self, key: "9999")!.name).to(equal("newname"))
+      }
+
+      it("can be relocated") {
+        Realm().write {
+          stop.latitude = -22
+          stop.longitude = 60
+        }
+        expect(Realm().objectForPrimaryKey(Stop.self, key: "9999")!.latitude).to(equal(-22))
+        expect(Realm().objectForPrimaryKey(Stop.self, key: "9999")!.longitude).to(equal(60))
       }
     }
   }

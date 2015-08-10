@@ -184,6 +184,21 @@ extension CLLocation {
   func commonHorizontalLocationWith (other: CLLocation) -> Bool {
     return self.coordinate.longitude == other.coordinate.longitude && self.coordinate.latitude == other.coordinate.latitude
   }
+  
+  // Based on https://stackoverflow.com/questions/7278094/moving-a-cllocation-by-x-meters
+  func coordinateWithDirection(direction: CLLocationDirection, distance distanceMeters: CLLocationDistance) -> CLLocationCoordinate2D {
+    let distRadians = distanceMeters / (6372797.6)
+    
+    var rDirection = direction * M_PI / 180.0
+    
+    let lat1 = self.coordinate.latitude * M_PI / 180
+    let lon1 = self.coordinate.longitude * M_PI / 180
+    
+    let lat2 = asin(sin(lat1) * cos(distRadians) + cos(lat1) * sin(distRadians) * cos(rDirection))
+    let lon2 = lon1 + atan2(sin(rDirection) * sin(distRadians) * cos(lat1), cos(distRadians) - sin(lat1) * sin(lat2))
+    
+    return CLLocationCoordinate2D(latitude: lat2 * 180 / M_PI, longitude: lon2 * 180 / M_PI)
+  }
 }
 
 // MARK: - UITableView

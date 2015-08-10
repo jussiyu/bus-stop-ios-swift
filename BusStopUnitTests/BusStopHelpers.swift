@@ -8,6 +8,7 @@
 
 import Foundation
 import XCGLogger
+import RealmSwift
 
 let log = XCGLogger.defaultInstance()
 
@@ -19,4 +20,10 @@ func setUpLog() {
   log.dateFormatter = shortLogDateFormatter
   log.xcodeColorsEnabled = true
   log.xcodeColors[XCGLogger.LogLevel.Info] = XCGLogger.XcodeColor(fg: (147, 147, 255))
+}
+
+func setUpDatabase() {
+  let documentPath = NSSearchPathForDirectoriesInDomains(.DocumentDirectory, .UserDomainMask, true).first as! String
+  Realm.defaultPath = documentPath.stringByAppendingPathComponent("unittest.realm")
+  log.info("Setting Realm default database path to \(Realm.defaultPath)")
 }
