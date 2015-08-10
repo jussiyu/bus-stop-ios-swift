@@ -42,5 +42,7 @@
 		<string>UIInterfaceOrientationLandscapeLeft</string>
 		<string>UIInterfaceOrientationLandscapeRight</string>
 	</array>
+	<key>UserDefinedVersionNumber</key>
+	<string>15</string>
 </dict>
 </plist>

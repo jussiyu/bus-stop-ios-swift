@@ -317,6 +317,7 @@
 				4A2FA8561B5533720088C00F /* UIFontDescriptorExt.swift */,
 			);
 			name = View;
+			path = view;
 			sourceTree = "<group>";
 		};
 		4AB26CD91B53B6DC00F3FA11 /* API */ = {
@@ -326,6 +327,7 @@
 				4A532E191B68C5AB00A80544 /* APIControllerLocal.swift */,
 			);
 			name = API;
+			path = api;
 			sourceTree = "<group>";
 		};
 		4AB26CDA1B53B6E500F3FA11 /* Controller */ = {
@@ -334,6 +336,7 @@
 				4A0EA37E1B23234100F747D0 /* MainViewController.swift */,
 			);
 			name = Controller;
+			path = controller;
 			sourceTree = "<group>";
 		};
 		4AB26CDB1B53B6FE00F3FA11 /* Model */ = {
@@ -345,6 +348,7 @@
 				4AC2E4791B483DB600D8F20E /* Vehicles.swift */,
 			);
 			name = Model;
+			path = model;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -861,12 +865,14 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				CURRENT_PROJECT_VERSION = 1;
 				INFOPLIST_FILE = BusStop/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 8.4;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				OTHER_SWIFT_FLAGS = "$(inherited) \"-D\" \"DEBUG\"";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE = "";
+				VERSIONING_SYSTEM = "apple-generic";
 			};
 			name = Debug;
 		};
@@ -877,11 +883,13 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				CURRENT_PROJECT_VERSION = 1;
 				INFOPLIST_FILE = BusStop/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 8.4;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE = "";
+				VERSIONING_SYSTEM = "apple-generic";
 			};
 			name = Release;
 		};
