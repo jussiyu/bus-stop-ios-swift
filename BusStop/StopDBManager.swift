@@ -28,7 +28,9 @@ class StopDBManager {
     }
     return self.instances[currentThread]!
   }
-  private init() {}
+  private init() {
+    log.info("Using Realm database in \(self.realm.path)")
+  }
 
   let realm = Realm()
 
