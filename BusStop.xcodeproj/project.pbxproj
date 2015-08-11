@@ -35,6 +35,8 @@
 		4A532E1A1B68C5AB00A80544 /* APIControllerLocal.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A532E191B68C5AB00A80544 /* APIControllerLocal.swift */; };
 		4A532E281B68D7DE00A80544 /* testdata in CopyFiles */ = {isa = PBXBuildFile; fileRef = 4A532E251B68D6A700A80544 /* testdata */; };
 		4A6BC41F1B53B0DC0095FC71 /* VehicleHeaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A6BC41E1B53B0DC0095FC71 /* VehicleHeaderView.swift */; };
+		4A8178241B79EA540022EF20 /* MapViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A8178231B79EA540022EF20 /* MapViewController.swift */; };
+		4A8178261B79EF550022EF20 /* MapKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4A8178251B79EF550022EF20 /* MapKit.framework */; };
 		4A84A0461B61011A005931B0 /* SelectedStopTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A84A0451B61011A005931B0 /* SelectedStopTableViewCell.swift */; };
 		4AAFBABB1B236791008F488D /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 4AAFBABA1B236791008F488D /* Main.storyboard */; };
 		4ABEDB131B539FBF00C29E5C /* HorizontalScroller.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4ABEDB121B539FBF00C29E5C /* HorizontalScroller.swift */; };
@@ -123,6 +125,8 @@
 		4A6712261B7654730098ED3D /* StopTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = StopTests.swift; path = ../BusStopTests/StopTests.swift; sourceTree = "<group>"; };
 		4A6BC41E1B53B0DC0095FC71 /* VehicleHeaderView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = VehicleHeaderView.swift; sourceTree = "<group>"; };
 		4A75298AA8FC50C4F94424EA /* Pods-BusStop.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-BusStop.release.xcconfig"; path = "Pods/Target Support Files/Pods-BusStop/Pods-BusStop.release.xcconfig"; sourceTree = "<group>"; };
+		4A8178231B79EA540022EF20 /* MapViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MapViewController.swift; sourceTree = "<group>"; };
+		4A8178251B79EF550022EF20 /* MapKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MapKit.framework; path = System/Library/Frameworks/MapKit.framework; sourceTree = SDKROOT; };
 		4A84A0451B61011A005931B0 /* SelectedStopTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SelectedStopTableViewCell.swift; sourceTree = "<group>"; };
 		4AAFBABA1B236791008F488D /* Main.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = Main.storyboard; sourceTree = "<group>"; };
 		4ABEDB121B539FBF00C29E5C /* HorizontalScroller.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HorizontalScroller.swift; sourceTree = "<group>"; };
@@ -143,6 +147,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				4A10E1EE1B2F03B900231417 /* CoreLocation.framework in Frameworks */,
+				4A8178261B79EF550022EF20 /* MapKit.framework in Frameworks */,
 				64A12E5854F293C1C1F594F3 /* Pods_BusStop.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -177,6 +182,7 @@
 		3D46AF4CBA289C7B981D62FC /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				4A8178251B79EF550022EF20 /* MapKit.framework */,
 				4A1547EB1B7798C60004688F /* SwiftyJSON.framework */,
 				4A1547E81B7796E60004688F /* Pods_BusStopTests.framework */,
 				4A10E1ED1B2F03B900231417 /* CoreLocation.framework */,
@@ -334,6 +340,7 @@
 			isa = PBXGroup;
 			children = (
 				4A0EA37E1B23234100F747D0 /* MainViewController.swift */,
+				4A8178231B79EA540022EF20 /* MapViewController.swift */,
 			);
 			name = Controller;
 			path = controller;
@@ -465,7 +472,7 @@
 								enabled = 1;
 							};
 							com.apple.Maps.iOS = {
-								enabled = 0;
+								enabled = 1;
 							};
 						};
 					};
@@ -697,6 +704,7 @@
 				4A141BA01B2B15890009DED9 /* Stop.swift in Sources */,
 				4AC2E47A1B483DB600D8F20E /* Vehicles.swift in Sources */,
 				4A84A0461B61011A005931B0 /* SelectedStopTableViewCell.swift in Sources */,
+				4A8178241B79EA540022EF20 /* MapViewController.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
