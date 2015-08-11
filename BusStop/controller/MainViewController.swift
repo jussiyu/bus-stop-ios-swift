@@ -457,6 +457,12 @@ class MainViewController: UIViewController {
     api.invalidateSessions()
   }
 
+  override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
+    if let mapController = segue.destinationViewController as? MapViewController where segue.identifier == "showStopOnMap" {
+      mapController.stop = stopForRow(2)
+      mapController.userLocation = userLocation
+    }
+  }
   
   
   //
@@ -814,13 +820,11 @@ extension MainViewController: UITableViewDataSource {
       if let selectedVehicle = selectedVehicle {
         let rowToBeReturned = indexPath.row
         
-        if let title = cell.viewWithTag(1) as? UILabel {
-          if let stop = stopForRow(rowToBeReturned) {
-            title.text = "\(stop.name) (\(stop.id))"
-          } else {
-            title.text = NSLocalizedString("Unknown stop", comment: "")
-            log.error("Unknown stop at row \(rowToBeReturned)")
-          }
+        if let stop = stopForRow(rowToBeReturned) {
+          cell.textLabel?.text = "\(stop.name) (\(stop.id))"
+        } else {
+          cell.textLabel?.text = NSLocalizedString("Unknown stop", comment: "")
+          log.error("Unknown stop at row \(rowToBeReturned)")
         }
       } else {
         
@@ -884,16 +888,16 @@ extension MainViewController: UITableViewDelegate {
     }
   }
 
-//  func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
-//    log.verbose("vehicleScrollView:didSelectRowAtIndexPath: \(indexPath.row)")
-//
-//    if selectedStopId == nil {
-//      expandStopAtIndexPath(indexPath)
-//    } else {
-//      // There is a dedicated close button on the view so do nothing here
-//    }
-//
-//  }
+  func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
+    log.verbose("vehicleScrollView:didSelectRowAtIndexPath: \(indexPath.row)")
+
+    if selectedStopId == nil {
+      expandStopAtIndexPath(indexPath)
+    } else {
+      // There is a dedicated close button on the view so do nothing here
+    }
+
+  }
   
   func scrollViewDidEndScrollingAnimation(scrollView: UIScrollView) {
     

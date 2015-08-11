@@ -7,29 +7,58 @@
 //
 
 import UIKit
+import MapKit
+import AsyncLegacy
 
 class MapViewController: UIViewController {
+  
+  class StopAnnotation : MKPointAnnotation {
+    
+  }
+  
+  @IBOutlet weak var mapView: MKMapView!
+  
+  var userLocation: CLLocation?
+  var stop: Stop?
+  
+  let stopReuseIdentifier = "stopPin"
+  
+  override func viewDidLoad() {
+    super.viewDidLoad()
 
-    override func viewDidLoad() {
-        super.viewDidLoad()
-
-        // Do any additional setup after loading the view.
+    if let userLocation = userLocation {
+      let initialCamera = MKMapCamera(lookingAtCenterCoordinate: userLocation.coordinate, fromEyeCoordinate: userLocation.coordinate, eyeAltitude: 100)
+      mapView.setCamera(initialCamera, animated: false)
     }
-
-    override func didReceiveMemoryWarning() {
-        super.didReceiveMemoryWarning()
-        // Dispose of any resources that can be recreated.
+    if let stop = stop {
+      let stopPointAnnotation = MKPointAnnotation()
+      stopPointAnnotation.title = stop.name
+      stopPointAnnotation.coordinate = stop.location.coordinate
+      mapView.addAnnotation(stopPointAnnotation)
+      
+      let stopCamera = MKMapCamera(lookingAtCenterCoordinate: stop.location.coordinate, fromEyeCoordinate: stop.location.coordinate, eyeAltitude: 1000)
+      Async.main(after: 1) {
+        self.mapView.setCamera(stopCamera, animated: true)
+      }
     }
     
+  }
+  
+  override func didReceiveMemoryWarning() {
+    super.didReceiveMemoryWarning()
+    // Dispose of any resources that can be recreated.
+  }
+}
 
-    /*
-    // MARK: - Navigation
-
-    // In a storyboard-based application, you will often want to do a little preparation before navigation
-    override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
-        // Get the new view controller using segue.destinationViewController.
-        // Pass the selected object to the new view controller.
+extension MapViewController : MKMapViewDelegate {
+  
+  func mapView(mapView: MKMapView!, viewForAnnotation annotation: MKAnnotation!) -> MKAnnotationView! {
+    
+    if annotation is MKUserLocation {
+      return nil
     }
-    */
-
+    
+    return MKPinAnnotationView(annotation: annotation, reuseIdentifier: stopReuseIdentifier)
+  }
+  
 }
