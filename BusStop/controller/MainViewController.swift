@@ -461,9 +461,10 @@ class MainViewController: UIViewController {
     if let mapController = segue.destinationViewController as? MapViewController,
         cell = sender as? UITableViewCell where segue.identifier == "showStopOnMap" {
       if let stopRow = stopTableView.indexPathForCell(cell)?.row {
-        mapController.stop = stopForRow(stopRow)
+        mapController.selectedStop = stopForRow(stopRow)
       }
       mapController.userLocation = userLocation
+      mapController.selectedVehicle = selectedVehicle
     }
   }
   

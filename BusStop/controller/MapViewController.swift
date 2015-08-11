@@ -12,13 +12,20 @@ import AsyncLegacy
 
 class MapViewController: UIViewController {
   
+  class StopAnnotation : MKPointAnnotation {
+    var selectedStop = false
+  }
+  
   @IBOutlet weak var mapView: MKMapView!
   
   var userLocation: CLLocation?
-  var stop: Stop?
+  var selectedStop: Stop?
+  var selectedVehicle: VehicleActivity?
   
   let stopReuseIdentifier = "stopPin"
-  
+
+  let stopDBManager = StopDBManager.sharedInstance
+
   override func viewDidLoad() {
     super.viewDidLoad()
 
@@ -26,11 +33,25 @@ class MapViewController: UIViewController {
       let initialCamera = MKMapCamera(lookingAtCenterCoordinate: userLocation.coordinate, fromEyeCoordinate: userLocation.coordinate, eyeAltitude: 100)
       mapView.setCamera(initialCamera, animated: false)
     }
-    if let stop = stop {
-      let stopPointAnnotation = MKPointAnnotation()
-      stopPointAnnotation.title = stop.name
+    
+    if let selectedVehicle = selectedVehicle {
+      for stop in selectedVehicle.stops {
+        if let stop = stopDBManager.stopWithId(stop.id) where stop.id != selectedStop?.id {
+          let stopPointAnnotation = StopAnnotation()
+          stopPointAnnotation.title = "\(stop.name) (\(stop.id))"
+          stopPointAnnotation.coordinate = stop.location.coordinate
+          mapView.addAnnotation(stopPointAnnotation)
+          mapView.selectAnnotation(stopPointAnnotation, animated: true)
+        }
+      }
+    }
+    if let stop = selectedStop {
+      let stopPointAnnotation = StopAnnotation()
+      stopPointAnnotation.selectedStop = true
+      stopPointAnnotation.title = "\(stop.name) (\(stop.id))"
       stopPointAnnotation.coordinate = stop.location.coordinate
       mapView.addAnnotation(stopPointAnnotation)
+      mapView.selectAnnotation(stopPointAnnotation, animated: true)
       
       let stopCamera = MKMapCamera(lookingAtCenterCoordinate: stop.location.coordinate, fromEyeCoordinate: stop.location.coordinate, eyeAltitude: 1000)
       self.mapView.setCamera(stopCamera, animated: true)
@@ -51,13 +72,17 @@ extension MapViewController : MKMapViewDelegate {
     if annotation is MKUserLocation {
       return nil
     }
-    if let view = mapView.dequeueReusableAnnotationViewWithIdentifier(stopReuseIdentifier) {
-      return view
-    } else {
-      let view = MKPinAnnotationView(annotation: annotation, reuseIdentifier: stopReuseIdentifier)
+    var view: MKPinAnnotationView! = mapView.dequeueReusableAnnotationViewWithIdentifier(stopReuseIdentifier) as? MKPinAnnotationView
+    if view == nil {
+      view = MKPinAnnotationView(annotation: annotation, reuseIdentifier: stopReuseIdentifier)
       view.canShowCallout = true
-      return view
     }
+
+    if let annotation = annotation as? StopAnnotation where annotation.selectedStop {
+      view.pinColor = MKPinAnnotationColor.Red
+    } else {
+      view.pinColor = MKPinAnnotationColor.Purple
+    }
+    return view
   }
-  
 }
