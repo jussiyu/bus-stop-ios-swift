@@ -12,10 +12,6 @@ import AsyncLegacy
 
 class MapViewController: UIViewController {
   
-  class StopAnnotation : MKPointAnnotation {
-    
-  }
-  
   @IBOutlet weak var mapView: MKMapView!
   
   var userLocation: CLLocation?
@@ -37,9 +33,7 @@ class MapViewController: UIViewController {
       mapView.addAnnotation(stopPointAnnotation)
       
       let stopCamera = MKMapCamera(lookingAtCenterCoordinate: stop.location.coordinate, fromEyeCoordinate: stop.location.coordinate, eyeAltitude: 1000)
-      Async.main(after: 1) {
-        self.mapView.setCamera(stopCamera, animated: true)
-      }
+      self.mapView.setCamera(stopCamera, animated: true)
     }
     
   }
@@ -57,8 +51,11 @@ extension MapViewController : MKMapViewDelegate {
     if annotation is MKUserLocation {
       return nil
     }
-    
-    return MKPinAnnotationView(annotation: annotation, reuseIdentifier: stopReuseIdentifier)
+    if let view = mapView.dequeueReusableAnnotationViewWithIdentifier(stopReuseIdentifier) {
+      return view
+    } else {
+      return MKPinAnnotationView(annotation: annotation, reuseIdentifier: stopReuseIdentifier)
+    }
   }
   
 }
