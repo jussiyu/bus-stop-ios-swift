@@ -54,7 +54,9 @@ extension MapViewController : MKMapViewDelegate {
     if let view = mapView.dequeueReusableAnnotationViewWithIdentifier(stopReuseIdentifier) {
       return view
     } else {
-      return MKPinAnnotationView(annotation: annotation, reuseIdentifier: stopReuseIdentifier)
+      let view = MKPinAnnotationView(annotation: annotation, reuseIdentifier: stopReuseIdentifier)
+      view.canShowCallout = true
+      return view
     }
   }
   

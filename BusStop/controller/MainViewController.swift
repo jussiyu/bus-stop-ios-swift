@@ -458,8 +458,11 @@ class MainViewController: UIViewController {
   }
 
   override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
-    if let mapController = segue.destinationViewController as? MapViewController where segue.identifier == "showStopOnMap" {
-      mapController.stop = stopForRow(2)
+    if let mapController = segue.destinationViewController as? MapViewController,
+        cell = sender as? UITableViewCell where segue.identifier == "showStopOnMap" {
+      if let stopRow = stopTableView.indexPathForCell(cell)?.row {
+        mapController.stop = stopForRow(stopRow)
+      }
       mapController.userLocation = userLocation
     }
   }
@@ -896,7 +899,6 @@ extension MainViewController: UITableViewDelegate {
     } else {
       // There is a dedicated close button on the view so do nothing here
     }
-
   }
   
   func scrollViewDidEndScrollingAnimation(scrollView: UIScrollView) {
