@@ -28,7 +28,7 @@ class MainViewController: UIViewController {
   @IBOutlet weak var vehicleScrollView: HorizontalScroller!
   @IBOutlet weak var vehicleScrollViewTopConstraint: NSLayoutConstraint!
   @IBOutlet weak var vehicleScrollViewBottomConstraint: NSLayoutConstraint!
-  @IBOutlet weak var autoRefreshSwitch: UIBarButtonItem!
+  @IBOutlet weak var refreshButtonItem: UIBarButtonItem!
   @IBOutlet weak var progressLabel: UILabel!
   
   let progressViewManager = MediumProgressViewManager.sharedInstance
@@ -42,7 +42,7 @@ class MainViewController: UIViewController {
   var systemSoundID: SystemSoundID = 0
   let stopSoundFileName = "StopSound", stopSoundFileExt = "aif"
   var userNotifiedForSelectedStop = false
-  var autoRefresh:Bool = false
+  let autoRefresh = true
   var autoRefreshTimer: NSTimer?
   let autoRefreshIntervalMax = 10.0
   let autoRefreshIntervalMin = 2.0
@@ -392,9 +392,6 @@ class MainViewController: UIViewController {
     
     vehicleScrollView.delegate = self
   
-    // Autorefresh
-    autoRefresh = (autoRefreshSwitch.customView as! UISwitch).on
-    
     NSNotificationCenter.defaultCenter().addObserver(self,
       selector: "preferredContentSizeChanged:",
       name: UIContentSizeCategoryDidChangeNotification,
@@ -472,11 +469,8 @@ class MainViewController: UIViewController {
   //
   // MARK: - actions
   //
-  @IBAction func autoRefreshToggled(sender: AnyObject) {
-    if let toggle = autoRefreshSwitch.customView as? UISwitch {
-      autoRefresh = toggle.on
-      initAutoRefreshTimer(andFire: true)
-    }
+  @IBAction func refreshTapped(sender: AnyObject) {
+    autoRefreshTimer?.fire()
   }
 
   
@@ -580,8 +574,6 @@ class MainViewController: UIViewController {
   }
   
   private func initAutoRefreshTimer(andFire: Bool = false) {
-    (autoRefreshSwitch.customView as! UISwitch).on = autoRefresh
-    
     Async.main {
       // Use main thread to ensure that invalidate functions correctly
       self.autoRefreshTimer?.invalidate()
@@ -1011,7 +1003,6 @@ extension MainViewController: UITableViewDelegate {
     expandStopTableView()
     stopTableView.reloadRowsAtIndexPaths([NSIndexPath(forRow: 0, inSection: 0)], withRowAnimation: .Fade)
     
-    autoRefresh = true
     initAutoRefreshTimer()
     
   }
@@ -1098,7 +1089,6 @@ extension MainViewController: UITableViewDelegate {
     progressViewManager.showProgress()
     refreshVehicles(queue: nil) {_ in self.progressViewManager.hideProgress()}
     
-    autoRefresh = false
     initAutoRefreshTimer()
 
   }

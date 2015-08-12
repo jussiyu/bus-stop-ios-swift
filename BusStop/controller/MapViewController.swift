@@ -17,6 +17,7 @@ class MapViewController: UIViewController {
   }
   
   @IBOutlet weak var mapView: MKMapView!
+  @IBOutlet weak var showUserLocationButtonItem: UIBarButtonItem!
   
   var userLocation: CLLocation?
   var selectedStop: Stop?
@@ -57,11 +58,19 @@ class MapViewController: UIViewController {
       self.mapView.setCamera(stopCamera, animated: true)
     }
     
+    showUserLocationButtonItem.enabled = userLocation != nil ? true : false
   }
   
   override func didReceiveMemoryWarning() {
     super.didReceiveMemoryWarning()
     // Dispose of any resources that can be recreated.
+  }
+  
+  @IBAction func showUserLocation(sender: AnyObject) {
+    if let userLocation = userLocation {
+      let userCamera = MKMapCamera(lookingAtCenterCoordinate: userLocation.coordinate, fromEyeCoordinate: userLocation.coordinate, eyeAltitude: 1000)
+      self.mapView.setCamera(userCamera, animated: true)
+    }
   }
 }
 

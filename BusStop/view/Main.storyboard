@@ -181,18 +181,13 @@
                         </constraints>
                     </view>
                     <navigationItem key="navigationItem" title="Bus Stop" id="0w6-WA-eo3">
-                        <barButtonItem key="rightBarButtonItem" id="xuj-HQ-FG6">
-                            <switch key="customView" opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" contentHorizontalAlignment="center" contentVerticalAlignment="center" id="CeP-SP-SJ7" userLabel="autoRefreshToggle">
-                                <rect key="frame" x="-25" y="-15" width="51" height="31"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                <connections>
-                                    <action selector="autoRefreshToggled:" destination="vXZ-lx-hvc" eventType="valueChanged" id="pZq-ge-l3x"/>
-                                </connections>
-                            </switch>
+                        <barButtonItem key="rightBarButtonItem" systemItem="refresh" id="xuj-HQ-FG6">
+                            <connections>
+                                <action selector="refreshTapped:" destination="vXZ-lx-hvc" id="xBB-4H-sAF"/>
+                            </connections>
                         </barButtonItem>
                     </navigationItem>
                     <connections>
-                        <outlet property="autoRefreshSwitch" destination="xuj-HQ-FG6" id="oRe-It-4QW"/>
                         <outlet property="progressLabel" destination="C1n-ja-70w" id="ySJ-fS-weG"/>
                         <outlet property="stopTableView" destination="gZm-hb-9Zh" id="E1M-Sj-s5X"/>
                         <outlet property="vehicleScrollView" destination="csx-9f-M92" id="7d2-bs-NA4"/>
@@ -205,7 +200,7 @@
             </objects>
             <point key="canvasLocation" x="-305" y="1417"/>
         </scene>
-        <!--Map View Controller-->
+        <!--Title-->
         <scene sceneID="ThE-19-uqi">
             <objects>
                 <viewController id="YBp-1f-ZuH" customClass="MapViewController" customModule="BusStop" customModuleProvider="target" sceneMemberID="viewController">
@@ -232,8 +227,16 @@
                             <constraint firstItem="y7I-vK-i8L" firstAttribute="top" secondItem="1Vc-jm-KGM" secondAttribute="bottom" id="iw4-xo-ISt"/>
                         </constraints>
                     </view>
+                    <navigationItem key="navigationItem" title="Title" id="gF0-hD-OEA">
+                        <barButtonItem key="rightBarButtonItem" title="Your location" id="VN0-3n-SgM">
+                            <connections>
+                                <action selector="showUserLocation:" destination="YBp-1f-ZuH" id="sUH-45-ZiY"/>
+                            </connections>
+                        </barButtonItem>
+                    </navigationItem>
                     <connections>
                         <outlet property="mapView" destination="y7I-vK-i8L" id="d2n-QZ-DG4"/>
+                        <outlet property="showUserLocationButtonItem" destination="VN0-3n-SgM" id="UcW-gB-6Pv"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="dBt-0n-hia" userLabel="First Responder" sceneMemberID="firstResponder"/>
