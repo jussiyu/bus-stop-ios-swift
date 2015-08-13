@@ -10,7 +10,8 @@
             ActionType = "Xcode.IDEStandardExecutionActionsCore.ExecutionActionType.ShellScriptAction">
             <ActionContent
                title = "Run Script"
-               scriptText = "#!/bin/sh&#10;&#10;#Grabs info from plist&#10;plist=$SRCROOT&quot;/&quot;$INFOPLIST_FILE&#10;currentBuild=`/usr/libexec/PlistBuddy -c &quot;Print :UserDefinedVersionNumber&quot; &quot;$plist&quot;`&#10;&#10;#And changes it before writing out the plist again&#10;if [ -z &quot;$currentBuild&quot; ]&#10;then&#10;currentBuild=1&#10;/usr/libexec/PlistBuddy -c &quot;Add :UserDefinedVersionNumber string $currentBuild&quot; &quot;$plist&quot;&#10;&#10;else&#10;currentBuild=$(($currentBuild + 1));&#10;/usr/libexec/PlistBuddy -c &quot;Set :UserDefinedVersionNumber $currentBuild&quot; &quot;$plist&quot;&#10;fi">
+               scriptText = "#!/bin/sh&#10;&#10;#Grabs info from plist&#10;plist=$SRCROOT&quot;/&quot;$INFOPLIST_FILE&#10;currentBuild=`/usr/libexec/PlistBuddy -c &quot;Print :UserDefinedVersionNumber&quot; &quot;$plist&quot;`&#10;&#10;#And changes it before writing out the plist again&#10;if [ -z &quot;$currentBuild&quot; ]&#10;then&#10;currentBuild=1&#10;/usr/libexec/PlistBuddy -c &quot;Add :UserDefinedVersionNumber string $currentBuild&quot; &quot;$plist&quot;&#10;&#10;else&#10;currentBuild=$(($currentBuild + 1));&#10;/usr/libexec/PlistBuddy -c &quot;Set :UserDefinedVersionNumber $currentBuild&quot; &quot;$plist&quot;&#10;fi"
+               shellToInvoke = "/usr/bin/false">
                <EnvironmentBuildable>
                   <BuildableReference
                      BuildableIdentifier = "primary"
