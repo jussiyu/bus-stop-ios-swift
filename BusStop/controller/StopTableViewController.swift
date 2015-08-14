@@ -18,6 +18,7 @@ protocol MainDelegate {
   func stopSelected()
   func stopUnselected()
   func getUserLocation() -> CLLocation?
+  func refresh(ready: () -> Void)
 }
 
 extension StopTableViewController: StopDelegate {
@@ -61,6 +62,9 @@ class StopTableViewController: UITableViewController {
   // MARK: - Lifecycle
   override func viewDidLoad() {
     super.viewDidLoad()
+    
+    refreshControl = UIRefreshControl()
+    refreshControl?.addTarget(self, action: "handleRefresh:", forControlEvents: .ValueChanged)
   }
   
   override func didReceiveMemoryWarning() {
@@ -228,6 +232,20 @@ class StopTableViewController: UITableViewController {
     }
     
     mainDelegate?.stopUnselected()
+  }
+  
+  func handleRefresh(refreshControle: UIRefreshControl) {
+    if tableView.contentOffset.y < -self.refreshControl!.frame.size.height / 2 {
+      self.tableView.setContentOffset(CGPoint(x: 0, y: -self.refreshControl!.frame.size.height), animated: true)
+      refreshControl?.beginRefreshing()
+      mainDelegate?.refresh {
+        self.refreshControl?.endRefreshing()
+        self.tableView.setContentOffset(CGPointZero, animated: true)
+      }
+    } else {
+      self.refreshControl?.endRefreshing()
+      self.tableView.setContentOffset(CGPointZero, animated: true)
+    }
   }
 }
 

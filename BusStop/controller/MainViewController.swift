@@ -93,6 +93,16 @@ extension MainViewController : MainDelegate {
   func getUserLocation() -> CLLocation? {
     return userLocation
   }
+  
+  func refresh(ready: () -> Void) {
+    Async.main {self.progressViewManager.showProgress() }
+    refreshStopsForSelectedVehicle(queue: nil) {_ in
+      Async.main {
+        ready()
+        self.progressViewManager.hideProgress()
+      }
+    }
+  }
 }
 
 
