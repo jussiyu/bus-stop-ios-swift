@@ -196,20 +196,14 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     log.verbose("")
     locationManager.stopUpdatingLocation()
     locationUpdateTimer?.cancel()
-    if locationUpdateTimer != nil && handle {
+    // nil timer means that timer is not running
+    locationUpdateTimer = nil
+    if handle {
       handleReceivedLocations()
     }
   }
 
-  
-  
   private func handleReceivedLocations() {
-    if locationUpdateTimer == nil {
-      // Handle locations only once
-      return
-    } else {
-      locationUpdateTimer = nil
-    }
 
     let monitoringDuration = abs(locationUpdateStartTime?.timeIntervalSinceNow ?? 0)
     log.debug("Location monitoring stopped after \(monitoringDuration) seconds and \(self.locations.count) locations")
@@ -232,6 +226,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     } else {
       log.error("No location found")
     }
+    
+    // do not keep old locations
+    locations.removeAll(keepCapacity: false)
   }
 
   private func locationServiceDisabledAlert(authorizationStatus: CLAuthorizationStatus? = nil) {

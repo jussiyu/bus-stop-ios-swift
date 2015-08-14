@@ -380,12 +380,6 @@ class MainViewController: UIViewController {
   //
   // MARK: - lifecycle
   //
-  override func viewDidLayoutSubviews() {
-  }
-
-  override func viewDidAppear(animated: Bool) {
-  }
-
   override func viewDidLoad() {
     log.verbose("")
     super.viewDidLoad()
@@ -470,7 +464,14 @@ class MainViewController: UIViewController {
   // MARK: - actions
   //
   @IBAction func refreshTapped(sender: AnyObject) {
-    autoRefreshTimer?.fire()
+    if let autoRefreshTimer = autoRefreshTimer {
+      autoRefreshTimer.fire()
+    } else {
+      Async.main {self.progressViewManager.showProgress() }
+      refreshStopsForSelectedVehicle(queue: nil) {_ in
+        Async.main {self.progressViewManager.hideProgress()}
+      }
+    }
   }
 
   
@@ -696,6 +697,8 @@ extension MainViewController {
   
   func applicationWillResignActive(notification: NSNotification) {
     log.verbose("")
+    
+    api.cancelTasks()
     
     if initialRefreshTaskQueue?.state == .Running {
       initialRefreshTaskQueue?.pause()

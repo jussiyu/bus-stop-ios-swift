@@ -84,6 +84,20 @@ extension String {
   
 }
 
+// MARK: - Int
+extension Int {
+  static func random(min: Int, max: Int) -> Int {
+    let range = UInt32(max - min)
+    let rndInt = Int(arc4random_uniform(range + 1)) + min
+    return rndInt
+  }
+  
+  static func random(max: Int) -> Int {
+    let rnd = Int(arc4random_uniform(UInt32(max) + 1))
+    return rnd
+  }
+}
+
 // MARK: - Double
 extension Double {
   static var f: NSNumberFormatter = {

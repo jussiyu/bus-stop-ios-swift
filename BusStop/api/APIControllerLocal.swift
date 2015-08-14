@@ -62,6 +62,10 @@ class APIControllerLocal : APIControllerProtocol {
     return true
   }
   
+  func cancelTasks() {
+    //noop
+  }
+  
   private func doGetOnPath(filePath: String, delegate: APIControllerDelegate?, cachingEnabled: Bool = true, next: ApiControllerDelegateNextTask?) {
     if delegate == nil {
       log.error("Delegate not set!")

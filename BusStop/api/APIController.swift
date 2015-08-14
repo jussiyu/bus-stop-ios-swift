@@ -33,6 +33,7 @@ protocol APIControllerProtocol {
   func getStops(next: ApiControllerDelegateNextTask?)
   func connectedToNetwork() -> Bool
   func invalidateSessions()
+  func cancelTasks()
 }
 
 class APIController : NSObject, APIControllerProtocol {
@@ -66,6 +67,7 @@ class APIController : NSObject, APIControllerProtocol {
   
   /// Cancel all active tasks
   func cancelTasks() {
+    log.verbose("")
     synchronize(activeTasks) {
       while !self.activeTasks.isEmpty {
         self.activeTasks.removeLast().cancel()
@@ -151,8 +153,7 @@ class APIController : NSObject, APIControllerProtocol {
       
       let task = session.dataTaskWithURL(url, completionHandler: {data, response, error -> Void in
         UIApplication.sharedApplication().networkActivityIndicatorVisible = false
-        let response = response as! NSHTTPURLResponse
-        if error == nil && response.statusCode == 200 {
+        if let response = response as? NSHTTPURLResponse where error == nil && response.statusCode == 200 {
           log.debug("Task completed successfully: " + urlPath)
           let json = JSON(data: data)
           delegate?.didReceiveAPIResults(json, next: next)
