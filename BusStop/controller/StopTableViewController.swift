@@ -28,6 +28,7 @@ extension StopTableViewController: StopDelegate {
 
 class StopTableViewController: UITableViewController {
   
+  // MARK: - properties
   var tableViewHeader: UILabel?
   let defaultCellIdentifier: String = "StopCell"
   let selectedCellIdentifier: String = "SelectedStopCell"
@@ -57,28 +58,15 @@ class StopTableViewController: UITableViewController {
     return mainDelegate?.getSelectedVehicle()
   }
 
+  // MARK: - Lifecycle
   override func viewDidLoad() {
     super.viewDidLoad()
-    
-    // Uncomment the following line to preserve selection between presentations
-    // self.clearsSelectionOnViewWillAppear = false
-    
-    // Uncomment the following line to display an Edit button in the navigation bar for this view controller.
-    // self.navigationItem.rightBarButtonItem = self.editButtonItem()
   }
   
   override func didReceiveMemoryWarning() {
     super.didReceiveMemoryWarning()
     // Dispose of any resources that can be recreated.
   }
-  
-  // MARK: - Table view data source
-  
-  //    override func numberOfSectionsInTableView(tableView: UITableView) -> Int {
-  //        // #warning Potentially incomplete method implementation.
-  //        // Return the number of sections.
-  //        return 0
-  //    }
   
   override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
     if let mapController = segue.destinationViewController as? MapViewController,
@@ -91,190 +79,8 @@ class StopTableViewController: UITableViewController {
     }
   }
 
-  
-  //data source
-  override func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-    
-    // if a stop is selected then only it will be shown
-    if let selectedStop = selectedStop {
-      return 1
-    } else {
-      return selectedVehicle?.stops.count ?? 0
-    }
-  }
-  
-  override func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
-    
-    if let selectedStop = selectedStop, selectedVehicle = selectedVehicle {
-      
-      // selected cell
-      let cell = tableView.dequeueReusableCellWithIdentifier(selectedCellIdentifier, forIndexPath:indexPath) as! SelectedStopTableViewCell
-      
-      // Return the currently selected stop
-      let style = NSParagraphStyle.defaultParagraphStyle().mutableCopy() as! NSMutableParagraphStyle
-      style.hyphenationFactor = 1.0
-      style.alignment = .Center
-      
-      let string = NSAttributedString(string: "\(selectedStop.name)\n(\(selectedStop.id))", attributes: [NSParagraphStyleAttributeName:style])
-      cell.stopNameLabel.attributedText = string
-      let stopNameLabelFont = UIFont(descriptor: UIFontDescriptor.preferredDescriptorWithStyle(UIFontTextStyleHeadline, oversizedBy: 16), size: 0)
-      cell.stopNameLabel.font = stopNameLabelFont
-      let stopCountLabelFont = UIFont(descriptor: UIFontDescriptor.preferredDescriptorWithStyle(UIFontTextStyleHeadline, oversizedBy: 20), size: 0)
-      cell.stopCountLabel.font = stopCountLabelFont
-      
-      if let selectedStopIndex = selectedVehicle.stopIndexById(selectedStop.id) {
-        cell.stopCountLabel.text = String(selectedStopIndex)
-        
-        var distanceHintText = String(format: NSLocalizedString("%d stop(s) before your stop", comment: ""), selectedStopIndex)
-        
-        if selectedStopIndex < selectedVehicle.stops.count {
-          let stop = selectedVehicle.stops[selectedStopIndex]
-          let minutesUntilSelectedStop = Int(floor(stop.expectedArrivalTime.timeIntervalSinceNow / 60))
-          var timeHintText: String?
-          if minutesUntilSelectedStop >= 0 {
-            timeHintText = String(format: NSLocalizedString(
-              "Arriving at your stop in about %d minutes(s)", comment: ""), minutesUntilSelectedStop)
-          } else {
-            timeHintText = String(format: NSLocalizedString(
-              "Arriving at your stop very soon!", comment: ""), minutesUntilSelectedStop)
-          }
-          distanceHintText += "\n\(timeHintText!)"
-        }
-        
-        cell.distanceHintLabel.text = distanceHintText.stringByReplacingOccurrencesOfString(
-          "\\n", withString: "\n", options: nil)
-      } else {
-        //TODO: cell.distanceHintLabel.text = autoUnexpandTaskQueueProgress ?? ""
-        cell.stopCountLabel.text = ""
-      }
-      
-      // Delay message
-      let delayMinutes = Int(round(abs(selectedVehicle.delay / 60)))
-      let delaySeconds = Int(round(abs(selectedVehicle.delay % 60)))
-      if selectedVehicle.delay > 0 {
-        cell.delayLabel.text = String( format: NSLocalizedString("Behind schedule\nby %d min %d s", comment: ""), delayMinutes, delaySeconds)
-      } else if selectedVehicle.delay < 0 {
-        cell.delayLabel.text = String( format: NSLocalizedString("Ahead of schedule\nby %d min %d s", comment: ""), delayMinutes, delaySeconds)
-      } else {
-        cell.delayLabel.text = ""
-      }
-      
-      // Close button
-      cell.closeButton.setTitle(NSLocalizedString("Stop tracking", comment: ""), forState: .Normal)
-      cell.closeButton.removeTarget(nil, action: nil, forControlEvents: .TouchUpInside)
-      cell.closeButton.addTarget(self, action: "selectedStopCloseButtonPressed:", forControlEvents: .TouchUpInside)
-      
-      // Favourite button
-      cell.favoriteButton.selected = selectedStop.favorite
-      cell.favoriteButton.removeTarget(nil, action: nil, forControlEvents: .TouchUpInside)
-      cell.favoriteButton.addTarget(self, action: "selectedStopFavoriteButtonPressed:", forControlEvents: .TouchUpInside)
-      
-      return cell
-      
-    } else {  // selectedStop == nil
-      
-      let cell = tableView.dequeueReusableCellWithIdentifier(defaultCellIdentifier, forIndexPath:indexPath) as! UITableViewCell
-      
-      if let selectedVehicle = selectedVehicle {
-        let rowToBeReturned = indexPath.row
-        
-        if let stop = stopForRow(rowToBeReturned) {
-          cell.textLabel?.text = "\(stop.name) (\(stop.id))"
-        } else {
-          cell.textLabel?.text = NSLocalizedString("Unknown stop", comment: "")
-          log.error("Unknown stop at row \(rowToBeReturned)")
-        }
-      } else {
-        
-        log.warning("Not vehicle selected")
-      }
-      
-      return cell
-    }
-  }
-  
-  func selectedStopCloseButtonPressed(sender: AnyObject) {
-    log.verbose("")
-    
-    doUnselectStop()
-  }
-  
-  func selectedStopFavoriteButtonPressed(sender: AnyObject) {
-    log.verbose("")
-    
-    if let button = sender as? UIButton {
-      button.selected = !button.selected
-      if let selectedStop = selectedStop {
-        stopDBManager.setFavoriteForStop(selectedStop, favorite: button.selected)
-      }
-    }
-  }
-  
-  //// Delegate
-  override func tableView(tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
-    tableViewHeader = UILabel()
-    //TODO: if closestVehicles.count > 0 {
-      if selectedStopId == nil {
-        tableViewHeader!.text = NSLocalizedString("Choose your stop", comment: "")
-      } else {
-        tableViewHeader!.text = NSLocalizedString("Now tracking your stop", comment: "")
-      }
-//    } else {
-//      stopTableViewHeader!.text = ""
-//    }
-    tableViewHeader!.textAlignment = .Center
-    tableViewHeader!.backgroundColor = UIColor.whiteColor()
-    return tableViewHeader
-  }
-  
-  override func tableView(tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
-    return 22
-  }
-  
-  override func tableView(tableView: UITableView, heightForRowAtIndexPath indexPath: NSIndexPath) -> CGFloat {
-    if selectedStopId == nil {
-      return tableView.rowHeight
-    } else {
-      return tableView.bounds.height - (tableViewHeader?.bounds.height ?? 0)
-    }
-  }
-  
-  override func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
-    log.verbose("vehicleScrollView:didSelectRowAtIndexPath: \(indexPath.row)")
-    
-    if selectedStopId == nil {
-      doSelectStopAtIndexPath(indexPath)
-    } else {
-      // There is a dedicated close button on the view so do nothing here
-    }
-  }
-  
-//  func scrollViewDidEndScrollingAnimation(scrollView: UIScrollView) {
-//    
-//  }
-  
-  override func scrollViewDidScroll(scrollView: UIScrollView) {
-    super.scrollViewDidScroll(scrollView)
-    // Dim the vehicle scroller and move it up
-    // Also slide adjacent headers to the side
-    
-    // Do nothing if all rows fit so that bouncing does nothing
-    if scrollView.bounds.height < scrollView.contentSize.height {
-      
-      // scroll stop table view up and minimize vehicle scroller
-      // Use the positive value of the table scroll offset to animate other views
-      let offset = max(scrollView.contentOffset.y, 0)
-      //    log.debug("vehicleScrollView vertical offset: \(offset)")
-      mainDelegate?.expandStopContainerByOffset(offset)
-      
-    } else {
-      
-      // ensure that everything is reset to normal
-      mainDelegate?.resetVehicleScrollView()
-    }
-  }
-  
-  func stopForRow(row: Int) -> Stop? {
+  // MARK: - Helpers
+  private func stopForRow(row: Int) -> Stop? {
     if let selectedVehicle = selectedVehicle where selectedVehicle.stops.count > row {
       let vehicleActivityStop = selectedVehicle.stops[row]
       if let stop = stopDBManager.stopWithId(vehicleActivityStop.id) {
@@ -289,7 +95,7 @@ class StopTableViewController: UITableViewController {
     }
   }
   
-  func rowForStop(stop: Stop) -> Int? {
+  private func rowForStop(stop: Stop) -> Int? {
     let row = selectedVehicle?.stopIndexById(stop.id)
     if row == nil {
       log.warning("Selected vehicle does not currenly have this stop")
@@ -420,64 +226,203 @@ class StopTableViewController: UITableViewController {
     if let newRowForSelectedStop = newRowForSelectedStop {
       tableView.scrollToRowAtIndexPath(NSIndexPath(forRow: newRowForSelectedStop, inSection: 0), atScrollPosition: .None, animated: true)
     }
-
+    
     mainDelegate?.stopUnselected()
   }
+}
 
+
+//
+// MARK: - UITableViewDataSource
+//
+extension StopTableViewController : UITableViewDataSource {
+
+  override func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+    
+    // if a stop is selected then only it will be shown
+    if let selectedStop = selectedStop {
+      return 1
+    } else {
+      return selectedVehicle?.stops.count ?? 0
+    }
+  }
   
-  /*
   override func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
-  let cell = tableView.dequeueReusableCellWithIdentifier("reuseIdentifier", forIndexPath: indexPath) as! UITableViewCell
-  
-  // Configure the cell...
-  
-  return cell
+    
+    if let selectedStop = selectedStop, selectedVehicle = selectedVehicle {
+      
+      // selected cell
+      let cell = tableView.dequeueReusableCellWithIdentifier(selectedCellIdentifier, forIndexPath:indexPath) as! SelectedStopTableViewCell
+      cell.delegate = self
+      
+      // Return the currently selected stop
+      let style = NSParagraphStyle.defaultParagraphStyle().mutableCopy() as! NSMutableParagraphStyle
+      style.hyphenationFactor = 1.0
+      style.alignment = .Center
+      
+      let string = NSAttributedString(string: "\(selectedStop.name)\n(\(selectedStop.id))", attributes: [NSParagraphStyleAttributeName:style])
+      cell.stopNameLabel.attributedText = string
+      let stopNameLabelFont = UIFont(descriptor: UIFontDescriptor.preferredDescriptorWithStyle(UIFontTextStyleHeadline, oversizedBy: 16), size: 0)
+      cell.stopNameLabel.font = stopNameLabelFont
+      let stopCountLabelFont = UIFont(descriptor: UIFontDescriptor.preferredDescriptorWithStyle(UIFontTextStyleHeadline, oversizedBy: 20), size: 0)
+      cell.stopCountLabel.font = stopCountLabelFont
+      
+      if let selectedStopIndex = selectedVehicle.stopIndexById(selectedStop.id) {
+        cell.stopCountLabel.text = String(selectedStopIndex)
+        
+        var distanceHintText = String(format: NSLocalizedString("%d stop(s) before your stop", comment: ""), selectedStopIndex)
+        
+        if selectedStopIndex < selectedVehicle.stops.count {
+          let stop = selectedVehicle.stops[selectedStopIndex]
+          let minutesUntilSelectedStop = Int(floor(stop.expectedArrivalTime.timeIntervalSinceNow / 60))
+          var timeHintText: String?
+          if minutesUntilSelectedStop >= 0 {
+            timeHintText = String(format: NSLocalizedString(
+              "Arriving at your stop in about %d minutes(s)", comment: ""), minutesUntilSelectedStop)
+          } else {
+            timeHintText = String(format: NSLocalizedString(
+              "Arriving at your stop very soon!", comment: ""), minutesUntilSelectedStop)
+          }
+          distanceHintText += "\n\(timeHintText!)"
+        }
+        
+        cell.distanceHintLabel.text = distanceHintText.stringByReplacingOccurrencesOfString(
+          "\\n", withString: "\n", options: nil)
+      } else {
+        //TODO: cell.distanceHintLabel.text = autoUnexpandTaskQueueProgress ?? ""
+        cell.stopCountLabel.text = ""
+      }
+      
+      // Delay message
+      let delayMinutes = Int(round(abs(selectedVehicle.delay / 60)))
+      let delaySeconds = Int(round(abs(selectedVehicle.delay % 60)))
+      if selectedVehicle.delay > 0 {
+        cell.delayLabel.text = String( format: NSLocalizedString("Behind schedule\nby %d min %d s", comment: ""), delayMinutes, delaySeconds)
+      } else if selectedVehicle.delay < 0 {
+        cell.delayLabel.text = String( format: NSLocalizedString("Ahead of schedule\nby %d min %d s", comment: ""), delayMinutes, delaySeconds)
+      } else {
+        cell.delayLabel.text = ""
+      }
+      
+      // Close button
+      cell.closeButton.setTitle(NSLocalizedString("Stop tracking", comment: ""), forState: .Normal)
+      
+      // Favourite button
+      cell.favoriteButton.selected = selectedStop.favorite
+      
+      return cell
+      
+    } else {  // selectedStop == nil
+      
+      let cell = tableView.dequeueReusableCellWithIdentifier(defaultCellIdentifier, forIndexPath:indexPath) as! UITableViewCell
+      
+      if let selectedVehicle = selectedVehicle {
+        let rowToBeReturned = indexPath.row
+        
+        if let stop = stopForRow(rowToBeReturned) {
+          cell.textLabel?.text = "\(stop.name) (\(stop.id))"
+        } else {
+          cell.textLabel?.text = NSLocalizedString("Unknown stop", comment: "")
+          log.error("Unknown stop at row \(rowToBeReturned)")
+        }
+      } else {
+        
+        log.warning("Not vehicle selected")
+      }
+      
+      return cell
+    }
   }
-  */
-  
-  /*
-  // Override to support conditional editing of the table view.
-  override func tableView(tableView: UITableView, canEditRowAtIndexPath indexPath: NSIndexPath) -> Bool {
-  // Return NO if you do not want the specified item to be editable.
-  return true
+}
+
+//
+// MARK: - UITableViewDelegate
+//
+extension StopTableViewController : SelectedStopTableViewCellDelegate {
+  func shouldSetFavorite(favorite: Bool) -> Bool {
+    log.verbose("")
+    
+    if let selectedStop = selectedStop {
+      stopDBManager.setFavoriteForStop(selectedStop, favorite: favorite)
+      return true
+    } else {
+      return false
+    }
   }
-  */
-  
-  /*
-  // Override to support editing the table view.
-  override func tableView(tableView: UITableView, commitEditingStyle editingStyle: UITableViewCellEditingStyle, forRowAtIndexPath indexPath: NSIndexPath) {
-  if editingStyle == .Delete {
-  // Delete the row from the data source
-  tableView.deleteRowsAtIndexPaths([indexPath], withRowAnimation: .Fade)
-  } else if editingStyle == .Insert {
-  // Create a new instance of the appropriate class, insert it into the array, and add a new row to the table view
+
+  func close() {
+    log.verbose("")
+    doUnselectStop()
   }
+}
+
+
+
+
+//
+// MARK: - UITableViewDelegate
+//
+extension StopTableViewController : UITableViewDelegate {
+
+  override func tableView(tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
+    tableViewHeader = UILabel()
+    //TODO: if closestVehicles.count > 0 {
+      if selectedStopId == nil {
+        tableViewHeader!.text = NSLocalizedString("Choose your stop", comment: "")
+      } else {
+        tableViewHeader!.text = NSLocalizedString("Now tracking your stop", comment: "")
+      }
+//    } else {
+//      stopTableViewHeader!.text = ""
+//    }
+    tableViewHeader!.textAlignment = .Center
+    tableViewHeader!.backgroundColor = UIColor.whiteColor()
+    return tableViewHeader
   }
-  */
   
-  /*
-  // Override to support rearranging the table view.
-  override func tableView(tableView: UITableView, moveRowAtIndexPath fromIndexPath: NSIndexPath, toIndexPath: NSIndexPath) {
-  
+  override func tableView(tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
+    return 22
   }
-  */
   
-  /*
-  // Override to support conditional rearranging of the table view.
-  override func tableView(tableView: UITableView, canMoveRowAtIndexPath indexPath: NSIndexPath) -> Bool {
-  // Return NO if you do not want the item to be re-orderable.
-  return true
+  override func tableView(tableView: UITableView, heightForRowAtIndexPath indexPath: NSIndexPath) -> CGFloat {
+    if selectedStopId == nil {
+      return tableView.rowHeight
+    } else {
+      return tableView.bounds.height - (tableViewHeader?.bounds.height ?? 0)
+    }
   }
-  */
   
-  /*
-  // MARK: - Navigation
-  
-  // In a storyboard-based application, you will often want to do a little preparation before navigation
-  override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
-  // Get the new view controller using [segue destinationViewController].
-  // Pass the selected object to the new view controller.
+  override func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
+    log.verbose("vehicleScrollView:didSelectRowAtIndexPath: \(indexPath.row)")
+    
+    if selectedStopId == nil {
+      doSelectStopAtIndexPath(indexPath)
+    } else {
+      // There is a dedicated close button on the view so do nothing here
+    }
   }
-  */
   
+//  func scrollViewDidEndScrollingAnimation(scrollView: UIScrollView) {
+//    
+//  }
+  
+  override func scrollViewDidScroll(scrollView: UIScrollView) {
+    // Dim the vehicle scroller and move it up
+    // Also slide adjacent headers to the side
+    
+    // Do nothing if all rows fit so that bouncing does nothing
+    if scrollView.bounds.height < scrollView.contentSize.height {
+      
+      // scroll stop table view up and minimize vehicle scroller
+      // Use the positive value of the table scroll offset to animate other views
+      let offset = max(scrollView.contentOffset.y, 0)
+      //    log.debug("vehicleScrollView vertical offset: \(offset)")
+      mainDelegate?.expandStopContainerByOffset(offset)
+      
+    } else {
+      
+      // ensure that everything is reset to normal
+      mainDelegate?.resetVehicleScrollView()
+    }
+  }
 }

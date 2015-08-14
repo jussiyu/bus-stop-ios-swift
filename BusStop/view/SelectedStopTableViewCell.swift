@@ -8,7 +8,13 @@
 
 import UIKit
 
+protocol SelectedStopTableViewCellDelegate {
+  func shouldSetFavorite(favorite: Bool) -> Bool
+  func close()
+}
 class SelectedStopTableViewCell: UITableViewCell {
+  
+  var delegate: SelectedStopTableViewCellDelegate?
 
   @IBOutlet weak var stopNameLabel: UILabel!
   @IBOutlet weak var stopCountLabel: UILabel!
@@ -28,4 +34,15 @@ class SelectedStopTableViewCell: UITableViewCell {
         // Configure the view for the selected state
     }
 
+  @IBAction func favoriteButtonTapped(sender: AnyObject) {
+    if let button = sender as? UIButton {
+      if let delegate = delegate where delegate.shouldSetFavorite(button.selected) {
+        button.selected = !button.selected
+      }
+      
+    }
+  }
+  @IBAction func closeButtonTapped(sender: UIButton) {
+    delegate?.close()
+  }
 }

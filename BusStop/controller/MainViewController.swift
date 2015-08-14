@@ -137,6 +137,7 @@ class MainViewController: UIViewController {
     }
   }
   
+  
   var stopTableView: UITableView {
     // hack
     return stopTableContainerView.subviews.first as! UITableView
