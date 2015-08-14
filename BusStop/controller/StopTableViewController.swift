@@ -25,6 +25,10 @@ extension StopTableViewController: StopDelegate {
   func unselectStop() {
     doUnselectStop()
   }
+  func getSelectedStopId() -> String? {
+    return selectedStopId
+  }
+
 }
 
 class StopTableViewController: UITableViewController {
@@ -157,6 +161,10 @@ class StopTableViewController: UITableViewController {
   }
   
   private func doUnselectStop() {
+    if selectedStopId == nil {
+      return
+    }
+    
     appDelegate.stopUpdatingLocation(handleReceivedLocations: false)
     
     tableView.scrollEnabled = true

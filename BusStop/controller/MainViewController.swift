@@ -21,6 +21,7 @@ import AudioToolbox
 //
 
 protocol StopDelegate {
+  func getSelectedStopId() -> String?
   func unselectStop()
 }
 
@@ -81,6 +82,8 @@ extension MainViewController : MainDelegate {
     
     vehicleScrollView.touchEnabled = true
     
+    userNotifiedForSelectedStop = false
+    
     autoUnexpandTaskQueue?.cancel()
     
     unexpandStopContainer()
@@ -133,13 +136,13 @@ class MainViewController: UIViewController {
   var systemSoundID: SystemSoundID = 0
   let stopSoundFileName = "StopSound", stopSoundFileExt = "aif"
   var userNotifiedForSelectedStop = false
-  let autoRefresh = true
+  var autoRefresh: Bool {return selectedStopId  != nil}
   var autoRefreshTimer: NSTimer?
   let autoRefreshIntervalMax = 10.0
   let autoRefreshIntervalMin = 2.0
   var autoRefreshInterval: Double {
     // adjust refresh interval based on how close user is to the selected stop
-    if let selectedStop = selectedStop, selectedStopIndex = selectedVehicle?.stopIndexById(selectedStop.id)
+    if let selectedStopId = selectedStopId, selectedStopIndex = selectedVehicle?.stopIndexById(selectedStopId)
         where selectedStopIndex > 0 {
       return cap(pow(Double(selectedStopIndex), 3), min: autoRefreshIntervalMin, max: autoRefreshIntervalMax)
     } else {
@@ -174,7 +177,7 @@ class MainViewController: UIViewController {
       }
       
       if selectedStopId != nil && find(closestVehicles, selectedVehicle!) == nil {
-        log.info("Unexpaning the lost selected stop \(self.selectedStop?.id)")
+        log.info("Unexpaning the lost selected stop \(self.selectedStopId)")
         Async.main {
           var title = NSLocalizedString("Lost your stop.", comment:"")
           var message = NSLocalizedString("Your stop was already passed. Stopped tracking your stop.", comment:"")
@@ -192,7 +195,7 @@ class MainViewController: UIViewController {
   
   var selectedVehicleRef: String? {
     didSet {
-      selectedStopId = nil
+      stopDelegate?.unselectStop()
       
       //      if selectedVehicle != nil {
       //        defaults.setObject(selectedVehicle?.vehicleRef, forKey: selectedVehicleKey)
@@ -221,22 +224,8 @@ class MainViewController: UIViewController {
   /// a thread specific instance - do not reuse across threads
   var stopDBManager: StopDBManager { return StopDBManager.sharedInstance }
 
-  var selectedStopId: String? {
-    didSet {
-      log.debug("SelectedStopId set to \(self.selectedStop)")
-      userNotifiedForSelectedStop = false
-    }
-  }
+  var selectedStopId: String? { return stopDelegate?.getSelectedStopId() }
 
-  // Not retained as a strong reference in order to avoid duplicates after an vehicles refresh
-  var selectedStop: Stop? {
-    if let selectedStopId = selectedStopId {
-      return stopDBManager.stopWithId(selectedStopId)
-    } else {
-      return nil
-    }
-  }
-  
   var userLocation: CLLocation? {
     didSet {
       if let userLocation = userLocation {
@@ -304,7 +293,8 @@ class MainViewController: UIViewController {
               if let selectedStopId = self.ref.selectedStopId {
                 let selectedStopRow = self.ref.selectedVehicle?.stopIndexById(selectedStopId)
                 if selectedStopRow == nil {
-                  log.debug("Selected stop \(self.ref.selectedStop!.name) passed")
+                  // TODO: move to stop controller
+                  log.debug("Selected stop \(self.ref.selectedStopId) passed")
                   if self.ref.autoUnexpandTaskQueue == nil ||
                     self.ref.autoUnexpandTaskQueue!.state == .Completed ||
                     self.ref.autoUnexpandTaskQueue!.state == .Cancelled {
@@ -548,17 +538,9 @@ class MainViewController: UIViewController {
   }
 
   override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
-//    if let mapController = segue.destinationViewController as? MapViewController,
-//        cell = sender as? UITableViewCell where segue.identifier == "showStopOnMap" {
-//      if let stopRow = stopTableView.indexPathForCell(cell)?.row {
-//        mapController.selectedStop = stopForRow(stopRow)
-//      }
-//      mapController.userLocation = userLocation
-//      mapController.selectedVehicle = selectedVehicle
-//    } else
-      if let stopController = segue.destinationViewController as? StopTableViewController {
+    if let stopController = segue.destinationViewController as? StopTableViewController {
       stopController.mainDelegate = self
-        stopDelegate?.unselectStop()
+      stopDelegate = stopController
     }
 
   }
@@ -740,7 +722,8 @@ class MainViewController: UIViewController {
       let localNotification = UILocalNotification()
       localNotification.fireDate = nil
       localNotification.soundName = "\(stopSoundFileName).\(stopSoundFileExt)"
-      localNotification.alertBody = NSLocalizedString("\(selectedStop!.name) is the next one!", comment: "")
+      // TODO: move to stop controller
+      localNotification.alertBody = NSLocalizedString("\(selectedStopId) is the next one!", comment: "")
       localNotification.alertAction = NSLocalizedString("Action", comment:"")
       localNotification.repeatInterval = nil
       UIApplication.sharedApplication().scheduleLocalNotification(localNotification)
