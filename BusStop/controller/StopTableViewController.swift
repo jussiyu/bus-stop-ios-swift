@@ -8,6 +8,8 @@
 
 import UIKit
 import CoreLocation
+import XCGLogger
+import TaskQueue
 
 protocol MainDelegate {
   func resetVehicleScrollView()
@@ -19,8 +21,12 @@ protocol MainDelegate {
   func stopUnselected()
   func getUserLocation() -> CLLocation?
   func refresh(ready: () -> Void)
+  func selectedStopReached()
 }
 
+//
+// MARK: - StopDelegate implementation
+//
 extension StopTableViewController: StopDelegate {
   func unselectStop() {
     doUnselectStop()
@@ -29,8 +35,40 @@ extension StopTableViewController: StopDelegate {
     return selectedStopId
   }
 
+  func reloadStops() {
+    tableView.reloadSections(NSIndexSet(index: 0), withRowAnimation: .Fade)
+    
+    // Check if the selected stop is still on the stop list
+    if selectedStopId != nil {
+      
+      if let selectedStopId = selectedStopId {
+        let selectedStopRow = selectedVehicle?.stopIndexById(selectedStopId)
+        if selectedStopRow == nil {
+          log.debug("Selected stop \(selectedStopId) passed")
+          if autoUnexpandTaskQueue == nil ||
+            autoUnexpandTaskQueue!.state == .Completed ||
+            autoUnexpandTaskQueue!.state == .Cancelled {
+              log.debug("Launching new auto unexpand")
+              autoUnexpandTaskQueue = initAutoUnexpandTaskQueue()
+              autoUnexpandTaskQueue?.run()
+          }
+        } else if selectedStopRow == 0 {
+          mainDelegate?.selectedStopReached()
+        }
+      }
+    }
+  }
+  
+  func scrollToTopWithAnimation(animated: Bool) {
+    tableView.scrollToTop(animated: animated)
+  }
 }
 
+
+//
+// MARK: - UI(Table)ViewController implementation
+///////////////////////////////////////////////
+//
 class StopTableViewController: UITableViewController {
   
   // MARK: - properties
@@ -63,6 +101,39 @@ class StopTableViewController: UITableViewController {
     return mainDelegate?.getSelectedVehicle()
   }
 
+  var autoUnexpandTaskQueue: TaskQueue?
+  func initAutoUnexpandTaskQueue() -> TaskQueue {
+    let q = TaskQueue()
+    
+    var i = 0
+    q.tasks +=! {
+      self.autoUnexpandTaskQueueProgress = NSLocalizedString("Hopefully you hace a nice ride! Ending tracking now", comment: "")
+    }
+    
+    q.tasks +=! {[weak q] result, next in
+      if i++ > 6 {
+        next(nil)
+      } else {
+        
+        println("sleeping \(i)")
+        self.autoUnexpandTaskQueueProgress! += "."
+        self.tableView.reloadRowsAtIndexPaths([NSIndexPath(forRow: 0, inSection: 0)], withRowAnimation: .Fade)
+        q?.retry(delay: 1)
+      }
+    }
+    
+    q.tasks +=! {
+      self.unselectStop()
+      self.autoUnexpandTaskQueueProgress = nil
+    }
+    
+    return q
+  }
+  var autoUnexpandTaskQueueProgress: String?
+  
+  
+
+  
   // MARK: - Lifecycle
   override func viewDidLoad() {
     super.viewDidLoad()
@@ -165,6 +236,8 @@ class StopTableViewController: UITableViewController {
       return
     }
     
+    autoUnexpandTaskQueue?.cancel()
+
     appDelegate.stopUpdatingLocation(handleReceivedLocations: false)
     
     tableView.scrollEnabled = true

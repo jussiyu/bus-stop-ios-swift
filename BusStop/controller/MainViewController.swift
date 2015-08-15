@@ -23,8 +23,13 @@ import AudioToolbox
 protocol StopDelegate {
   func getSelectedStopId() -> String?
   func unselectStop()
+  func reloadStops()
+  func scrollToTopWithAnimation(animated: Bool)
 }
 
+//
+// MARK: - MainDelegate implementation
+//
 extension MainViewController : MainDelegate {
   
   func resetVehicleScrollView() {
@@ -66,26 +71,18 @@ extension MainViewController : MainDelegate {
   
   func unexpandStopContainer() {
     expandStopContainerByOffset(0)
-    
   }
   
   func stopSelected() {
     initAutoRefreshTimer()
-    
     vehicleScrollView.touchEnabled = false
-    
     expandStopContainer()
   }
   
   func stopUnselected() {
     initAutoRefreshTimer()
-    
     vehicleScrollView.touchEnabled = true
-    
     userNotifiedForSelectedStop = false
-    
-    autoUnexpandTaskQueue?.cancel()
-    
     unexpandStopContainer()
     
     // Refresh vehicle as they are not updated while stop was selected
@@ -106,11 +103,19 @@ extension MainViewController : MainDelegate {
       }
     }
   }
+  
+  func selectedStopReached() {
+    notifySelectedStopReached()
+  }
 }
 
 
 
 
+//
+// MARK: - UIViewController implementation
+//////////////////////////////////////////
+//
 
 class MainViewController: UIViewController {
   
@@ -148,12 +153,6 @@ class MainViewController: UIViewController {
     } else {
       return autoRefreshIntervalMax
     }
-  }
-  
-  
-  var stopTableView: UITableView {
-    // hack
-    return stopTableContainerView.subviews.first as! UITableView
   }
   
   let maxVisibleVehicleCount = 10
@@ -285,28 +284,7 @@ class MainViewController: UIViewController {
           self.ref.vehicles.setStopsFromJSON(results["body"])
           self.ref.vehicles.setLocationsFromJSON(results["body"])
           Async.main {
-            self.ref.stopTableView.reloadSections(NSIndexSet(index: 0), withRowAnimation: .Fade)
-
-            // Check if the selected stop is still on the stop list
-            if self.ref.selectedStopId != nil {
-
-              if let selectedStopId = self.ref.selectedStopId {
-                let selectedStopRow = self.ref.selectedVehicle?.stopIndexById(selectedStopId)
-                if selectedStopRow == nil {
-                  // TODO: move to stop controller
-                  log.debug("Selected stop \(self.ref.selectedStopId) passed")
-                  if self.ref.autoUnexpandTaskQueue == nil ||
-                    self.ref.autoUnexpandTaskQueue!.state == .Completed ||
-                    self.ref.autoUnexpandTaskQueue!.state == .Cancelled {
-                      log.debug("Launching new auto unexpand")
-                      self.ref.autoUnexpandTaskQueue = self.ref.initAutoUnexpandTaskQueue()
-                      self.ref.autoUnexpandTaskQueue?.run()
-                  }
-                } else if selectedStopRow == 0 {
-                  self.ref.notifySelectedStopReached()
-                }
-              }
-            }
+            self.ref.stopDelegate?.reloadStops()
             next?(nil)
           }
         } else { // status != success
@@ -412,7 +390,7 @@ class MainViewController: UIViewController {
     q.tasks +=! {
       if self.selectedStopId == nil {
         log.info("Task: show closest vehicle headers")
-        self.stopTableView.scrollToTop(animated: true)
+        self.stopDelegate?.scrollToTopWithAnimation(true)
         self.vehicleScrollView.reloadData()
       }
     }
@@ -431,38 +409,6 @@ class MainViewController: UIViewController {
     
     return q
   }
-
-  var autoUnexpandTaskQueue: TaskQueue?
-  func initAutoUnexpandTaskQueue() -> TaskQueue {
-    let q = TaskQueue()
-
-    var i = 0
-    q.tasks +=! {
-      self.autoUnexpandTaskQueueProgress = NSLocalizedString("Hopefully you hace a nice ride! Ending tracking now", comment: "")
-    }
-    
-    q.tasks +=! {[weak q] result, next in
-      if i++ > 6 {
-        next(nil)
-      } else {
-        
-        println("sleeping \(i)")
-        self.autoUnexpandTaskQueueProgress! += "."
-        self.stopTableView.reloadRowsAtIndexPaths([NSIndexPath(forRow: 0, inSection: 0)], withRowAnimation: .Fade)
-        q?.retry(delay: 1)
-      }
-    }
- 
-    q.tasks +=! {
-      self.stopDelegate?.unselectStop()
-      self.autoUnexpandTaskQueueProgress = nil
-    }
-
-    return q
-  }
-  var autoUnexpandTaskQueueProgress: String?
-  
-  
   
   //
   // MARK: - lifecycle
@@ -591,7 +537,7 @@ class MainViewController: UIViewController {
             } else {
               log.info("RefreshAll done successfully!")
               self.extendProgressLabelTextWith(NSLocalizedString("All data loaded", comment: ""))
-              self.stopTableView.hidden = false
+              self.stopTableContainerView.hidden = false
               self.hideProgressLabel()
             }
             self.progressViewManager.hideProgress()
@@ -944,7 +890,7 @@ extension MainViewController: HorizontalScrollerDelegate {
   }
   
   func horizontalScrollerWillBeginDragging(horizontalScroller: HorizontalScroller) {
-    stopTableView.scrollToTop(animated: true)
+    stopDelegate?.scrollToTopWithAnimation(true)
     resetVehicleScrollView()
   }
   
@@ -964,7 +910,7 @@ extension MainViewController: HorizontalScrollerDelegate {
 
     }
     
-    stopTableView.scrollToTop(animated: true)
+    stopDelegate?.scrollToTopWithAnimation(true)
     resetVehicleScrollView()
 
     if selectedStopId != nil {

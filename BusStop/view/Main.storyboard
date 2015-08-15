@@ -29,7 +29,7 @@
                                     </mask>
                                 </variation>
                             </view>
-                            <containerView opaque="NO" contentMode="scaleToFill" verticalCompressionResistancePriority="749" translatesAutoresizingMaskIntoConstraints="NO" id="dJ0-gt-DTi" userLabel="Stop Table Container View">
+                            <containerView hidden="YES" opaque="NO" contentMode="scaleToFill" verticalCompressionResistancePriority="749" translatesAutoresizingMaskIntoConstraints="NO" id="dJ0-gt-DTi" userLabel="Stop Table Container View">
                                 <rect key="frame" x="16" y="219" width="568" height="381"/>
                                 <connections>
                                     <segue destination="OfK-Km-6Fz" kind="embed" id="h49-c5-nJT"/>
@@ -223,10 +223,10 @@
             </objects>
             <point key="canvasLocation" x="-305" y="2005.5"/>
         </scene>
-        <!--Title-->
+        <!--Map View Controller-->
         <scene sceneID="ThE-19-uqi">
             <objects>
-                <viewController id="YBp-1f-ZuH" customClass="MapViewController" customModule="BusStop" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController id="YBp-1f-ZuH" userLabel="Map View Controller" customClass="MapViewController" customModule="BusStop" customModuleProvider="target" sceneMemberID="viewController">
                     <layoutGuides>
                         <viewControllerLayoutGuide type="top" id="1Vc-jm-KGM"/>
                         <viewControllerLayoutGuide type="bottom" id="ITZ-JO-DGW"/>
@@ -250,7 +250,7 @@
                             <constraint firstItem="y7I-vK-i8L" firstAttribute="top" secondItem="1Vc-jm-KGM" secondAttribute="bottom" id="iw4-xo-ISt"/>
                         </constraints>
                     </view>
-                    <navigationItem key="navigationItem" title="Title" id="gF0-hD-OEA">
+                    <navigationItem key="navigationItem" id="gF0-hD-OEA">
                         <barButtonItem key="rightBarButtonItem" title="Your location" id="VN0-3n-SgM">
                             <connections>
                                 <action selector="showUserLocation:" destination="YBp-1f-ZuH" id="sUH-45-ZiY"/>
