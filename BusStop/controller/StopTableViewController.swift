@@ -367,7 +367,7 @@ extension StopTableViewController : UITableViewDataSource {
       cell.stopCountLabel.font = stopCountLabelFont
       
       if let selectedStopIndex = selectedVehicle.stopIndexById(selectedStop.id) {
-        cell.stopCountLabel.text = String(selectedStopIndex)
+        cell.stopCountLabel.text = selectedStopIndex > 0 ? String(selectedStopIndex) : "" // don't show zero
         
         var distanceHintText = String(format: NSLocalizedString("%d stop(s) before your stop", comment: ""), selectedStopIndex)
         
@@ -387,8 +387,9 @@ extension StopTableViewController : UITableViewDataSource {
         
         cell.distanceHintLabel.text = distanceHintText.stringByReplacingOccurrencesOfString(
           "\\n", withString: "\n", options: nil)
-      } else {
-        //TODO: cell.distanceHintLabel.text = autoUnexpandTaskQueueProgress ?? ""
+        
+      } else { // the stop no more on the stop list
+        cell.distanceHintLabel.text = autoUnexpandTaskQueueProgress ?? ""
         cell.stopCountLabel.text = ""
       }
       
