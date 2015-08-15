@@ -657,19 +657,21 @@ class MainViewController: UIViewController {
 
   private func notifySelectedStopReached() {
     if userNotifiedForSelectedStop {
+      // already notified, ignore
       return
     }
+    
     userNotifiedForSelectedStop = true
     
     if UIApplication.sharedApplication().applicationState == .Active {
       playSelectedStopReachedAlert()
-    } else {
+    } else if let selectedStopId = selectedStopId, stop = stopDBManager.stopWithId(selectedStopId) {
+      let stopName = stop.name ?? stop.id
       UIApplication.sharedApplication().cancelAllLocalNotifications()
       let localNotification = UILocalNotification()
       localNotification.fireDate = nil
       localNotification.soundName = "\(stopSoundFileName).\(stopSoundFileExt)"
-      // TODO: move to stop controller
-      localNotification.alertBody = NSLocalizedString("\(selectedStopId) is the next one!", comment: "")
+      localNotification.alertBody = NSLocalizedString("\(stopName) is the next one!", comment: "")
       localNotification.alertAction = NSLocalizedString("Action", comment:"")
       localNotification.repeatInterval = nil
       UIApplication.sharedApplication().scheduleLocalNotification(localNotification)
