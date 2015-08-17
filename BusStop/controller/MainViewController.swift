@@ -69,12 +69,11 @@ extension MainViewController : MainDelegate {
     }
   }
   
-  func unexpandStopContainer() {
-    expandStopContainerByOffset(0)
-  }
-  
   func stopSelected() {
-    initAutoRefreshTimer()
+    // reset notifier flag
+    userNotifiedForSelectedStop = false
+    
+    initAutoRefreshTimer(andFire: true)
     vehicleScrollView.touchEnabled = false
     expandStopContainer()
   }
@@ -82,10 +81,14 @@ extension MainViewController : MainDelegate {
   func stopUnselected() {
     initAutoRefreshTimer()
     vehicleScrollView.touchEnabled = true
-    userNotifiedForSelectedStop = false
-    unexpandStopContainer()
     
-    // Refresh vehicle as they are not updated while stop was selected
+    // hide stop table temporarily as it's probably out of date
+    stopTableContainerView.hidden = true
+    
+    // minimize stop container
+    expandStopContainerByOffset(0)
+    
+    // Refresh vehicle as they were not updated while stop was selected
     progressViewManager.showProgress()
     refreshVehicles(queue: nil) {_ in self.progressViewManager.hideProgress()}
   }
@@ -170,7 +173,11 @@ class MainViewController: UIViewController {
     didSet {
       if selectedStopId == nil {
         self.selectedVehicleRef = closestVehicles.first?.vehicleRef
-        self.vehicleScrollView.scrollToViewWithIndex(0, animated: true)
+        if !self.vehicleScrollView.shouldScrollToViewWithIndex(0, animated: true) {
+          // there was no need to scroll but refresh stops for the current (first) vehicle anyway
+          progressViewManager.showProgress()
+          refreshStopsForSelectedVehicle(queue: nil) {_ in Async.main {self.progressViewManager.hideProgress()} }
+        }
         log.info("Selected vehicle reset to first")
         return
       }
@@ -185,7 +192,7 @@ class MainViewController: UIViewController {
           self.presentViewController(alert, animated: true, completion: {
             self.stopDelegate?.unselectStop()
             self.selectedVehicleRef = self.closestVehicles.first?.vehicleRef
-            self.vehicleScrollView.scrollToViewWithIndex(0, animated: true)
+            self.vehicleScrollView.shouldScrollToViewWithIndex(0, animated: true)
           })
         }
       }
@@ -194,7 +201,9 @@ class MainViewController: UIViewController {
   
   var selectedVehicleRef: String? {
     didSet {
-      stopDelegate?.unselectStop()
+      if stopDelegate?.getSelectedStopId() != nil {
+        stopDelegate?.unselectStop()
+      }
       
       //      if selectedVehicle != nil {
       //        defaults.setObject(selectedVehicle?.vehicleRef, forKey: selectedVehicleKey)
@@ -285,6 +294,9 @@ class MainViewController: UIViewController {
           self.ref.vehicles.setLocationsFromJSON(results["body"])
           Async.main {
             self.ref.stopDelegate?.reloadStops()
+            UIView.animateWithDuration(0.3) {
+              self.ref.stopTableContainerView.hidden = false
+            }
             next?(nil)
           }
         } else { // status != success
@@ -537,7 +549,6 @@ class MainViewController: UIViewController {
             } else {
               log.info("RefreshAll done successfully!")
               self.extendProgressLabelTextWith(NSLocalizedString("All data loaded", comment: ""))
-              self.stopTableContainerView.hidden = false
               self.hideProgressLabel()
             }
             self.progressViewManager.hideProgress()

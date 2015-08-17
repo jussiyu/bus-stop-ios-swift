@@ -100,18 +100,32 @@ class HorizontalScroller: UIView {
     }
   }
   
-  func scrollToViewWithIndex(index: Int, animated: Bool = true ) {
-    if scrollerSubviews.count > index {
-      // center the header with index to the scroller
-      let scrollViewWidth = bounds.width
-      if let currentViewCenter = scrollerSubviews[index]?.frame.midX {
-        let newOffset = currentViewCenter - scrollViewWidth / 2
+  /// Return true if we actually scrolled somewhere
+  func shouldScrollToViewWithIndex(index: Int, animated: Bool = true ) -> Bool {
+    if index > scrollerSubviews.count {
+      return false
+    }
+    
+    // center the header with index to the scroller
+    let scrollViewWidth = bounds.width
+    if let currentViewCenter = scrollerSubviews[index]?.frame.midX {
+      let newOffset = currentViewCenter - scrollViewWidth / 2
+
+      // Do we need to scroll anywhere?
+      if newOffset != scroller.contentOffset.y {
         log.debug("Scrolling to view with index \(index); from offset \(self.scroller.contentOffset) to \(newOffset)")
         scroller.setContentOffset(CGPoint(x: CGFloat(newOffset), y: 0), animated: animated)
+        return true
+
+      } else {
+        return false
       }
+      
+    } else {
+      return false
     }
   }
-  
+
   func dequeueReusableView(index: Int) -> UIView? {
     if reusableSubviews.count > 0 {
       let view = reusableSubviews[index]
@@ -197,7 +211,7 @@ class HorizontalScroller: UIView {
       }
 
       if let initialViewIndex = delegate.initialViewIndex?(self) {
-        scrollToViewWithIndex(initialViewIndex)
+        shouldScrollToViewWithIndex(initialViewIndex)
       }
 
       // force intrisic size calculation now that all subviews have been created

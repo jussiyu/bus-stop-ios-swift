@@ -41,11 +41,6 @@ class Vehicles {
     log.debug("Vehicles read: \(self.vehicles.count)")
   }
  
-  // TODO does not make sense
-  func getFirstVehicle() -> VehicleActivity? {
-    return vehicles.values.first
-  }
-
   func getClosestVehicle(userLocation: CLLocation) -> VehicleActivity? {
     let sortedMatchingVehicles = sorted(vehicles.values) {isLeftVehicleActivityCloserToUserLocation(userLocation, left: $0, right: $1)}
     let closest = sortedMatchingVehicles.reduce("") { "\($0), \($1.description), "}

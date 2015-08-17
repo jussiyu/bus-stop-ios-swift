@@ -16,7 +16,6 @@ protocol MainDelegate {
   func getSelectedVehicle() ->VehicleActivity?
   func expandStopContainer()
   func expandStopContainerByOffset(offset: CGFloat)
-  func unexpandStopContainer()
   func stopSelected()
   func stopUnselected()
   func getUserLocation() -> CLLocation?
@@ -466,15 +465,11 @@ extension StopTableViewController : UITableViewDelegate {
 
   override func tableView(tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
     tableViewHeader = UILabel()
-    //TODO: if closestVehicles.count > 0 {
-      if selectedStopId == nil {
-        tableViewHeader!.text = NSLocalizedString("Choose your stop", comment: "")
-      } else {
-        tableViewHeader!.text = NSLocalizedString("Now tracking your stop", comment: "")
-      }
-//    } else {
-//      stopTableViewHeader!.text = ""
-//    }
+    if selectedStopId == nil {
+      tableViewHeader!.text = NSLocalizedString("Choose your stop", comment: "")
+    } else {
+      tableViewHeader!.text = NSLocalizedString("Now tracking your stop", comment: "")
+    }
     tableViewHeader!.textAlignment = .Center
     tableViewHeader!.backgroundColor = UIColor.whiteColor()
     return tableViewHeader
