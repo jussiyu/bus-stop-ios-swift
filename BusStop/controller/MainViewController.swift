@@ -927,7 +927,6 @@ extension MainViewController: HorizontalScrollerDelegate {
     if numberOfTaps == 3 {
       // Switch between remote and local test data
       selectedVehicleRef = nil
-        // TODO: switch to local APIController
       if api is APIController {
         self.api = self.localApi
       } else {
