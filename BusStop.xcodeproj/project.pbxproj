@@ -41,6 +41,8 @@
 		4A8B3F6C1B7DDFDB00781C57 /* StopTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A8B3F6B1B7DDFDB00781C57 /* StopTableViewController.swift */; };
 		4AA1089A1B8203260044E041 /* CommonFoundation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4AA108991B8203260044E041 /* CommonFoundation.swift */; };
 		4AA1089C1B82037D0044E041 /* CommonUIKit.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4AA1089B1B82037D0044E041 /* CommonUIKit.swift */; };
+		4AA1089F1B821E190044E041 /* LICENSE in Resources */ = {isa = PBXBuildFile; fileRef = 4AA1089E1B821E190044E041 /* LICENSE */; };
+		4AA108A11B821E280044E041 /* README.md in Sources */ = {isa = PBXBuildFile; fileRef = 4AA108A01B821E280044E041 /* README.md */; };
 		4AAFBABB1B236791008F488D /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 4AAFBABA1B236791008F488D /* Main.storyboard */; };
 		4ABEDB131B539FBF00C29E5C /* HorizontalScroller.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4ABEDB121B539FBF00C29E5C /* HorizontalScroller.swift */; };
 		4AC2E47A1B483DB600D8F20E /* Vehicles.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4AC2E4791B483DB600D8F20E /* Vehicles.swift */; };
@@ -94,17 +96,17 @@
 		21E9CFEBB044447E7E089058 /* Pods-BusStopTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-BusStopTests.debug.xcconfig"; path = "Pods/Target Support Files/Pods-BusStopTests/Pods-BusStopTests.debug.xcconfig"; sourceTree = "<group>"; };
 		4A0EA3591B21C0B000F747D0 /* BusStop.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = BusStop.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		4A0EA35D1B21C0B000F747D0 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		4A0EA35E1B21C0B000F747D0 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
+		4A0EA35E1B21C0B000F747D0 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = AppDelegate.swift; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.swift; };
 		4A0EA3651B21C0B000F747D0 /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Images.xcassets; sourceTree = "<group>"; };
 		4A0EA3681B21C0B000F747D0 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/LaunchScreen.xib; sourceTree = "<group>"; };
 		4A0EA36E1B21C0B000F747D0 /* BusStopTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = BusStopTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		4A0EA3731B21C0B000F747D0 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		4A0EA3741B21C0B000F747D0 /* BusStopTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BusStopTests.swift; sourceTree = "<group>"; };
 		4A0EA37E1B23234100F747D0 /* MainViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = MainViewController.swift; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.swift; };
-		4A0EA3801B23235800F747D0 /* APIController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = APIController.swift; sourceTree = "<group>"; };
+		4A0EA3801B23235800F747D0 /* APIController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = APIController.swift; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.swift; };
 		4A10E1ED1B2F03B900231417 /* CoreLocation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreLocation.framework; path = System/Library/Frameworks/CoreLocation.framework; sourceTree = SDKROOT; };
-		4A10E1F11B30214100231417 /* Common.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Common.swift; sourceTree = "<group>"; };
-		4A141B9F1B2B15890009DED9 /* Stop.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Stop.swift; sourceTree = "<group>"; };
+		4A10E1F11B30214100231417 /* Common.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = Common.swift; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.swift; };
+		4A141B9F1B2B15890009DED9 /* Stop.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = Stop.swift; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.swift; };
 		4A1547711B7761EC0004688F /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; name = Info.plist; path = /Users/jussi/dev/iOS/BusStop/BusStopUnitTests/Info.plist; sourceTree = "<group>"; };
 		4A1547741B7762B40004688F /* AsyncLegacy.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = AsyncLegacy.swift; path = AsyncLegacy/AsyncLegacy.swift; sourceTree = SOURCE_ROOT; };
 		4A1547981B7767BA0004688F /* AsyncLegacy.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = AsyncLegacy.framework; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -115,7 +117,7 @@
 		4A1547E81B7796E60004688F /* Pods_BusStopTests.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Pods_BusStopTests.framework; path = "Pods/../build/Debug-iphoneos/Pods_BusStopTests.framework"; sourceTree = "<group>"; };
 		4A1547EB1B7798C60004688F /* SwiftyJSON.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SwiftyJSON.framework; path = "Pods/../build/Debug-iphoneos/SwiftyJSON.framework"; sourceTree = "<group>"; };
 		4A1547ED1B779E300004688F /* BusStopHelpers.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BusStopHelpers.swift; sourceTree = "<group>"; };
-		4A1B1EB41B7237FD001C61D9 /* StopDBManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StopDBManager.swift; sourceTree = "<group>"; };
+		4A1B1EB41B7237FD001C61D9 /* StopDBManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = StopDBManager.swift; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.swift; };
 		4A2BB8101B4AEAB900F350C7 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/Localizable.strings; sourceTree = "<group>"; };
 		4A2FA8561B5533720088C00F /* UIFontDescriptorExt.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UIFontDescriptorExt.swift; sourceTree = "<group>"; };
 		4A3DF9A21B4AF90500CF1345 /* fi */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fi; path = fi.lproj/Localizable.strings; sourceTree = "<group>"; };
@@ -123,17 +125,19 @@
 		4A3DF9AA1B4B0AA000CF1345 /* fi */ = {isa = PBXFileReference; lastKnownFileType = text.xml; name = fi; path = fi.lproj/Localizable.stringsdict; sourceTree = "<group>"; };
 		4A4336F51B6FE205005E9C29 /* StopSound.aif */ = {isa = PBXFileReference; lastKnownFileType = file; name = StopSound.aif; path = BusStop/StopSound.aif; sourceTree = "<group>"; };
 		4A4D12B81B2AC01900B6B757 /* VehicleActivity.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = VehicleActivity.swift; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.swift; };
-		4A532E191B68C5AB00A80544 /* APIControllerLocal.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = APIControllerLocal.swift; sourceTree = "<group>"; };
+		4A532E191B68C5AB00A80544 /* APIControllerLocal.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = APIControllerLocal.swift; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.swift; };
 		4A532E251B68D6A700A80544 /* testdata */ = {isa = PBXFileReference; lastKnownFileType = folder; name = testdata; path = BusStop/testdata; sourceTree = "<group>"; };
 		4A6712261B7654730098ED3D /* StopTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = StopTests.swift; path = ../BusStopTests/StopTests.swift; sourceTree = "<group>"; };
-		4A6BC41E1B53B0DC0095FC71 /* VehicleHeaderView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = VehicleHeaderView.swift; sourceTree = "<group>"; };
+		4A6BC41E1B53B0DC0095FC71 /* VehicleHeaderView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = VehicleHeaderView.swift; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.swift; };
 		4A75298AA8FC50C4F94424EA /* Pods-BusStop.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-BusStop.release.xcconfig"; path = "Pods/Target Support Files/Pods-BusStop/Pods-BusStop.release.xcconfig"; sourceTree = "<group>"; };
 		4A8178231B79EA540022EF20 /* MapViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MapViewController.swift; sourceTree = "<group>"; };
 		4A8178251B79EF550022EF20 /* MapKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MapKit.framework; path = System/Library/Frameworks/MapKit.framework; sourceTree = SDKROOT; };
-		4A84A0451B61011A005931B0 /* SelectedStopTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SelectedStopTableViewCell.swift; sourceTree = "<group>"; };
-		4A8B3F6B1B7DDFDB00781C57 /* StopTableViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StopTableViewController.swift; sourceTree = "<group>"; };
-		4AA108991B8203260044E041 /* CommonFoundation.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CommonFoundation.swift; sourceTree = "<group>"; };
-		4AA1089B1B82037D0044E041 /* CommonUIKit.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CommonUIKit.swift; sourceTree = "<group>"; };
+		4A84A0451B61011A005931B0 /* SelectedStopTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = SelectedStopTableViewCell.swift; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.swift; };
+		4A8B3F6B1B7DDFDB00781C57 /* StopTableViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = StopTableViewController.swift; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.swift; };
+		4AA108991B8203260044E041 /* CommonFoundation.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = CommonFoundation.swift; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.swift; };
+		4AA1089B1B82037D0044E041 /* CommonUIKit.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = CommonUIKit.swift; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.swift; };
+		4AA1089E1B821E190044E041 /* LICENSE */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = LICENSE; sourceTree = "<group>"; };
+		4AA108A01B821E280044E041 /* README.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 		4AAFBABA1B236791008F488D /* Main.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = Main.storyboard; sourceTree = "<group>"; };
 		4ABEDB121B539FBF00C29E5C /* HorizontalScroller.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HorizontalScroller.swift; sourceTree = "<group>"; };
 		4AC2E4791B483DB600D8F20E /* Vehicles.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = Vehicles.swift; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.swift; };
@@ -216,6 +220,8 @@
 		4A0EA3501B21C0B000F747D0 = {
 			isa = PBXGroup;
 			children = (
+				4AA1089E1B821E190044E041 /* LICENSE */,
+				4AA108A01B821E280044E041 /* README.md */,
 				4A4336F51B6FE205005E9C29 /* StopSound.aif */,
 				4A532E251B68D6A700A80544 /* testdata */,
 				4A0EA35B1B21C0B000F747D0 /* BusStop */,
@@ -537,6 +543,7 @@
 				4AAFBABB1B236791008F488D /* Main.storyboard in Resources */,
 				4A2BB8111B4AEAB900F350C7 /* Localizable.strings in Resources */,
 				4A0EA3691B21C0B000F747D0 /* LaunchScreen.xib in Resources */,
+				4AA1089F1B821E190044E041 /* LICENSE in Resources */,
 				4A3DF9A91B4B0A9900CF1345 /* Localizable.stringsdict in Resources */,
 				4A4336F61B6FE205005E9C29 /* StopSound.aif in Resources */,
 				4A0EA3661B21C0B000F747D0 /* Images.xcassets in Resources */,
@@ -715,6 +722,7 @@
 				4A2FA8571B5533720088C00F /* UIFontDescriptorExt.swift in Sources */,
 				4A10E1F21B30214100231417 /* Common.swift in Sources */,
 				4A6BC41F1B53B0DC0095FC71 /* VehicleHeaderView.swift in Sources */,
+				4AA108A11B821E280044E041 /* README.md in Sources */,
 				4A4D12B91B2AC01900B6B757 /* VehicleActivity.swift in Sources */,
 				4ABEDB131B539FBF00C29E5C /* HorizontalScroller.swift in Sources */,
 				4A1B1EB51B7237FD001C61D9 /* StopDBManager.swift in Sources */,

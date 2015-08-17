@@ -1,10 +1,23 @@
+// Copyright (c) 2015 Solipaste Oy
 //
-//  VehicleActivity.swift
-//  BusStop
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the "Software"), to deal
+// in the Software without restriction, including without limitation the rights
+// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+// copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
 //
-//  Created by Jussi Yli-Urpo on 12.6.15.
-//  Copyright (c) 2015 Solipaste. All rights reserved.
+// The above copyright notice and this permission notice shall be included in
+// all copies or substantial portions of the Software.
 //
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+// THE SOFTWARE.
+
 
 import Foundation
 import CoreLocation
@@ -12,6 +25,34 @@ import SwiftyJSON
 import XCGLogger
 
 class VehicleActivity : Equatable {
+  
+  enum Operator: String {
+    case TKL = "tkl"
+    case LL = "ll"
+    case Paunu = "paunu"
+    
+    init?(operatorRef ref: String) {
+      switch ref.lowercaseString {
+      case TKL.rawValue:
+        self = .TKL
+      case LL.rawValue:
+        self = .LL
+      case Paunu.rawValue:
+        self = .Paunu
+      default:
+        return nil
+      }
+    }
+    
+    func name() -> String {
+      switch self {
+      case TKL: return "TKL"
+      case LL: return "Länsilinja"
+      case Paunu: return "Paunu"
+      default: return "other"
+      }
+    }
+  }
   
   struct VehicleActivityStop {
     var id: String
@@ -29,12 +70,42 @@ class VehicleActivity : Equatable {
   var description: String {
     return "vehicleRef: \(vehicleRef), loc: \(location?.coordinate.latitude.toString(fractionDigits: 2)):\(location?.coordinate.longitude.toString(fractionDigits: 2))"
   }
+  let vehicleOperator: Operator?
   var lastUpdated = NSDate()
  
+  // MARK: - initialization
+  init?(fromJSON monVeh: JSON) {
+    if let vehicleRef = monVeh["vehicleRef"].string, lineRef = monVeh["lineRef"].string, operatorRef = monVeh["operatorRef"].string
+      where !vehicleRef.isEmpty && !lineRef.isEmpty {
+        self.vehicleRef = vehicleRef
+        self.lineRef = lineRef
+        self.vehicleOperator = Operator(operatorRef: operatorRef)
+        
+        let delayString = monVeh["delay"].string
+        self.delay = delayString?.fromStringToTimeInterval() ?? 0
+        
+        setLocationFromJSON(monVeh)
+        setStopsFromJSON(monVeh)
+        
+    } else {
+      lastUpdated = NSDate()
+      log.error("failed to parse vehicle activity from JSON: \(monVeh)")
+      self.vehicleRef = ""
+      self.vehicleOperator = nil
+      self.lineRef = ""
+      self.delay = 0
+      return nil
+    }
+  }
+  
   var formattedVehicleRef: String {
     let comps = vehicleRef.componentsSeparatedByString("_")
     if comps.count == 2 {
-      return "\(comps[0]) \(comps[1])"
+      if let vehicleOperator = vehicleOperator where comps.count == 2 {
+        return "\(vehicleOperator.name()) \(comps[1])"
+      } else {
+        return "\(comps[0]) \(comps[1])"
+      }
     } else {
       return vehicleRef
     }
@@ -74,28 +145,6 @@ class VehicleActivity : Equatable {
     return nil
   }
 
-  // MARK: - initialization
-  init?(fromJSON monVeh: JSON) {
-    if let vehicleRef = monVeh["vehicleRef"].string, lineRef = monVeh["lineRef"].string where !vehicleRef.isEmpty && !lineRef.isEmpty {
-      self.vehicleRef = vehicleRef
-      self.lineRef = lineRef
-
-      let delayString = monVeh["delay"].string
-      self.delay = delayString?.fromStringToTimeInterval() ?? 0
-      
-      setLocationFromJSON(monVeh)
-      setStopsFromJSON(monVeh)
-      
-    } else {
-      lastUpdated = NSDate()
-      log.error("failed to parse vehicle activity from JSON: \(monVeh)")
-      self.vehicleRef = ""
-      self.lineRef = ""
-      self.delay = 0
-      return nil
-    }
-  }
-  
   func setStopsFromJSON(monVeh: JSON) {
     self.stops = []
     
