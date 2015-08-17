@@ -381,7 +381,7 @@ extension StopTableViewController : UITableViewDataSource {
             timeHintText = String(format: NSLocalizedString(
               "Arriving at your stop very soon!", comment: ""), minutesUntilSelectedStop)
           }
-          distanceHintText += "\n\(timeHintText!)"
+          distanceHintText += "\n\n\(timeHintText!)"
         }
         
         cell.distanceHintLabel.text = distanceHintText.stringByReplacingOccurrencesOfString(
