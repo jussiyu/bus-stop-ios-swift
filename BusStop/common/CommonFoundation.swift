@@ -1,15 +1,26 @@
+// Copyright (c) 2015 Solipaste Oy
 //
-//  File.swift
-//  BusStop
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the "Software"), to deal
+// in the Software without restriction, including without limitation the rights
+// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+// copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
 //
-//  Created by Jussi Yli-Urpo on 16.6.15.
-//  Copyright (c) 2015 Solipaste. All rights reserved.
+// The above copyright notice and this permission notice shall be included in
+// all copies or substantial portions of the Software.
 //
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+// THE SOFTWARE.
+
 
 import Foundation
-import UIKit
-import XCGLogger
-import CoreLocation
+
 
 func cap<T : Comparable>(value: T, min minimum: T, max maximum: T) -> T {
   return max( min(maximum, value), minimum)
@@ -22,15 +33,15 @@ extension String {
     f.locale = NSLocale.currentLocale()
     f.numberStyle = NSNumberFormatterStyle.DecimalStyle
     return f
-  }()
-
+    }()
+  
   static let posixNumberFormatter: NSNumberFormatter = {
     let f = NSNumberFormatter()
     f.locale = NSLocale(localeIdentifier: "en_US_POSIX")
     f.numberStyle = NSNumberFormatterStyle.DecimalStyle
     return f
-  }()
-
+    }()
+  
   static let iso8601DateFormatter: NSDateFormatter = {
     // 2015-07-13T14:32:00+03:00
     let f = NSDateFormatter()
@@ -38,7 +49,7 @@ extension String {
     f.timeZone = NSTimeZone(forSecondsFromGMT: 0)
     f.dateFormat = "yyyy-MM-dd'T'HH:mm:sszzz"
     return f
-  }()
+    }()
   
   func toDouble() -> Double? {
     return String.localeNumberFormatter.numberFromString(self)?.doubleValue
@@ -50,9 +61,9 @@ extension String {
   func fromISO8601StringToDate() -> NSDate? {
     return String.iso8601DateFormatter.dateFromString(self)
   }
-
+  
   func fromStringToTimeInterval() -> NSTimeInterval? {
-      // -P0Y0M0DT0H3M20.000S",
+    // -P0Y0M0DT0H3M20.000S",
     var interval: NSTimeInterval = 0
     let negative = self[self.startIndex] == "-"
     if let minutesRange = self.rangeOfString("H\\d+M", options: NSStringCompareOptions.RegularExpressionSearch) {
@@ -74,7 +85,7 @@ extension String {
     
     return negative ? -interval : interval
   }
-
+  
   var isBlank: Bool {
     get {
       let trimmed = stringByTrimmingCharactersInSet(NSCharacterSet.whitespaceCharacterSet())
@@ -104,7 +115,7 @@ extension Double {
     let f = NSNumberFormatter()
     f.numberStyle = NSNumberFormatterStyle.DecimalStyle
     return f
-  }()
+    }()
   
   func toString(#fractionDigits: Int) -> String {
     Double.f.maximumFractionDigits = fractionDigits
@@ -116,7 +127,7 @@ extension Double {
     }
     
   }
-
+  
   func toInt(rounded: Bool = true) -> Int {
     
     return rounded ? Int(round(self)) : Int(self)
@@ -134,31 +145,6 @@ public extension NSObject{
   }
 }
 
-// MARK: - NSLayoutConstraint
-extension NSLayoutConstraint {  
-  class func constraintsWithVisualFormat(format: String, options opts: NSLayoutFormatOptions = nil, metrics: [String : AnyObject] = [:], views: [String : AnyObject] = [:], active: Bool) -> [NSLayoutConstraint] {
-    let constraints = NSLayoutConstraint.constraintsWithVisualFormat(format, options: opts, metrics: metrics, views: views) as! [NSLayoutConstraint]
-    if active {
-      NSLayoutConstraint.activateConstraints(constraints)
-    }
-    return constraints
-  }
-}
-
-// MARK: - UIView
-extension UIView {
-  func constraintsWithIdentifier(identifier: String) -> [NSLayoutConstraint] {
-    var matching = [NSLayoutConstraint]()
-    for c in constraints() {
-      if let c = c as? NSLayoutConstraint {
-        if c.identifier == identifier {
-          matching.append(c)
-        }
-      }
-    }
-    return matching
-  }
-}
 
 // MARK: - Array
 extension Array{
@@ -178,7 +164,7 @@ extension Array{
     }
     return nil
   }
-
+  
   mutating func remove<T : Equatable>(object:T) -> Int? {
     for (index,obj) in enumerate(self) {
       if obj as? T == object {
@@ -189,39 +175,6 @@ extension Array{
   }
 }
 
-// MARK: - CLLocation
-extension CLLocation {
-  func moreAccurateThanLocation(other: CLLocation) -> Bool {
-    return self.horizontalAccuracy < other.horizontalAccuracy
-  }
-
-  func commonHorizontalLocationWith (other: CLLocation) -> Bool {
-    return self.coordinate.longitude == other.coordinate.longitude && self.coordinate.latitude == other.coordinate.latitude
-  }
-  
-  // Based on https://stackoverflow.com/questions/7278094/moving-a-cllocation-by-x-meters
-  func coordinateWithDirection(direction: CLLocationDirection, distance distanceMeters: CLLocationDistance) -> CLLocationCoordinate2D {
-    let distRadians = distanceMeters / (6372797.6)
-    
-    var rDirection = direction * M_PI / 180.0
-    
-    let lat1 = self.coordinate.latitude * M_PI / 180
-    let lon1 = self.coordinate.longitude * M_PI / 180
-    
-    let lat2 = asin(sin(lat1) * cos(distRadians) + cos(lat1) * sin(distRadians) * cos(rDirection))
-    let lon2 = lon1 + atan2(sin(rDirection) * sin(distRadians) * cos(lat1), cos(distRadians) - sin(lat1) * sin(lat2))
-    
-    return CLLocationCoordinate2D(latitude: lat2 * 180 / M_PI, longitude: lon2 * 180 / M_PI)
-  }
-}
-
-// MARK: - UITableView
-extension UITableView {
-  func scrollToTop(#animated: Bool) {
-    // This is trigger didscroll messages
-    self.setContentOffset(CGPoint(x: 0,y: 0), animated: true)
-  }
-}
 
 // MARK: - Threading functions
 func delay(delay:Double, closure:()->()) {

@@ -39,6 +39,8 @@
 		4A8178261B79EF550022EF20 /* MapKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4A8178251B79EF550022EF20 /* MapKit.framework */; };
 		4A84A0461B61011A005931B0 /* SelectedStopTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A84A0451B61011A005931B0 /* SelectedStopTableViewCell.swift */; };
 		4A8B3F6C1B7DDFDB00781C57 /* StopTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A8B3F6B1B7DDFDB00781C57 /* StopTableViewController.swift */; };
+		4AA1089A1B8203260044E041 /* CommonFoundation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4AA108991B8203260044E041 /* CommonFoundation.swift */; };
+		4AA1089C1B82037D0044E041 /* CommonUIKit.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4AA1089B1B82037D0044E041 /* CommonUIKit.swift */; };
 		4AAFBABB1B236791008F488D /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 4AAFBABA1B236791008F488D /* Main.storyboard */; };
 		4ABEDB131B539FBF00C29E5C /* HorizontalScroller.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4ABEDB121B539FBF00C29E5C /* HorizontalScroller.swift */; };
 		4AC2E47A1B483DB600D8F20E /* Vehicles.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4AC2E4791B483DB600D8F20E /* Vehicles.swift */; };
@@ -130,6 +132,8 @@
 		4A8178251B79EF550022EF20 /* MapKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MapKit.framework; path = System/Library/Frameworks/MapKit.framework; sourceTree = SDKROOT; };
 		4A84A0451B61011A005931B0 /* SelectedStopTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SelectedStopTableViewCell.swift; sourceTree = "<group>"; };
 		4A8B3F6B1B7DDFDB00781C57 /* StopTableViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StopTableViewController.swift; sourceTree = "<group>"; };
+		4AA108991B8203260044E041 /* CommonFoundation.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CommonFoundation.swift; sourceTree = "<group>"; };
+		4AA1089B1B82037D0044E041 /* CommonUIKit.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CommonUIKit.swift; sourceTree = "<group>"; };
 		4AAFBABA1B236791008F488D /* Main.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = Main.storyboard; sourceTree = "<group>"; };
 		4ABEDB121B539FBF00C29E5C /* HorizontalScroller.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HorizontalScroller.swift; sourceTree = "<group>"; };
 		4AC2E4791B483DB600D8F20E /* Vehicles.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = Vehicles.swift; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.swift; };
@@ -243,7 +247,7 @@
 				4AB26CD81B53B6CE00F3FA11 /* View */,
 				4AB26CDA1B53B6E500F3FA11 /* Controller */,
 				4AB26CD91B53B6DC00F3FA11 /* API */,
-				4A10E1F11B30214100231417 /* Common.swift */,
+				4AA1089D1B8203A40044E041 /* Common */,
 				4A0EA35E1B21C0B000F747D0 /* AppDelegate.swift */,
 				4A0EA3651B21C0B000F747D0 /* Images.xcassets */,
 				4A0EA35C1B21C0B000F747D0 /* Supporting Files */,
@@ -312,6 +316,17 @@
 				4A1547DA1B7795580004688F /* Info.plist */,
 			);
 			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
+		4AA1089D1B8203A40044E041 /* Common */ = {
+			isa = PBXGroup;
+			children = (
+				4A10E1F11B30214100231417 /* Common.swift */,
+				4AA1089B1B82037D0044E041 /* CommonUIKit.swift */,
+				4AA108991B8203260044E041 /* CommonFoundation.swift */,
+			);
+			name = Common;
+			path = common;
 			sourceTree = "<group>";
 		};
 		4AB26CD81B53B6CE00F3FA11 /* View */ = {
@@ -695,6 +710,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				4A532E1A1B68C5AB00A80544 /* APIControllerLocal.swift in Sources */,
+				4AA1089A1B8203260044E041 /* CommonFoundation.swift in Sources */,
 				4A0EA3811B23235800F747D0 /* APIController.swift in Sources */,
 				4A2FA8571B5533720088C00F /* UIFontDescriptorExt.swift in Sources */,
 				4A10E1F21B30214100231417 /* Common.swift in Sources */,
@@ -702,6 +718,7 @@
 				4A4D12B91B2AC01900B6B757 /* VehicleActivity.swift in Sources */,
 				4ABEDB131B539FBF00C29E5C /* HorizontalScroller.swift in Sources */,
 				4A1B1EB51B7237FD001C61D9 /* StopDBManager.swift in Sources */,
+				4AA1089C1B82037D0044E041 /* CommonUIKit.swift in Sources */,
 				4A0EA37F1B23234100F747D0 /* MainViewController.swift in Sources */,
 				4A0EA35F1B21C0B000F747D0 /* AppDelegate.swift in Sources */,
 				4A141BA01B2B15890009DED9 /* Stop.swift in Sources */,

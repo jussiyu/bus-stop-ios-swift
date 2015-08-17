@@ -5,6 +5,7 @@
 //  Copyright (c) 2015 Solipaste. All rights reserved.
 //
 
+import Common
 import Foundation
 import SwiftyJSON
 import SystemConfiguration

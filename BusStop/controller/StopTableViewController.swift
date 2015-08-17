@@ -83,7 +83,6 @@ class StopTableViewController: UITableViewController {
   var selectedStopId: String? {
     didSet {
       log.debug("SelectedStopId set to \(self.selectedStop)")
-      // TODO userNotifiedForSelectedStop = false
     }
   }
   
