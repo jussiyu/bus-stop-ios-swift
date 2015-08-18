@@ -46,6 +46,7 @@
 		4AAFBABB1B236791008F488D /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 4AAFBABA1B236791008F488D /* Main.storyboard */; };
 		4ABEDB131B539FBF00C29E5C /* HorizontalScroller.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4ABEDB121B539FBF00C29E5C /* HorizontalScroller.swift */; };
 		4AC2E47A1B483DB600D8F20E /* Vehicles.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4AC2E4791B483DB600D8F20E /* Vehicles.swift */; };
+		4AE838E71B83690D00F733C3 /* CommonFoundation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4AA108991B8203260044E041 /* CommonFoundation.swift */; };
 		64A12E5854F293C1C1F594F3 /* Pods_BusStop.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = EAB3E59295EC798745861F0F /* Pods_BusStop.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
 		BC271C1312D7A8DE7BC4ED43 /* Pods_BusStopUnitTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 88DABB17A3ADAF8C5007BFEB /* Pods_BusStopUnitTests.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
 		CF471BB10972F3F919CA0F3E /* Pods_BusStopTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A27665056396F0B6312A24B3 /* Pods_BusStopTests.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
@@ -756,6 +757,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				4AE838E71B83690D00F733C3 /* CommonFoundation.swift in Sources */,
 				4A1547EF1B779F5F0004688F /* BusStopHelpers.swift in Sources */,
 				4A1547E21B7795A50004688F /* Stop.swift in Sources */,
 				4A1547E31B7795A50004688F /* StopDBManager.swift in Sources */,
