@@ -25,15 +25,18 @@ import CoreLocation
 
 // MARK: - CLLocation
 extension CLLocation {
+  /// compare horizontal location accuracy to a another location
   func moreAccurateThanLocation(other: CLLocation) -> Bool {
     return self.horizontalAccuracy < other.horizontalAccuracy
   }
   
+  /// Is this location in same horizontal position than the anothe one
   func commonHorizontalLocationWith (other: CLLocation) -> Bool {
     return self.coordinate.longitude == other.coordinate.longitude && self.coordinate.latitude == other.coordinate.latitude
   }
   
   // Based on https://stackoverflow.com/questions/7278094/moving-a-cllocation-by-x-meters
+  /// Return coordinate from 'distance' meters to 'direction' direction from this location
   func coordinateWithDirection(direction: CLLocationDirection, distance distanceMeters: CLLocationDistance) -> CLLocationCoordinate2D {
     let distRadians = distanceMeters / (6372797.6)
     

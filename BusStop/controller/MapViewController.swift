@@ -23,6 +23,10 @@ import UIKit
 import MapKit
 import AsyncLegacy
 
+
+//
+// MARK: - UIViewController
+//
 class MapViewController: UIViewController {
   
   class StopAnnotation : MKPointAnnotation {
@@ -87,6 +91,10 @@ class MapViewController: UIViewController {
   }
 }
 
+
+//
+// MARK: - MKMapViewDelegate
+//
 extension MapViewController : MKMapViewDelegate {
   
   func mapView(mapView: MKMapView!, viewForAnnotation annotation: MKAnnotation!) -> MKAnnotationView! {

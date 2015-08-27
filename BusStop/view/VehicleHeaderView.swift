@@ -22,6 +22,10 @@
 import UIKit
 import XCGLogger
 
+
+//
+// MARK: - UIView
+//
 class VehicleHeaderView: UIView {
   
   var lineLabel: UILabel!
@@ -114,7 +118,8 @@ class VehicleHeaderView: UIView {
     
     // initialize constraint with intrinsic height constant if not done already
     if constraint == nil {
-      constraint = NSLayoutConstraint.constraintsWithVisualFormat("V:[v(intrinsic@250)]", metrics: ["intrinsic":intrinsicHeight], views: ["v":view], active: false).first
+      constraint = NSLayoutConstraint.constraintsWithVisualFormat("V:[v(intrinsic@250)]",
+        metrics: ["intrinsic":intrinsicHeight], views: ["v":view], active: false).first
       constraint?.active = true
     }
     
@@ -126,6 +131,10 @@ class VehicleHeaderView: UIView {
 
 }
 
+
+//
+// MARK: - FadeableUIView
+//
 extension VehicleHeaderView: FadeableUIView {
   func fadeOutByOffset(offset: CGFloat) {
     var amount = min(1, 1 - (bounds.height - offset) / bounds.height)
@@ -139,6 +148,9 @@ extension VehicleHeaderView: FadeableUIView {
 }
 
 
+//
+// MARK: - Printable
+//
 extension VehicleHeaderView: Printable, DebugPrintable{
   override var description: String {
     return "** VehicleHeaderView: \(lineLabel.text!), \(vehicleLabel.text!), \(vehicleDistanceLabel.text!)"

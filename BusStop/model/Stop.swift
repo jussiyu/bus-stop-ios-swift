@@ -25,7 +25,9 @@ import SwiftyJSON
 import XCGLogger
 import RealmSwift
 
-
+//
+// MARK: - Stop
+//
 public class Stop : Object, Printable {
   public dynamic var id: String = ""
   public dynamic var name: String = ""
@@ -70,6 +72,7 @@ public class Stop : Object, Printable {
     
   }
   
+  // MARK: - Realm Object class overrides
   override public class func primaryKey() -> String? {
     return "id"
   }
@@ -77,7 +80,9 @@ public class Stop : Object, Printable {
   override public class func ignoredProperties() -> [String] {
     return ["location"]
   }
+
   
+  // MARK: - Printable implementation
   override public var description: String {
     return name
   }

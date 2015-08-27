@@ -24,6 +24,9 @@ import CoreLocation
 import SwiftyJSON
 import XCGLogger
 
+//
+// MARK: - Vechiles
+//
 class Vehicles {
   var vehicles = [String:VehicleActivity]()
   let maxVehiclesToRead = 500
@@ -96,6 +99,7 @@ class Vehicles {
   }
 }
 
+/// compare two locations to the userLocation
 private func isLeftVehicleActivityCloserToUserLocation(userLocation: CLLocation, #left: VehicleActivity, #right: VehicleActivity) -> Bool {
   return left.location != nil && right.location != nil ? (userLocation.distanceFromLocation(left.location!) < userLocation.distanceFromLocation(right.location!)) : false
 }

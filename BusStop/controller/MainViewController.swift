@@ -30,7 +30,7 @@ import TaskQueue
 import AudioToolbox
 
 //
-// MARK: - UIViewController
+// MARK: - StopDelegate protocol declaration
 //
 
 protocol StopDelegate {
@@ -39,92 +39,6 @@ protocol StopDelegate {
   func reloadStops()
   func scrollToTopWithAnimation(animated: Bool)
 }
-
-//
-// MARK: - MainDelegate implementation
-//
-extension MainViewController : MainDelegate {
-  
-  func resetVehicleScrollView() {
-    for viewIndex in 0..<vehicleScrollView.viewCount {
-      if let view = vehicleScrollView.viewAtIndex(viewIndex) as? VehicleHeaderView {
-        view.alpha = 1
-        view.transform = CGAffineTransformIdentity
-        view.fadeOutByOffset(0)
-      }
-    }
-  }
-  
-  func getSelectedVehicle() -> VehicleActivity? {
-    return selectedVehicle
-  }
-
-  func expandStopContainer() {
-    if let selectedVehicleIndex = selectedVehicleIndex,
-      selectedVehicleHeaderView = vehicleScrollView.viewAtIndex(selectedVehicleIndex) as? VehicleHeaderView {
-        
-        expandStopContainerByOffset(selectedVehicleHeaderView.bounds.height +
-          selectedVehicleHeaderView.layoutMargins.bottom)
-        stopTableContainerView.layoutIfNeeded()
-    }
-  }
-  
-  func expandStopContainerByOffset(offset: CGFloat) {
-    
-    if let selectedVehicleIndex = selectedVehicleIndex,
-      selectedVehicleHeaderView = vehicleScrollView.viewAtIndex(selectedVehicleIndex) as? VehicleHeaderView {
-        
-        // Make horizontal scroller smaller
-        vehicleScrollView.shrinkViewByOffset(offset)
-        
-        // scroll table view up to match current header view bottom
-        vehicleScrollViewBottomConstraint.constant = -min(offset, selectedVehicleHeaderView.bounds.height +  selectedVehicleHeaderView.layoutMargins.bottom) + selectedVehicleHeaderView.layoutMargins.bottom
-    }
-  }
-  
-  func stopSelected() {
-    // reset notifier flag
-    userNotifiedForSelectedStop = false
-    
-    initAutoRefreshTimer(andFire: true)
-    vehicleScrollView.touchEnabled = false
-    expandStopContainer()
-  }
-  
-  func stopUnselected() {
-    initAutoRefreshTimer()
-    vehicleScrollView.touchEnabled = true
-    
-    // hide stop table temporarily as it's probably out of date
-    stopTableContainerView.hidden = true
-    
-    // minimize stop container
-    expandStopContainerByOffset(0)
-    
-    // Refresh vehicle as they were not updated while stop was selected
-    progressViewManager.showProgress()
-    refreshVehicles(queue: nil) {_ in self.progressViewManager.hideProgress()}
-  }
-  
-  func getUserLocation() -> CLLocation? {
-    return userLocation
-  }
-  
-  func refresh(ready: () -> Void) {
-    Async.main {self.progressViewManager.showProgress() }
-    refreshStopsForSelectedVehicle(queue: nil) {_ in
-      Async.main {
-        ready()
-        self.progressViewManager.hideProgress()
-      }
-    }
-  }
-  
-  func selectedStopReached() {
-    notifySelectedStopReached()
-  }
-}
-
 
 
 
@@ -765,22 +679,93 @@ extension MainViewController {
 }
 
 
+
 //
-// MARK: - UITableViewDataSource
+// MARK: - MainDelegate implementation
 //
-//extension MainViewController: UITableViewDataSource {
-//    //
-//  
-//}
+extension MainViewController : MainDelegate {
+  
+  func resetVehicleScrollView() {
+    for viewIndex in 0..<vehicleScrollView.viewCount {
+      if let view = vehicleScrollView.viewAtIndex(viewIndex) as? VehicleHeaderView {
+        view.alpha = 1
+        view.transform = CGAffineTransformIdentity
+        view.fadeOutByOffset(0)
+      }
+    }
+  }
+  
+  func getSelectedVehicle() -> VehicleActivity? {
+    return selectedVehicle
+  }
+  
+  func expandStopContainer() {
+    if let selectedVehicleIndex = selectedVehicleIndex,
+      selectedVehicleHeaderView = vehicleScrollView.viewAtIndex(selectedVehicleIndex) as? VehicleHeaderView {
+        
+        expandStopContainerByOffset(selectedVehicleHeaderView.bounds.height +
+          selectedVehicleHeaderView.layoutMargins.bottom)
+        stopTableContainerView.layoutIfNeeded()
+    }
+  }
+  
+  func expandStopContainerByOffset(offset: CGFloat) {
+    
+    if let selectedVehicleIndex = selectedVehicleIndex,
+      selectedVehicleHeaderView = vehicleScrollView.viewAtIndex(selectedVehicleIndex) as? VehicleHeaderView {
+        
+        // Make horizontal scroller smaller
+        vehicleScrollView.shrinkViewByOffset(offset)
+        
+        // scroll table view up to match current header view bottom
+        vehicleScrollViewBottomConstraint.constant = -min(offset, selectedVehicleHeaderView.bounds.height +  selectedVehicleHeaderView.layoutMargins.bottom) + selectedVehicleHeaderView.layoutMargins.bottom
+    }
+  }
+  
+  func stopSelected() {
+    // reset notifier flag
+    userNotifiedForSelectedStop = false
+    
+    initAutoRefreshTimer(andFire: true)
+    vehicleScrollView.touchEnabled = false
+    expandStopContainer()
+  }
+  
+  func stopUnselected() {
+    initAutoRefreshTimer()
+    vehicleScrollView.touchEnabled = true
+    
+    // hide stop table temporarily as it's probably out of date
+    stopTableContainerView.hidden = true
+    
+    // minimize stop container
+    expandStopContainerByOffset(0)
+    
+    // Refresh vehicle as they were not updated while stop was selected
+    progressViewManager.showProgress()
+    refreshVehicles(queue: nil) {_ in self.progressViewManager.hideProgress()}
+  }
+  
+  func getUserLocation() -> CLLocation? {
+    return userLocation
+  }
+  
+  func refresh(ready: () -> Void) {
+    Async.main {self.progressViewManager.showProgress() }
+    refreshStopsForSelectedVehicle(queue: nil) {_ in
+      Async.main {
+        ready()
+        self.progressViewManager.hideProgress()
+      }
+    }
+  }
+  
+  func selectedStopReached() {
+    notifySelectedStopReached()
+  }
+}
 
 
-// MARK: - UITableViewDelegate
-//
-//
-//extension MainViewController: UITableViewDelegate {
-//  
-//  
-//}
 
 
 //
@@ -793,6 +778,7 @@ extension MainViewController: UITextFieldDelegate {
     return true
   }
 }
+
 
 
 //
@@ -944,6 +930,7 @@ extension MainViewController: HorizontalScrollerDelegate {
     refreshAll()
   }
 }
+
 
 //
 // MARK: - appDelegate helper

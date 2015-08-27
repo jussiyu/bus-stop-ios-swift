@@ -26,6 +26,9 @@ import XCGLogger
 import TaskQueue
 
 
+//
+// MARK: - APIControllerProtocol implementation
+//
 class APIControllerLocal : APIControllerProtocol {
   
   private static var _sharedInstance = APIControllerLocal()
@@ -48,10 +51,7 @@ class APIControllerLocal : APIControllerProtocol {
     doGetOnPath("journeysAPIbaseURL?lineRef", delegate: vehicleDelegate, next: next)
   }
   
-  //  func getVehicleActivities() {
-  //    doGetOnPath("journeysAPIbaseURL", delegate: vehDelegate, cachingEnabled: false)
-  //  }
-  
+ 
   func getVehicleActivityStopsForVehicle(vehicleRef: String, next: ApiControllerDelegateNextTask?) {
     doGetOnPath("\(journeysAPIbaseURL)vehicle-activity", delegate: vehicleStopsDelegate, cachingEnabled: false, next: next)
   }

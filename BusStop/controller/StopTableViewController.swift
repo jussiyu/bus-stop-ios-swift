@@ -24,6 +24,9 @@ import CoreLocation
 import XCGLogger
 import TaskQueue
 
+//
+// MARK: - MainDelegate protocol implementation
+//
 protocol MainDelegate {
   func resetVehicleScrollView()
   func getSelectedVehicle() ->VehicleActivity?
@@ -508,10 +511,6 @@ extension StopTableViewController : UITableViewDelegate {
       // There is a dedicated close button on the view so do nothing here
     }
   }
-  
-//  func scrollViewDidEndScrollingAnimation(scrollView: UIScrollView) {
-//    
-//  }
   
   override func scrollViewDidScroll(scrollView: UIScrollView) {
     // Dim the vehicle scroller and move it up

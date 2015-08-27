@@ -25,6 +25,9 @@ import SwiftyJSON
 import XCGLogger
 import RealmSwift
 
+//
+// MARK: - StopDBManager
+//
 class StopDBManager {
   
   // Multiton instance per thread

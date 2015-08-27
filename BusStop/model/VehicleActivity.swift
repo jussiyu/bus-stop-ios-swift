@@ -24,6 +24,9 @@ import CoreLocation
 import SwiftyJSON
 import XCGLogger
 
+//
+// MARK: - VechileActivity
+//
 class VehicleActivity : Equatable {
   
   enum Operator: String {
@@ -206,6 +209,7 @@ class VehicleActivity : Equatable {
   }
 }
 
+// Implement comparison for Equatable
 func == (lhs: VehicleActivity, rhs: VehicleActivity) -> Bool {
   return lhs.vehicleRef == rhs.vehicleRef
 }

@@ -21,6 +21,10 @@
 import UIKit
 import XCGLogger
 
+
+//
+// MARK: - HorizontalScrollerDelegate protocol
+//
 @objc protocol HorizontalScrollerDelegate: class {
   
   // data functions
@@ -36,10 +40,18 @@ import XCGLogger
   optional func horizontalScrollerTapped(horizontalScroller: HorizontalScroller, numberOfTaps: Int)
 }
 
+
+//
+// MARK: - FadeableUIView protocol
+//
 protocol FadeableUIView {
   func fadeOutByOffset(offset: CGFloat)
 }
 
+
+//
+// MARK: - UIView
+//
 class HorizontalScroller: UIView {
   
   weak var delegate: HorizontalScrollerDelegate?
@@ -288,9 +300,10 @@ class HorizontalScroller: UIView {
   }
 }
 
-//             ----- -----
-// |xxxXXXXxxx|xxxXXXXxxx|xxxXXXXxxx|
+
+//
 // MARK: - UIScrollViewDelegate
+//
 extension HorizontalScroller: UIScrollViewDelegate {
 
   private func scrollViewDidSomehowEndScrolling(scrollView: UIScrollView) {
@@ -347,7 +360,10 @@ extension HorizontalScroller: UIScrollViewDelegate {
   
 }
 
+
+//
 // MARK: - selector handler
+//
 extension HorizontalScroller {
   @objc func viewTapped(sender: UITapGestureRecognizer){
     log.verbose("viewtapped \(sender.numberOfTapsRequired) time(s)")

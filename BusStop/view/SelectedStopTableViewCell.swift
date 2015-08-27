@@ -21,10 +21,17 @@
 
 import UIKit
 
+//
+// MARK: - SelectedStopTableViewCellDelegate protocol
+//
 protocol SelectedStopTableViewCellDelegate {
   func shouldSetFavorite(favorite: Bool) -> Bool
   func close()
 }
+
+//
+// MARK: - UITableViewCell implementation
+//
 class SelectedStopTableViewCell: UITableViewCell {
   
   var delegate: SelectedStopTableViewCellDelegate?
