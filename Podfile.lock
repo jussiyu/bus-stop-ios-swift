@@ -1,0 +1,51 @@
+PODS:
+  - MediumProgressView (1.0.6)
+  - Nimble (1.0.0)
+  - Quick (0.3.1)
+  - ReachabilitySwift (1.1)
+  - Realm (0.94.1):
+    - Realm/Headers (= 0.94.1)
+  - Realm/Headers (0.94.1)
+  - RealmSwift (0.94.1):
+    - Realm (= 0.94.1)
+  - SwiftyJSON (2.2.1)
+  - TaskQueue (0.9.7)
+  - XCGLogger (2.2)
+
+DEPENDENCIES:
+  - MediumProgressView (from `git@bitbucket.org:jmy/mediumprogressview/`)
+  - Nimble (~> 1.0.0)
+  - Quick (~> 0.3.0)
+  - ReachabilitySwift (~> 1.1)
+  - RealmSwift (~> 0.94)
+  - SwiftyJSON (~> 2.2)
+  - TaskQueue (from `git@bitbucket.org:jmy/taskqueue`, branch `accesscontrol`)
+  - XCGLogger (~> 2.1)
+
+EXTERNAL SOURCES:
+  MediumProgressView:
+    :git: git@bitbucket.org:jmy/mediumprogressview/
+  TaskQueue:
+    :branch: accesscontrol
+    :git: git@bitbucket.org:jmy/taskqueue
+
+CHECKOUT OPTIONS:
+  MediumProgressView:
+    :commit: 4816e3ab9434a8abcacb17299b40aa844603e295
+    :git: git@bitbucket.org:jmy/mediumprogressview/
+  TaskQueue:
+    :commit: 9f5657d383860e475b68730112a808b52e609717
+    :git: git@bitbucket.org:jmy/taskqueue
+
+SPEC CHECKSUMS:
+  MediumProgressView: 96911061f6f1843ca7512fd4a7950c6c5d1dc543
+  Nimble: 8bee528e5fcc403653076545db562d2b5db7bb87
+  Quick: 824572d3d198d51e52cf4aa722cebf7e59952a35
+  ReachabilitySwift: 1e53abddb01111deac0d229dabdb8bb043567b18
+  Realm: d999a6cf0b41577a077349c9cc9d496cc62a7d17
+  RealmSwift: 06b60ff5b1338755654d39aab44ac38001600f76
+  SwiftyJSON: ae2d0a3d68025d136602a33c4ee215091ced3e33
+  TaskQueue: cc6c56e2868b8eeff36d012b5bb8c739651c4042
+  XCGLogger: bbfe599d8ccc4c2d0a72ce652eb1f5e6bb28e3d0
+
+COCOAPODS: 0.38.2

@@ -23,5 +23,4 @@ xcuserdata
 *.hmap
 *.ipa
 *~.*
-Podfile.lock
 Pods
