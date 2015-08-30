@@ -21,7 +21,7 @@
 
 import UIKit
 import MapKit
-import AsyncLegacy
+import Async
 
 
 //

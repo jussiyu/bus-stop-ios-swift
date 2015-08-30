@@ -1,4 +1,0 @@
-[submodule "AsyncLegacy"]
-	path = AsyncLegacy
-	url = ./AsyncLegacy/.git
-        brach = Framework

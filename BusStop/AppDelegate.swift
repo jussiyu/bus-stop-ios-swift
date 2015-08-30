@@ -23,7 +23,7 @@ import UIKit
 import CoreLocation
 import ReachabilitySwift
 import XCGLogger
-import AsyncLegacy
+import Async
 
 let log = XCGLogger.defaultInstance()
 

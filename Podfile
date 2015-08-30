@@ -7,7 +7,7 @@ target 'BusStop' do
   pod 'MediumProgressView', :git => 'git@bitbucket.org:jmy/mediumprogressview/'
   pod 'ReachabilitySwift', '~> 1.1'
   pod 'XCGLogger', '~> 2.1'
-  #  pod 'Async', :git => 'https://github.com/duemunk/Async.git'
+  pod 'Async', :git => 'https://github.com/duemunk/Async.git'
   pod 'TaskQueue', :git => 'git@bitbucket.org:jmy/taskqueue', :branch => 'accesscontrol'
   pod 'RealmSwift', '~> 0.94'
 end

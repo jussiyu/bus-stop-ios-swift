@@ -1,4 +1,5 @@
 PODS:
+  - Async (1.3.1)
   - MediumProgressView (1.0.6)
   - Nimble (1.0.0)
   - Quick (0.3.1)
@@ -13,6 +14,7 @@ PODS:
   - XCGLogger (2.2)
 
 DEPENDENCIES:
+  - Async (from `https://github.com/duemunk/Async.git`)
   - MediumProgressView (from `git@bitbucket.org:jmy/mediumprogressview/`)
   - Nimble (~> 1.0.0)
   - Quick (~> 0.3.0)
@@ -23,6 +25,8 @@ DEPENDENCIES:
   - XCGLogger (~> 2.1)
 
 EXTERNAL SOURCES:
+  Async:
+    :git: https://github.com/duemunk/Async.git
   MediumProgressView:
     :git: git@bitbucket.org:jmy/mediumprogressview/
   TaskQueue:
@@ -30,6 +34,9 @@ EXTERNAL SOURCES:
     :git: git@bitbucket.org:jmy/taskqueue
 
 CHECKOUT OPTIONS:
+  Async:
+    :commit: 9e64046b767fe11010891f5b7fe2aed613a6ee55
+    :git: https://github.com/duemunk/Async.git
   MediumProgressView:
     :commit: 4816e3ab9434a8abcacb17299b40aa844603e295
     :git: git@bitbucket.org:jmy/mediumprogressview/
@@ -38,6 +45,7 @@ CHECKOUT OPTIONS:
     :git: git@bitbucket.org:jmy/taskqueue
 
 SPEC CHECKSUMS:
+  Async: edb15b1e34181d7c9873ce6b5d6eabc1c99e638b
   MediumProgressView: 96911061f6f1843ca7512fd4a7950c6c5d1dc543
   Nimble: 8bee528e5fcc403653076545db562d2b5db7bb87
   Quick: 824572d3d198d51e52cf4aa722cebf7e59952a35

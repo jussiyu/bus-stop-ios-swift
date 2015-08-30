@@ -16,7 +16,6 @@
 		4A10E1F21B30214100231417 /* Common.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A10E1F11B30214100231417 /* Common.swift */; };
 		4A141BA01B2B15890009DED9 /* Stop.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A141B9F1B2B15890009DED9 /* Stop.swift */; };
 		4A15479D1B7767BB0004688F /* AsyncLegacy.h in Headers */ = {isa = PBXBuildFile; fileRef = 4A15479C1B7767BB0004688F /* AsyncLegacy.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		4A1547B01B7767BC0004688F /* AsyncLegacy.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 4A1547981B7767BA0004688F /* AsyncLegacy.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		4A1547B81B7767C20004688F /* AsyncLegacy.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A1547741B7762B40004688F /* AsyncLegacy.swift */; };
 		4A1547E21B7795A50004688F /* Stop.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A141B9F1B2B15890009DED9 /* Stop.swift */; };
 		4A1547E31B7795A50004688F /* StopDBManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A1B1EB41B7237FD001C61D9 /* StopDBManager.swift */; };
@@ -58,27 +57,9 @@
 			remoteGlobalIDString = 4A0EA3581B21C0B000F747D0;
 			remoteInfo = BusStop;
 		};
-		4A1547AD1B7767BC0004688F /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 4A0EA3511B21C0B000F747D0 /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = 4A1547971B7767BA0004688F;
-			remoteInfo = AsyncLegacy;
-		};
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXCopyFilesBuildPhase section */
-		4A1547B41B7767BC0004688F /* Embed Frameworks */ = {
-			isa = PBXCopyFilesBuildPhase;
-			buildActionMask = 2147483647;
-			dstPath = "";
-			dstSubfolderSpec = 10;
-			files = (
-				4A1547B01B7767BC0004688F /* AsyncLegacy.framework in Embed Frameworks */,
-			);
-			name = "Embed Frameworks";
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 		4A532E271B68D77B00A80544 /* CopyFiles */ = {
 			isa = PBXCopyFilesBuildPhase;
 			buildActionMask = 12;
@@ -420,12 +401,10 @@
 				97AB2CBA6BAF3F845FC3849C /* Embed Pods Frameworks */,
 				B222CECFCBC776CC7DCD8518 /* Copy Pods Resources */,
 				4A532E271B68D77B00A80544 /* CopyFiles */,
-				4A1547B41B7767BC0004688F /* Embed Frameworks */,
 			);
 			buildRules = (
 			);
 			dependencies = (
-				4A1547AE1B7767BC0004688F /* PBXTargetDependency */,
 			);
 			name = BusStop;
 			productName = BusStop;
@@ -785,11 +764,6 @@
 			isa = PBXTargetDependency;
 			target = 4A0EA3581B21C0B000F747D0 /* BusStop */;
 			targetProxy = 4A0EA36F1B21C0B000F747D0 /* PBXContainerItemProxy */;
-		};
-		4A1547AE1B7767BC0004688F /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = 4A1547971B7767BA0004688F /* AsyncLegacy */;
-			targetProxy = 4A1547AD1B7767BC0004688F /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 

@@ -25,7 +25,7 @@ import CoreLocation
 import MediumProgressView
 import ReachabilitySwift
 import XCGLogger
-import AsyncLegacy
+import Async
 import TaskQueue
 import AudioToolbox
 
