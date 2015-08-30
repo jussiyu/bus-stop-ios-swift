@@ -117,6 +117,9 @@
 		4A1547EB1B7798C60004688F /* SwiftyJSON.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SwiftyJSON.framework; path = "Pods/../build/Debug-iphoneos/SwiftyJSON.framework"; sourceTree = "<group>"; };
 		4A1547ED1B779E300004688F /* BusStopHelpers.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BusStopHelpers.swift; sourceTree = "<group>"; };
 		4A1B1EB41B7237FD001C61D9 /* StopDBManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = StopDBManager.swift; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.swift; };
+		4A235EE51B90AA38005F4DB1 /* screenshot-mainscreen.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "screenshot-mainscreen.png"; sourceTree = "<group>"; };
+		4A235EE61B90AA38005F4DB1 /* screenshot-map.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "screenshot-map.png"; sourceTree = "<group>"; };
+		4A235EE71B90AA38005F4DB1 /* screenshot-selected-stop.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "screenshot-selected-stop.png"; sourceTree = "<group>"; };
 		4A2BB8101B4AEAB900F350C7 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/Localizable.strings; sourceTree = "<group>"; };
 		4A2FA8561B5533720088C00F /* UIFontDescriptorExt.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UIFontDescriptorExt.swift; sourceTree = "<group>"; };
 		4A3DF9A21B4AF90500CF1345 /* fi */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fi; path = fi.lproj/Localizable.strings; sourceTree = "<group>"; };
@@ -221,6 +224,7 @@
 			children = (
 				4AA1089E1B821E190044E041 /* LICENSE */,
 				4AA108A01B821E280044E041 /* README.md */,
+				4A235EE41B90AA38005F4DB1 /* img */,
 				4A4336F51B6FE205005E9C29 /* StopSound.aif */,
 				4A532E251B68D6A700A80544 /* testdata */,
 				4A0EA35B1B21C0B000F747D0 /* BusStop */,
@@ -321,6 +325,16 @@
 				4A1547DA1B7795580004688F /* Info.plist */,
 			);
 			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
+		4A235EE41B90AA38005F4DB1 /* img */ = {
+			isa = PBXGroup;
+			children = (
+				4A235EE51B90AA38005F4DB1 /* screenshot-mainscreen.png */,
+				4A235EE61B90AA38005F4DB1 /* screenshot-map.png */,
+				4A235EE71B90AA38005F4DB1 /* screenshot-selected-stop.png */,
+			);
+			path = img;
 			sourceTree = "<group>";
 		};
 		4AA1089D1B8203A40044E041 /* Common */ = {
