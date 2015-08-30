@@ -15,8 +15,6 @@
 		4A10E1EE1B2F03B900231417 /* CoreLocation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4A10E1ED1B2F03B900231417 /* CoreLocation.framework */; };
 		4A10E1F21B30214100231417 /* Common.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A10E1F11B30214100231417 /* Common.swift */; };
 		4A141BA01B2B15890009DED9 /* Stop.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A141B9F1B2B15890009DED9 /* Stop.swift */; };
-		4A15479D1B7767BB0004688F /* AsyncLegacy.h in Headers */ = {isa = PBXBuildFile; fileRef = 4A15479C1B7767BB0004688F /* AsyncLegacy.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		4A1547B81B7767C20004688F /* AsyncLegacy.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A1547741B7762B40004688F /* AsyncLegacy.swift */; };
 		4A1547E21B7795A50004688F /* Stop.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A141B9F1B2B15890009DED9 /* Stop.swift */; };
 		4A1547E31B7795A50004688F /* StopDBManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A1B1EB41B7237FD001C61D9 /* StopDBManager.swift */; };
 		4A1547E41B7795A50004688F /* VehicleActivity.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A4D12B81B2AC01900B6B757 /* VehicleActivity.swift */; };
@@ -88,10 +86,7 @@
 		4A10E1F11B30214100231417 /* Common.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = Common.swift; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.swift; };
 		4A141B9F1B2B15890009DED9 /* Stop.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = Stop.swift; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.swift; };
 		4A1547711B7761EC0004688F /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; name = Info.plist; path = /Users/jussi/dev/iOS/BusStop/BusStopUnitTests/Info.plist; sourceTree = "<group>"; };
-		4A1547741B7762B40004688F /* AsyncLegacy.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = AsyncLegacy.swift; path = AsyncLegacy/AsyncLegacy.swift; sourceTree = SOURCE_ROOT; };
 		4A1547981B7767BA0004688F /* AsyncLegacy.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = AsyncLegacy.framework; sourceTree = BUILT_PRODUCTS_DIR; };
-		4A15479B1B7767BB0004688F /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		4A15479C1B7767BB0004688F /* AsyncLegacy.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AsyncLegacy.h; sourceTree = "<group>"; };
 		4A1547D71B7795580004688F /* BusStopUnitTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = BusStopUnitTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		4A1547DA1B7795580004688F /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		4A1547E81B7796E60004688F /* Pods_BusStopTests.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Pods_BusStopTests.framework; path = "Pods/../build/Debug-iphoneos/Pods_BusStopTests.framework"; sourceTree = "<group>"; };
@@ -211,7 +206,6 @@
 				4A0EA35B1B21C0B000F747D0 /* BusStop */,
 				4A0EA3711B21C0B000F747D0 /* BusStopTests */,
 				4A1547D81B7795580004688F /* BusStopUnitTests */,
-				4A1547991B7767BA0004688F /* AsyncLegacy */,
 				4A0EA35A1B21C0B000F747D0 /* Products */,
 				48E646FB0E105059211C2A8C /* Pods */,
 				3D46AF4CBA289C7B981D62FC /* Frameworks */,
@@ -268,24 +262,6 @@
 			isa = PBXGroup;
 			children = (
 				4A0EA3731B21C0B000F747D0 /* Info.plist */,
-			);
-			name = "Supporting Files";
-			sourceTree = "<group>";
-		};
-		4A1547991B7767BA0004688F /* AsyncLegacy */ = {
-			isa = PBXGroup;
-			children = (
-				4A1547741B7762B40004688F /* AsyncLegacy.swift */,
-				4A15479C1B7767BB0004688F /* AsyncLegacy.h */,
-				4A15479A1B7767BB0004688F /* Supporting Files */,
-			);
-			path = AsyncLegacy;
-			sourceTree = "<group>";
-		};
-		4A15479A1B7767BB0004688F /* Supporting Files */ = {
-			isa = PBXGroup;
-			children = (
-				4A15479B1B7767BB0004688F /* Info.plist */,
 			);
 			name = "Supporting Files";
 			sourceTree = "<group>";
@@ -383,7 +359,6 @@
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				4A15479D1B7767BB0004688F /* AsyncLegacy.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -738,7 +713,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				4A1547B81B7767C20004688F /* AsyncLegacy.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
