@@ -31,8 +31,6 @@ Application depends on the following CocoaPods:
 See [Podfile](Podfile) for specific versions ranges and
 [Podfile.lock](Podfile.lock) for exact versions used in development and testing.
 
-In addition a forked AsyncLegacy pod is included as a submodule.
-
 ## How to compile
 
 Pods are not included so therefore you need to fetch them by running `pod
