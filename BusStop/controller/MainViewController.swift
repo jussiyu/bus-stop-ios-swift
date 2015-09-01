@@ -99,13 +99,15 @@ class MainViewController: UIViewController {
   var closestVehicles: [VehicleActivity] = [] {
     didSet {
       if selectedStopId == nil {
+        
+        // re-select the first vehicle and scroll to it (if needed)
         self.selectedVehicleRef = closestVehicles.first?.vehicleRef
         if !self.vehicleScrollView.shouldScrollToViewWithIndex(0, animated: true) {
           // there was no need to scroll but refresh stops for the current (first) vehicle anyway
           progressViewManager.showProgress()
           refreshStopsForSelectedVehicle(queue: nil) {_ in Async.main {self.progressViewManager.hideProgress()} }
         }
-        log.info("Selected vehicle reset to first")
+        log.info("Selected vehicle reset to first one")
         return
       }
       
@@ -718,7 +720,8 @@ extension MainViewController : MainDelegate {
         vehicleScrollView.shrinkViewByOffset(offset)
         
         // scroll table view up to match current header view bottom
-        vehicleScrollViewBottomConstraint.constant = -min(offset, selectedVehicleHeaderView.bounds.height +  selectedVehicleHeaderView.layoutMargins.bottom) + selectedVehicleHeaderView.layoutMargins.bottom
+        let minimumAllowedHeight = selectedVehicleHeaderView.bounds.height +  selectedVehicleHeaderView.layoutMargins.bottom
+        vehicleScrollViewBottomConstraint.constant = -min(offset, minimumAllowedHeight) + selectedVehicleHeaderView.layoutMargins.bottom
     }
   }
   

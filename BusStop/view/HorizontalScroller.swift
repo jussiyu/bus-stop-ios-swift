@@ -136,7 +136,7 @@ class HorizontalScroller: UIView {
       let newOffset = currentViewCenter - scrollViewWidth / 2
 
       // Do we need to scroll anywhere?
-      if newOffset != scroller.contentOffset.y {
+      if newOffset != scroller.contentOffset.x {
         log.debug("Scrolling to view with index \(index); from offset \(self.scroller.contentOffset) to \(newOffset)")
         scroller.setContentOffset(CGPoint(x: CGFloat(newOffset), y: 0), animated: animated)
         return true
