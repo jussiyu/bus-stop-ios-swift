@@ -129,7 +129,7 @@ class StopTableViewController: UITableViewController {
         next(nil)
       } else {
         
-        println("sleeping \(i)")
+        print("sleeping \(i)")
         self.autoUnexpandTaskQueueProgress! += "."
         self.tableView.reloadRowsAtIndexPaths([NSIndexPath(forRow: 0, inSection: 0)], withRowAnimation: .Fade)
         q?.retry(delay: 1)
@@ -260,7 +260,7 @@ class StopTableViewController: UITableViewController {
     // the tapped (and only) row was already selected => add other rows back
     
     // calculate the final row for the selected stop (or nil)
-    var newRowForSelectedStop = selectedStopId != nil ? rowForStop(selectedStop!) : nil
+    let newRowForSelectedStop = selectedStopId != nil ? rowForStop(selectedStop!) : nil
     
     // reset the selection
     selectedStopId = nil
@@ -348,12 +348,12 @@ class StopTableViewController: UITableViewController {
 //
 // MARK: - UITableViewDataSource
 //
-extension StopTableViewController : UITableViewDataSource {
+extension StopTableViewController {
 
   override func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
     
     // if a stop is selected then only it will be shown
-    if let selectedStop = selectedStop {
+    if selectedStop != nil {
       return 1
     } else {
       return selectedVehicle?.stops.count ?? 0
@@ -430,7 +430,7 @@ extension StopTableViewController : UITableViewDataSource {
       
       let cell = tableView.dequeueReusableCellWithIdentifier(defaultCellIdentifier, forIndexPath:indexPath) 
       
-      if let selectedVehicle = selectedVehicle {
+      if selectedVehicle != nil {
         let rowToBeReturned = indexPath.row
         
         if let stop = stopForRow(rowToBeReturned) {
@@ -450,7 +450,7 @@ extension StopTableViewController : UITableViewDataSource {
 }
 
 //
-// MARK: - UITableViewDelegate
+// MARK: - SelectedStopTableViewCellDelegate
 //
 extension StopTableViewController : SelectedStopTableViewCellDelegate {
   func shouldSetFavorite(favorite: Bool) -> Bool {
@@ -476,7 +476,7 @@ extension StopTableViewController : SelectedStopTableViewCellDelegate {
 //
 // MARK: - UITableViewDelegate
 //
-extension StopTableViewController : UITableViewDelegate {
+extension StopTableViewController {
 
   override func tableView(tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
     tableViewHeader = UILabel()

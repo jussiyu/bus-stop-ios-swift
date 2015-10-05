@@ -25,7 +25,7 @@ import RealmSwift
 let log = XCGLogger.defaultInstance()
 
 func setUpLog() {
-  log.setup(logLevel: .Verbose, showLogLevel: true, showFileNames: true, showLineNumbers: true, writeToFile: nil, fileLogLevel: .None)
+  log.setup(.Verbose, showLogLevel: true, showFileNames: true, showLineNumbers: true, writeToFile: nil, fileLogLevel: .None)
   let shortLogDateFormatter = NSDateFormatter()
   shortLogDateFormatter.locale = NSLocale.currentLocale()
   shortLogDateFormatter.dateFormat = "HH:mm:ss.SSS"
@@ -35,7 +35,12 @@ func setUpLog() {
 }
 
 func setUpDatabase() {
-  let documentPath = NSSearchPathForDirectoriesInDomains(.DocumentDirectory, .UserDomainMask, true).first as! String
-  Realm.defaultPath = documentPath.stringByAppendingPathComponent("unittest.realm")
-  log.info("Setting Realm default database path to \(Realm.defaultPath)")
+  let documentPath = NSSearchPathForDirectoriesInDomains(.DocumentDirectory, .UserDomainMask, true).first
+  if let documentPath = documentPath {
+    let path = NSURL(fileURLWithPath: documentPath).URLByAppendingPathComponent("unittest.realm").path
+    Realm.Configuration.defaultConfiguration = Realm.Configuration(path: path)
+  } else {
+    log.error("Failed to set default path")
+  }
+  log.info("Setting Realm default database path to \(Realm.Configuration.defaultConfiguration.path)")
 }

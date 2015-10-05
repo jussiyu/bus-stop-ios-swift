@@ -43,7 +43,7 @@ class Vehicles {
   init (fromJSON result: JSON) {
 
     var vehicleCount = 0
-    for (index, subJson): (String, JSON) in result {
+    for (_, subJson): (String, JSON) in result {
       let monVeh = subJson["monitoredVehicleJourney"]
       if let v = VehicleActivity(fromJSON: monVeh) {
         vehicles[v.vehicleRef] = v
@@ -59,8 +59,6 @@ class Vehicles {
  
   func getClosestVehicle(userLocation: CLLocation) -> VehicleActivity? {
     let sortedMatchingVehicles = vehicles.values.sort {isLeftVehicleActivityCloserToUserLocation(userLocation, left: $0, right: $1)}
-    let closest = sortedMatchingVehicles.reduce("") { "\($0), \($1.description), "}
-//    log.debug("Closest matching vehicles: \(self.closest)")
     return sortedMatchingVehicles.first
   }
 
@@ -72,7 +70,7 @@ class Vehicles {
 
   func setLocationsFromJSON(result: JSON) {
     var vehicleCount = 0
-    for (index, subJson): (String, JSON) in result {
+    for (_, subJson): (String, JSON) in result {
       let monVeh = subJson["monitoredVehicleJourney"]
       if let vehicleRef = VehicleActivity.vehicleRefFromJSON(monVeh),
         v = vehicles[vehicleRef] {
@@ -86,7 +84,7 @@ class Vehicles {
   
   func setStopsFromJSON(result: JSON) {
     var vehicleCount = 0
-    for (index, subJson): (String, JSON) in result {
+    for (_, subJson): (String, JSON) in result {
       let monVeh = subJson["monitoredVehicleJourney"]
       if let vehicleRef = VehicleActivity.vehicleRefFromJSON(monVeh),
         v = vehicles[vehicleRef] {

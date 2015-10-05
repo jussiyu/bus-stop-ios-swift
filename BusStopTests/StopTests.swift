@@ -115,26 +115,30 @@ class StopTests: QuickSpec {
     describe("A stop added to database") {
       beforeSuite {
         setUpDatabase()
-        Realm().write {
-          Realm().deleteAll()
+        do {
+          try Realm().write {
+            try! Realm().deleteAll()
+          }
+        } catch {
+          // ignore if DB not found
         }
       }
       
       var stop: Stop!
       beforeEach {
         stop = Stop(id: "9999", name: "myname", location: CLLocation(latitude: -23, longitude: 62))
-        Realm().write {
-          Realm().add(stop)
+        try! Realm().write {
+          try! Realm().add(stop)
         }
       }
       afterEach {
-        Realm().write {
-          Realm().deleteAll()
+        try! Realm().write {
+          try! Realm().deleteAll()
         }
       }
       
       it("can be read back from database with same propery values") {
-        let stopFromDatabase = Realm().objects(Stop).first!
+        let stopFromDatabase = try! Realm().objects(Stop).first!
         expect(stopFromDatabase.id).to(equal("9999"))
         expect(stopFromDatabase.name).to(equal("myname"))
         expect(stopFromDatabase.latitude).to(equal(-23))
@@ -143,52 +147,55 @@ class StopTests: QuickSpec {
       }
 
       it("can be read back from database using primary key") {
-        expect(Realm().objectForPrimaryKey(Stop.self, key: "9999")).to(equal(stop))
+        expect(try! Realm().objectForPrimaryKey(Stop.self, key: "9999")).to(equal(stop))
       }
     }
     
     describe("A stop in database") {
       beforeSuite {
         setUpDatabase()
-        Realm().write {
-          Realm().deleteAll()
+        try! Realm().write {
+          try! Realm().deleteAll()
         }
       }
       
       var stop: Stop!
       beforeEach {
         stop = Stop(id: "9999", name: "myname", location: CLLocation(latitude: -23, longitude: 62))
-        Realm().write {
-          Realm().add(stop)
+        try! Realm().write {
+          try! Realm().add(stop)
         }
       }
       afterEach {
-        Realm().write {
-          Realm().deleteAll()
+        try! Realm().write {
+          try! Realm().deleteAll()
         }
       }
       
       it("can be set as favorite") {
-        Realm().write {
+        try! Realm().write {
           stop.favorite = true
         }
-        expect(Realm().objectForPrimaryKey(Stop.self, key: "9999")!.favorite).to(beTruthy())
+        let object = try! Realm().objectForPrimaryKey(Stop.self, key: "9999")
+        expect(object!.favorite).to(beTruthy())
       }
       
       it("can be renamed") {
-        Realm().write {
+        try! Realm().write {
           stop.name = "newname"
         }
-        expect(Realm().objectForPrimaryKey(Stop.self, key: "9999")!.name).to(equal("newname"))
+        let object = try! Realm().objectForPrimaryKey(Stop.self, key: "9999")
+        expect(object!.name).to(equal("newname"))
       }
 
       it("can be relocated") {
-        Realm().write {
+        try! Realm().write {
           stop.latitude = -22
           stop.longitude = 60
         }
-        expect(Realm().objectForPrimaryKey(Stop.self, key: "9999")!.latitude).to(equal(-22))
-        expect(Realm().objectForPrimaryKey(Stop.self, key: "9999")!.longitude).to(equal(60))
+        let object = try! Realm().objectForPrimaryKey(Stop.self, key: "9999")
+        expect(object!.latitude).to(equal(-22))
+        expect(object!.longitude).to(equal(60))
       }
     }
   }

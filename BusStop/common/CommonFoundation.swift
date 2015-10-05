@@ -148,7 +148,7 @@ public extension NSObject{
 
 // MARK: - Array
 extension Array{
-  func each(each: (Element) -> (T)) -> [Element]{
+  func each(each: (Element) -> (Element)) -> [Element]{
     var result = [Element]()
     for object: Element in self {
       result.append(each(object))

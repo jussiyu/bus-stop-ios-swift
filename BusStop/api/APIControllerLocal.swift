@@ -91,7 +91,7 @@ class APIControllerLocal : APIControllerProtocol {
         } else {
           delegate?.didReceiveAPIResults(json, next: next)
         }
-      } catch var error1 as NSError {
+      } catch let error1 as NSError {
         error = error1
         if let error = error {
           log.error("Local data loaded unsuccessfully: \(filePath).\(self.journeysAPIDataFormat)")

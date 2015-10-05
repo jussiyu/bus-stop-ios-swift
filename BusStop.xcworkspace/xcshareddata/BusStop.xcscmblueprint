@@ -1,0 +1,30 @@
+{
+  "DVTSourceControlWorkspaceBlueprintPrimaryRemoteRepositoryKey" : "EB350E71E0DBFFFDA291E85ABBE11299E8C6E033",
+  "DVTSourceControlWorkspaceBlueprintWorkingCopyRepositoryLocationsKey" : {
+
+  },
+  "DVTSourceControlWorkspaceBlueprintWorkingCopyStatesKey" : {
+    "EB350E71E0DBFFFDA291E85ABBE11299E8C6E033" : 0,
+    "C690F17F4D03D7C2A329C68DE80DBAEFF7076BAE" : 0
+  },
+  "DVTSourceControlWorkspaceBlueprintIdentifierKey" : "FB4E39D2-EF17-47DB-A96A-63D59E4F6DC2",
+  "DVTSourceControlWorkspaceBlueprintWorkingCopyPathsKey" : {
+    "EB350E71E0DBFFFDA291E85ABBE11299E8C6E033" : "BusStop",
+    "C690F17F4D03D7C2A329C68DE80DBAEFF7076BAE" : "mediumprogressview\/"
+  },
+  "DVTSourceControlWorkspaceBlueprintNameKey" : "BusStop",
+  "DVTSourceControlWorkspaceBlueprintVersion" : 204,
+  "DVTSourceControlWorkspaceBlueprintRelativePathToProjectKey" : "BusStop.xcworkspace",
+  "DVTSourceControlWorkspaceBlueprintRemoteRepositoriesKey" : [
+    {
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryURLKey" : "bitbucket.org:jmy\/mediumprogressview.git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositorySystemKey" : "com.apple.dt.Xcode.sourcecontrol.Git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryIdentifierKey" : "C690F17F4D03D7C2A329C68DE80DBAEFF7076BAE"
+    },
+    {
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryURLKey" : "bitbucket.org:jmy\/busstopios.git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositorySystemKey" : "com.apple.dt.Xcode.sourcecontrol.Git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryIdentifierKey" : "EB350E71E0DBFFFDA291E85ABBE11299E8C6E033"
+    }
+  ]
+}

@@ -1,10 +1,10 @@
 # Uncomment this line to define a global platform for your project
-platform :ios, '9.0'
+platform :ios, '8.0'
 use_frameworks!
 
 target 'BusStop' do
   pod 'SwiftyJSON', '~> 2.3'
-  pod 'MediumProgressView', :git => 'git@bitbucket.org:jmy/mediumprogressview/'
+  pod 'MediumProgressView', :path => '/Users/jussi/dev/iOS/mediumprogressview/'
   pod 'ReachabilitySwift', '~> 2.0'
   pod 'XCGLogger', '~> 3.0'
   pod 'Async', :git => 'https://github.com/JohnCoates/Async.git'
@@ -17,7 +17,7 @@ target 'BusStopTests' do
   pod 'XCGLogger', '~> 3.0'
   pod 'SwiftyJSON', '~> 2.3'
   pod 'Quick', '~>0.6.0'
-  pod 'Nimble', '~>2.0.0-rc.3'
+  pod 'Nimble', '~>2.0.0'
 end
 
 target 'BusStopUnitTests' do
@@ -25,6 +25,6 @@ target 'BusStopUnitTests' do
   pod 'XCGLogger', '~> 3.0'
   pod 'SwiftyJSON', '~> 2.3'
   pod 'Quick', '~>0.6.0'
-  pod 'Nimble', '~>2.0.0-rc.3'
+  pod 'Nimble', '~>2.0.0'
 end
 

@@ -44,7 +44,7 @@ protocol APIControllerProtocol {
   func getVehicleActivityStopsForVehicle(vehicleRef: String, next: ApiControllerDelegateNextTask?)
   func getVehicleActivityHeaders(next next: ApiControllerDelegateNextTask?)
   func getStops(next: ApiControllerDelegateNextTask?)
-  func connectedToNetwork() -> Bool
+//  func connectedToNetwork() -> Bool
   func invalidateSessions()
   func cancelTasks()
 }
@@ -118,24 +118,24 @@ class APIController : NSObject, APIControllerProtocol {
     doGetOnPath("\(journeysAPIbaseURL)stop-points", delegate: stopsDelegate, next: next)
   }
 
-  func connectedToNetwork() -> Bool {
-    var zeroAddress = sockaddr_in()
-    zeroAddress.sin_len = UInt8(sizeofValue(zeroAddress))
-    zeroAddress.sin_family = sa_family_t(AF_INET)
-    
-    let defaultRouteReachability = withUnsafePointer(&zeroAddress) {
-      SCNetworkReachabilityCreateWithAddress(nil, UnsafePointer($0)).takeRetainedValue()
-    }
-    
-    var flags : SCNetworkReachabilityFlags = 0
-    if SCNetworkReachabilityGetFlags(defaultRouteReachability, &flags) == 0 {
-      return false
-    }
-    
-    let isReachable = (flags & UInt32(kSCNetworkFlagsReachable)) != 0
-    let needsConnection = (flags & UInt32(kSCNetworkFlagsConnectionRequired)) != 0
-    return (isReachable && !needsConnection)
-  }
+//  func connectedToNetwork() -> Bool {
+//    var zeroAddress = sockaddr_in()
+//    zeroAddress.sin_len = UInt8(sizeofValue(zeroAddress))
+//    zeroAddress.sin_family = sa_family_t(AF_INET)
+//    
+//    let defaultRouteReachability = withUnsafePointer(&zeroAddress) {
+//      SCNetworkReachabilityCreateWithAddress(nil, UnsafePointer($0)).takeRetainedValue()
+//    }
+//    
+//    var flags : SCNetworkReachabilityFlags = 0
+//    if SCNetworkReachabilityGetFlags(defaultRouteReachability, &flags) == 0 {
+//      return false
+//    }
+//    
+//    let isReachable = (flags & UInt32(kSCNetworkFlagsReachable)) != 0
+//    let needsConnection = (flags & UInt32(kSCNetworkFlagsConnectionRequired)) != 0
+//    return (isReachable && !needsConnection)
+//  }
   
   private func doGetOnPath(urlPath: String, delegate: APIControllerDelegate?, cachingEnabled: Bool = true, next: ApiControllerDelegateNextTask?) {
     if delegate == nil {
@@ -156,7 +156,7 @@ class APIController : NSObject, APIControllerProtocol {
           return
         }
       } else {
-        if let cachedResponse = NSURLCache.sharedURLCache().cachedResponseForRequest(request) {
+        if NSURLCache.sharedURLCache().cachedResponseForRequest(request) != nil {
           log.warning("Cached response exists for \(urlPath). Removed!")
           NSURLCache.sharedURLCache().removeCachedResponseForRequest(request)
         }
@@ -166,15 +166,17 @@ class APIController : NSObject, APIControllerProtocol {
       
       let task = session.dataTaskWithURL(url, completionHandler: {data, response, error -> Void in
         UIApplication.sharedApplication().networkActivityIndicatorVisible = false
-        if let response = response as? NSHTTPURLResponse where error == nil && response.statusCode == 200 {
-          log.debug("Task completed successfully: " + urlPath)
+        if let data = data, response = response as? NSHTTPURLResponse where error == nil && response.statusCode == 200 {
+          log.debug("Task completed successfully: \(urlPath)")
           let json = JSON(data: data)
           delegate?.didReceiveAPIResults(json, next: next)
-        } else {
-          log.error("Task completed unsuccessfully: " + urlPath)
+        } else if let error = error {
+          log.error("Task completed unsuccessfully: \(urlPath)")
           log.error(error.localizedDescription)
           delegate?.didReceiveError(error, next: next)
           return
+        } else {
+          log.error("Unknown error from dataTaskWithURL")
         }
       })
       
@@ -186,7 +188,7 @@ class APIController : NSObject, APIControllerProtocol {
       }
       log.debug("Started datatask with id \(task.taskIdentifier))")
     } else {
-      log.severe("Invalid URL: " + urlPath)
+      log.severe("Invalid URL: \(urlPath)")
     }
   }
 }

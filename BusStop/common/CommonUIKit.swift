@@ -24,7 +24,7 @@ import UIKit
 
 // MARK: - NSLayoutConstraint
 extension NSLayoutConstraint {
-  class func constraintsWithVisualFormat(format: String, options opts: NSLayoutFormatOptions = nil, metrics: [String : AnyObject] = [:], views: [String : AnyObject] = [:], active: Bool) -> [NSLayoutConstraint] {
+  class func constraintsWithVisualFormat(format: String, options opts: NSLayoutFormatOptions = NSLayoutFormatOptions(rawValue: 0), metrics: [String : AnyObject] = [:], views: [String : AnyObject] = [:], active: Bool) -> [NSLayoutConstraint] {
     let constraints = NSLayoutConstraint.constraintsWithVisualFormat(format, options: opts, metrics: metrics, views: views) 
     if active {
       NSLayoutConstraint.activateConstraints(constraints)
@@ -38,10 +38,8 @@ extension UIView {
   func constraintsWithIdentifier(identifier: String) -> [NSLayoutConstraint] {
     var matching = [NSLayoutConstraint]()
     for c in constraints {
-      if let c = c as? NSLayoutConstraint {
-        if c.identifier == identifier {
-          matching.append(c)
-        }
+      if c.identifier == identifier {
+        matching.append(c)
       }
     }
     return matching

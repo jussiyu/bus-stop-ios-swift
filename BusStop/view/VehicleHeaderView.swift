@@ -151,7 +151,7 @@ extension VehicleHeaderView: FadeableUIView {
 //
 // MARK: - Printable
 //
-extension VehicleHeaderView: CustomStringConvertible, CustomDebugStringConvertible{
+extension VehicleHeaderView: CustomDebugStringConvertible{
   override var description: String {
     return "** VehicleHeaderView: \(lineLabel.text!), \(vehicleLabel.text!), \(vehicleDistanceLabel.text!)"
   }

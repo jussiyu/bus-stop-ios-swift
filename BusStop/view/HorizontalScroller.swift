@@ -173,7 +173,7 @@ class HorizontalScroller: UIView {
       let subViewCount = delegate.numberOfItemsInHorizontalScroller(self)
 
       // move old views to reuse list
-      for (index, view) in scrollerSubviews.enumerate() {
+      for (index, _) in scrollerSubviews.enumerate() {
         if index < subViewCount {
           // recycle view
           reusableSubviews[index] = scrollerSubviews[index]
@@ -327,8 +327,8 @@ extension HorizontalScroller: UIScrollViewDelegate {
   func scrollViewWillEndDragging(scrollView: UIScrollView, withVelocity velocity: CGPoint, targetContentOffset: UnsafeMutablePointer<CGPoint>) {
     
     if let scrollViewPageWidth = scrollerSubviews[0]?.bounds.width where scrollViewPageWidth > 0 {
-      var currentOffset = CGFloat(scrollView.contentOffset.x)
-      var targetOffset = CGFloat(targetContentOffset.memory.x)
+//      var currentOffset = CGFloat(scrollView.contentOffset.x)
+      let targetOffset = CGFloat(targetContentOffset.memory.x)
       
       // try first with the (positive!) targetOffset
       var newTargetOffset = max(0, round(targetOffset / scrollViewPageWidth) * scrollViewPageWidth)

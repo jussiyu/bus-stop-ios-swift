@@ -52,7 +52,6 @@ class VehicleActivity : Equatable {
       case TKL: return "TKL"
       case LL: return "Länsilinja"
       case Paunu: return "Paunu"
-      default: return "other"
       }
     }
   }
@@ -152,9 +151,14 @@ class VehicleActivity : Equatable {
     self.stops = []
     
     let stops = monVeh["onwardCalls"]
-    for (index, subJSON): (String, JSON) in stops {
+    for (_, subJSON): (String, JSON) in stops {
       let stopRef = subJSON["stopPointRef"].string
-      let ref = stopRef != nil ? NSURL(fileURLWithPath: stopRef!): nil
+      let ref: NSURL?
+      if stopRef != nil {
+        ref = NSURL(fileURLWithPath: stopRef!)
+      } else {
+        ref = NSURL()
+      }
       
       let arrivalString = subJSON["expectedArrivalTime"].string
       let arrivalTime = arrivalString?.fromISO8601StringToDate()
@@ -162,7 +166,8 @@ class VehicleActivity : Equatable {
       let departureString = subJSON["expectedDepartureTime"].string
       let departureTime = departureString?.fromISO8601StringToDate()
       
-      let order = subJSON["order"].string?.toInt()
+      let orderString = subJSON["order"].string
+      let order = orderString != nil ? Int(orderString!) : nil
       
       if let ref = ref, id = ref.lastPathComponent, arrivalTime = arrivalTime, departureTime = departureTime, order = order {
         let stop = VehicleActivityStop(id: id, expectedArrivalTime: arrivalTime,

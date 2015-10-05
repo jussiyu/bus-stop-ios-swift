@@ -114,8 +114,8 @@ class MainViewController: UIViewController {
       if selectedStopId != nil && closestVehicles.indexOf(selectedVehicle!) == nil {
         log.info("Unexpaning the lost selected stop \(self.selectedStopId)")
         Async.main {
-          var title = NSLocalizedString("Lost your stop.", comment:"")
-          var message = NSLocalizedString("Your stop was already passed. Stopped tracking your stop.", comment:"")
+          let title = NSLocalizedString("Lost your stop.", comment:"")
+          let message = NSLocalizedString("Your stop was already passed. Stopped tracking your stop.", comment:"")
           let alert = UIAlertController(title: title, message: message, preferredStyle: UIAlertControllerStyle.Alert)
           alert.addAction(UIAlertAction(title: NSLocalizedString("OK", comment: "Alert OK"), style: UIAlertActionStyle.Default, handler: nil))
           self.presentViewController(alert, animated: true, completion: {
@@ -174,7 +174,7 @@ class MainViewController: UIViewController {
   }
   
   lazy var apiDelegate: Delegates = {
-
+    
     // Common functionality
     class APIDelegateBase: APIControllerDelegate {
       let ref: MainViewController
@@ -312,7 +312,7 @@ class MainViewController: UIViewController {
           locationCheckCounter = 0
 
           Async.main {
-            var title = CLLocationManager.authorizationStatus() == .AuthorizedWhenInUse ?
+            let title = CLLocationManager.authorizationStatus() == .AuthorizedWhenInUse ?
               NSLocalizedString("Failed to acquire your location.", comment:"") :
               NSLocalizedString("To use BusStop, please allow BusStop to use location data in phone settings.", comment:"")
             let alert = UIAlertController(title: title, message: nil, preferredStyle: UIAlertControllerStyle.Alert)
@@ -360,7 +360,7 @@ class MainViewController: UIViewController {
     
     vehicleScrollView.delegate = self
     
-    let refershControl = UIRefreshControl()
+//    let refershControl = UIRefreshControl()
   
     NSNotificationCenter.defaultCenter().addObserver(self,
       selector: "preferredContentSizeChanged:",
@@ -386,7 +386,7 @@ class MainViewController: UIViewController {
     super.viewWillAppear(animated)
 
     // Reachability
-    reachability.whenReachable = { reachability in
+    reachability?.whenReachable = { reachability in
       self.extendProgressLabelTextWith(NSLocalizedString("Network connectivity resumed. Refreshing data from network...", comment: ""))
       
       log.debug("Now reachable")
@@ -396,11 +396,11 @@ class MainViewController: UIViewController {
 
       self.refreshAll()
     }
-    reachability.startNotifier()
+    reachability?.startNotifier()
   }
 
   override func viewWillDisappear(animated: Bool) {
-    reachability.stopNotifier()
+    reachability?.stopNotifier()
   }
   
   override func didReceiveMemoryWarning() {
@@ -488,7 +488,7 @@ class MainViewController: UIViewController {
 
   }
 
-  private func refreshStops(#queue: TaskQueue?, next: ApiControllerDelegateNextTask?) {
+  private func refreshStops(queue queue: TaskQueue?, next: ApiControllerDelegateNextTask?) {
     log.verbose("")
     
     if stopDBManager.stopCount > 0 {
@@ -497,7 +497,7 @@ class MainViewController: UIViewController {
       return
     }
     
-    if reachability.isReachable() {
+    if let reachability = reachability where reachability.isReachable() {
       api.getStops(next)
     } else {
       showNetworkReachabilityError()
@@ -507,10 +507,10 @@ class MainViewController: UIViewController {
     }
   }
 
-  private func refreshVehicles(#queue: TaskQueue?, next: ApiControllerDelegateNextTask?) {
+  private func refreshVehicles(queue queue: TaskQueue?, next: ApiControllerDelegateNextTask?) {
     log.verbose("")
     
-    if reachability.isReachable() {
+    if let r = reachability where r.isReachable() {
       api.getVehicleActivityHeaders(next: next)
     } else {
       showNetworkReachabilityError()
@@ -520,11 +520,11 @@ class MainViewController: UIViewController {
     }
   }
 
-  private func refreshStopsForSelectedVehicle(#queue: TaskQueue?, next: ApiControllerDelegateNextTask?) {
+  private func refreshStopsForSelectedVehicle(queue queue: TaskQueue?, next: ApiControllerDelegateNextTask?) {
     log.verbose("")
 
     if let selectedVehicleRef = selectedVehicle?.vehicleRef {
-      if reachability.isReachable() {
+      if let reachability = reachability where reachability.isReachable() {
         api.getVehicleActivityStopsForVehicle(selectedVehicleRef, next: next)
       } else {
         showNetworkReachabilityError()
@@ -547,7 +547,7 @@ class MainViewController: UIViewController {
     presentViewController(alert, animated: true, completion: nil)
   }
   
-  private func initAutoRefreshTimer(andFire: Bool = false) {
+  private func initAutoRefreshTimer(andFile andFire: Bool = false) {
     Async.main {
       // Use main thread to ensure that invalidate functions correctly
       self.autoRefreshTimer?.invalidate()
@@ -572,7 +572,7 @@ class MainViewController: UIViewController {
     Async.main {self.progressViewManager.showProgress() }
     refreshStopsForSelectedVehicle(queue: nil) {_ in
       Async.main {self.progressViewManager.hideProgress()}
-      self.initAutoRefreshTimer(andFire: false)
+      self.initAutoRefreshTimer(andFile: false)
     }
   }
   
@@ -613,7 +613,7 @@ class MainViewController: UIViewController {
       localNotification.soundName = "\(stopSoundFileName).\(stopSoundFileExt)"
       localNotification.alertBody = NSLocalizedString("\(stopName) is the next one!", comment: "")
       localNotification.alertAction = NSLocalizedString("Action", comment:"")
-      localNotification.repeatInterval = nil
+      localNotification.repeatInterval = NSCalendarUnit(rawValue: 0)
       UIApplication.sharedApplication().scheduleLocalNotification(localNotification)
     }
   }
@@ -729,7 +729,7 @@ extension MainViewController : MainDelegate {
     // reset notifier flag
     userNotifiedForSelectedStop = false
     
-    initAutoRefreshTimer(andFire: true)
+    initAutoRefreshTimer(andFile: true)
     vehicleScrollView.touchEnabled = false
     expandStopContainer()
   }

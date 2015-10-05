@@ -53,7 +53,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     #if DEBUG
       
       let logPath : NSURL = self.cacheDirectory.URLByAppendingPathComponent("XCGLogger_Log.txt")
-      log.setup(logLevel: .Verbose, showLogLevel: true, showFileNames: true, showLineNumbers: true, writeToFile: logPath, fileLogLevel: .Debug)
+      log.setup(.Verbose, showLogLevel: true, showFileNames: true, showLineNumbers: true, writeToFile: logPath, fileLogLevel: .Debug)
       let shortLogDateFormatter = NSDateFormatter()
       shortLogDateFormatter.locale = NSLocale.currentLocale()
       shortLogDateFormatter.dateFormat = "HH:mm:ss.SSS"
@@ -71,7 +71,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     }
     
     // reset badge if allowed
-    if UIApplication.sharedApplication().currentUserNotificationSettings().types.intersect(UIUserNotificationType.Badge) != [] {
+    if UIApplication.sharedApplication().currentUserNotificationSettings()?.types.intersect(UIUserNotificationType.Badge) != [] {
       UIApplication.sharedApplication().applicationIconBadgeNumber = 0
     }
 
@@ -208,8 +208,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     let monitoringDuration = abs(locationUpdateStartTime?.timeIntervalSinceNow ?? 0)
     log.debug("Location monitoring stopped after \(monitoringDuration) seconds and \(self.locations.count) locations")
     locationManager.stopUpdatingLocation()
-    let initialLocation = CLLocation()
-    var bestLocation: CLLocation? =
+    let bestLocation: CLLocation? =
     locations.reduce(nil as CLLocation?) { (best, candidate) in
       if best == nil {
         // ignore initial
@@ -236,9 +235,11 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
       log.debug("Alert controller already visible. Skipping")
       return
     }
-    
-    log.warning("Location services disabled" + (authorizationStatus == nil ? " on device level." : "") + " Show alert.")
-
+    if authorizationStatus == nil {
+      log.warning("Location services disabled on device level. Show alert.")
+    } else {
+      log.warning("Location services disabled. Show alert.")
+    }
     let errorTitle = NSLocalizedString("Turn on Location Services to Allow BusStop to Determine Your Location", comment: "")
     let errorMessage = "" //NSLocalizedString("Location service disabled", comment: "")
     let alertController = UIAlertController(title: errorTitle, message: errorMessage, preferredStyle: UIAlertControllerStyle.Alert)
@@ -275,7 +276,7 @@ extension AppDelegate: CLLocationManagerDelegate {
   func locationManager(manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
     log.debug("didUpdateLocations: \(locations[0].description)")
 
-    if let latestLoc = locations.last as? CLLocation {
+    if let latestLoc = locations.last {
       if latestLoc.horizontalAccuracy > 0 && latestLoc.timestamp.timeIntervalSinceNow > -30 {
         // good enough location received
         

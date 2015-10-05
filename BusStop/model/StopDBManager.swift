@@ -30,12 +30,14 @@ import RealmSwift
 //
 class StopDBManager {
   
+  let realm: Realm
+  
   // Multiton instance per thread
   private static var instances: [mach_port_t: StopDBManager] = [:]
   
   /// A thread specific instance of StipDBManager
   static var sharedInstance: StopDBManager {
-    var currentThread = pthread_mach_thread_np(pthread_self())
+    let currentThread = pthread_mach_thread_np(pthread_self())
     synchronize(self) {
       if self.instances[currentThread] == nil {
         self.instances[currentThread] = StopDBManager()
@@ -44,12 +46,11 @@ class StopDBManager {
     }
     return self.instances[currentThread]!
   }
+  
   private init() {
+    try! realm = Realm()
     log.info("Using Realm database in \(self.realm.path)")
   }
-
-  let realm = Realm()
-
 
   var stopCount: Int {
     return realm.objects(Stop).count
@@ -61,7 +62,7 @@ class StopDBManager {
     realm.write {
       self.realm.deleteAll()
       
-      for (index, subJson): (String, JSON) in result {
+      for (_, subJson): (String, JSON) in result {
         if let id = subJson["shortName"].string, name = subJson["name"].string where !id.isEmpty {
           
           let locString = subJson["location"].string
@@ -77,8 +78,8 @@ class StopDBManager {
             }
           }
           
-          var s = Stop(id: id, name: name, location: location)
-          
+          let s = Stop(id: id, name: name, location: location)
+       
           self.realm.add(s)
           ++count
         }
@@ -94,9 +95,8 @@ class StopDBManager {
   
   func setFavoriteForStop(stop: Stop, favorite: Bool) {
     realm.write {
-      stop.favorite = favorite
+        stop.favorite = favorite
     }
   }
-  
 }
 
