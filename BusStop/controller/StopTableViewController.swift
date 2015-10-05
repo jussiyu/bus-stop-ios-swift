@@ -400,7 +400,7 @@ extension StopTableViewController : UITableViewDataSource {
         }
         
         cell.distanceHintLabel.text = distanceHintText.stringByReplacingOccurrencesOfString(
-          "\\n", withString: "\n", options: nil)
+          "\\n", withString: "\n", options: [])
         
       } else { // the stop no more on the stop list
         cell.distanceHintLabel.text = autoUnexpandTaskQueueProgress ?? ""
@@ -428,7 +428,7 @@ extension StopTableViewController : UITableViewDataSource {
       
     } else {  // selectedStop == nil
       
-      let cell = tableView.dequeueReusableCellWithIdentifier(defaultCellIdentifier, forIndexPath:indexPath) as! UITableViewCell
+      let cell = tableView.dequeueReusableCellWithIdentifier(defaultCellIdentifier, forIndexPath:indexPath) 
       
       if let selectedVehicle = selectedVehicle {
         let rowToBeReturned = indexPath.row

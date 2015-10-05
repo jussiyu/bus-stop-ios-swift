@@ -40,7 +40,7 @@ extension CLLocation {
   func coordinateWithDirection(direction: CLLocationDirection, distance distanceMeters: CLLocationDistance) -> CLLocationCoordinate2D {
     let distRadians = distanceMeters / (6372797.6)
     
-    var rDirection = direction * M_PI / 180.0
+    let rDirection = direction * M_PI / 180.0
     
     let lat1 = self.coordinate.latitude * M_PI / 180
     let lon1 = self.coordinate.longitude * M_PI / 180

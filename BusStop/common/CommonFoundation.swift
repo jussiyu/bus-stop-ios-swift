@@ -70,7 +70,7 @@ extension String {
       var minutesString = self.substringWithRange(minutesRange)
       minutesString.removeAtIndex(minutesString.startIndex) // remove H
       minutesString.removeAtIndex(minutesString.endIndex.predecessor()) // remove M
-      if let minutes = minutesString.toInt() {
+      if let minutes = Int(minutesString) {
         interval += NSTimeInterval(60 * minutes)
       }
     }
@@ -78,7 +78,7 @@ extension String {
       var secondsString = self.substringWithRange(secondsRange)
       secondsString.removeAtIndex(secondsString.startIndex) // remove M
       secondsString.removeAtIndex(secondsString.endIndex.predecessor()) // remove .
-      if let seconds = secondsString.toInt() {
+      if let seconds = Int(secondsString) {
         interval += NSTimeInterval(seconds)
       }
     }
@@ -117,7 +117,7 @@ extension Double {
     return f
     }()
   
-  func toString(#fractionDigits: Int) -> String {
+  func toString(fractionDigits fractionDigits: Int) -> String {
     Double.f.maximumFractionDigits = fractionDigits
     Double.f.minimumFractionDigits = fractionDigits
     if let s = Double.f.stringFromNumber(self) {
@@ -148,16 +148,16 @@ public extension NSObject{
 
 // MARK: - Array
 extension Array{
-  func each(each: (T) -> (T)) -> [T]{
-    var result = [T]()
-    for object: T in self {
+  func each(each: (Element) -> (T)) -> [Element]{
+    var result = [Element]()
+    for object: Element in self {
       result.append(each(object))
     }
     return result
   }
   
   func indexOf<T : Equatable>(object:T) -> Int? {
-    for (index,obj) in enumerate(self) {
+    for (index,obj) in self.enumerate() {
       if obj as? T == object {
         return index
       }
@@ -166,7 +166,7 @@ extension Array{
   }
   
   mutating func remove<T : Equatable>(object:T) -> Int? {
-    for (index,obj) in enumerate(self) {
+    for (index,obj) in self.enumerate() {
       if obj as? T == object {
         self.removeAtIndex(index)
       }
@@ -186,7 +186,7 @@ func delay(delay:Double, closure:()->()) {
 func synchronize<T>(lockObj: AnyObject!, closure: ()->T) -> T
 {
   objc_sync_enter(lockObj)
-  var retVal: T = closure()
+  let retVal: T = closure()
   objc_sync_exit(lockObj)
   return retVal
 }

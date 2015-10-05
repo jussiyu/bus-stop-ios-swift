@@ -44,7 +44,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
   var cacheDirectory: NSURL {
     let urls = NSFileManager.defaultManager().URLsForDirectory(.CachesDirectory, inDomains: .UserDomainMask)
-    return urls[urls.endIndex-1] as! NSURL
+    return urls[urls.endIndex-1] 
   }
 
   func application(application: UIApplication, didFinishLaunchingWithOptions launchOptions: [NSObject: AnyObject]?) -> Bool {
@@ -71,12 +71,12 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     }
     
     // reset badge if allowed
-    if UIApplication.sharedApplication().currentUserNotificationSettings().types & UIUserNotificationType.Badge != nil {
+    if UIApplication.sharedApplication().currentUserNotificationSettings().types.intersect(UIUserNotificationType.Badge) != [] {
       UIApplication.sharedApplication().applicationIconBadgeNumber = 0
     }
 
     // Request local notification usage
-    UIApplication.sharedApplication().registerUserNotificationSettings(UIUserNotificationSettings(forTypes: .Badge | .Alert | .Sound, categories: nil))
+    UIApplication.sharedApplication().registerUserNotificationSettings(UIUserNotificationSettings(forTypes: [.Badge, .Alert, .Sound], categories: nil))
 
     if CLLocationManager.locationServicesEnabled() {
       // Request location usage in async if needed
@@ -128,7 +128,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     case CLAuthorizationStatus.NotDetermined:
       log.info("Location service has not been authorized by user yet. Do nothing yet.")
     case CLAuthorizationStatus.Denied:
-        locationServiceDisabledAlert(authorizationStatus: locationAuthorizationStatus)
+        locationServiceDisabledAlert(locationAuthorizationStatus)
     default:
       log.error("Location auth restricted: \(locationAuthorizationStatus.hashValue)")
       // TODO show note
@@ -163,7 +163,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
       locationManager.stopUpdatingLocation()
       locationManager.stopMonitoringSignificantLocationChanges()
       log.error("Location service not authorized by the user")
-      locationServiceDisabledAlert(authorizationStatus: status)
+      locationServiceDisabledAlert(status)
     }
 
   }
@@ -272,7 +272,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
 // MARK: - CLLocationManagerDelegate
 extension AppDelegate: CLLocationManagerDelegate {
-  func locationManager(manager: CLLocationManager!, didUpdateLocations locations: [AnyObject]!) {
+  func locationManager(manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
     log.debug("didUpdateLocations: \(locations[0].description)")
 
     if let latestLoc = locations.last as? CLLocation {
@@ -296,7 +296,7 @@ extension AppDelegate: CLLocationManagerDelegate {
     }
   }
   
-  func locationManager(manager: CLLocationManager!, didFailWithError error: NSError!) {
+  func locationManager(manager: CLLocationManager, didFailWithError error: NSError) {
     log.error("Location Manager didFailWithError: \(error)")
 
     if error == CLError.Denied.rawValue || error == CLError.LocationUnknown.rawValue {
@@ -304,7 +304,7 @@ extension AppDelegate: CLLocationManagerDelegate {
     }
   }
   
-  func locationManager(manager: CLLocationManager!, didChangeAuthorizationStatus status: CLAuthorizationStatus) {
+  func locationManager(manager: CLLocationManager, didChangeAuthorizationStatus status: CLAuthorizationStatus) {
     log.debug("didChangeAuthorizationStatus: \(status.hashValue)")
 
     initializeLocationWithAuthorizationStatus(status)

@@ -42,7 +42,7 @@ protocol APIControllerProtocol {
   
   func getVehicleActivitiesForLine(lineId: Int, next: ApiControllerDelegateNextTask?)
   func getVehicleActivityStopsForVehicle(vehicleRef: String, next: ApiControllerDelegateNextTask?)
-  func getVehicleActivityHeaders(#next: ApiControllerDelegateNextTask?)
+  func getVehicleActivityHeaders(next next: ApiControllerDelegateNextTask?)
   func getStops(next: ApiControllerDelegateNextTask?)
   func connectedToNetwork() -> Bool
   func invalidateSessions()
@@ -110,7 +110,7 @@ class APIController : NSObject, APIControllerProtocol {
     doGetOnPath("\(journeysAPIbaseURL)vehicle-activity?vehicleRef=\(vehicleRef)", delegate: vehicleStopsDelegate, cachingEnabled: false, next: next)
   }
 
-  func getVehicleActivityHeaders(#next: ApiControllerDelegateNextTask?) {
+  func getVehicleActivityHeaders(next next: ApiControllerDelegateNextTask?) {
     doGetOnPath("\(journeysAPIbaseURL)vehicle-activity?exclude-fields=monitoredVehicleJourney.onwardCalls", delegate: vehicleDelegate, cachingEnabled: false, next: next)
   }
 

@@ -86,21 +86,21 @@ class HorizontalScroller: UIView {
     return scrollerSubviews.count
   }
 
-  required init(coder aDecoder: NSCoder) {
+  required init?(coder aDecoder: NSCoder) {
     super.init(coder: aDecoder)
     initialize()
   }
   
   private func initialize() {
     scroller = UIScrollView()
-    self.setTranslatesAutoresizingMaskIntoConstraints(false)
-    scroller.setTranslatesAutoresizingMaskIntoConstraints(false)
+    self.translatesAutoresizingMaskIntoConstraints = false
+    scroller.translatesAutoresizingMaskIntoConstraints = false
     scroller.decelerationRate = UIScrollViewDecelerationRateFast
     addSubview(scroller)
     scroller.delegate = self    
     
-    NSLayoutConstraint.activateConstraints(NSLayoutConstraint.constraintsWithVisualFormat("V:|[scroller]|", options: nil, metrics: [:], views: ["scroller":scroller]))
-    NSLayoutConstraint.activateConstraints(NSLayoutConstraint.constraintsWithVisualFormat("H:|[scroller]|", options: nil, metrics: [:], views: ["scroller":scroller]))
+    NSLayoutConstraint.activateConstraints(NSLayoutConstraint.constraintsWithVisualFormat("V:|[scroller]|", options: [], metrics: [:], views: ["scroller":scroller]))
+    NSLayoutConstraint.activateConstraints(NSLayoutConstraint.constraintsWithVisualFormat("H:|[scroller]|", options: [], metrics: [:], views: ["scroller":scroller]))
     
     singleTapRecognizer = UITapGestureRecognizer(target: self, action: "viewTapped:")
     addGestureRecognizer(singleTapRecognizer!)
@@ -173,7 +173,7 @@ class HorizontalScroller: UIView {
       let subViewCount = delegate.numberOfItemsInHorizontalScroller(self)
 
       // move old views to reuse list
-      for (index, view) in enumerate(scrollerSubviews) {
+      for (index, view) in scrollerSubviews.enumerate() {
         if index < subViewCount {
           // recycle view
           reusableSubviews[index] = scrollerSubviews[index]
@@ -193,7 +193,7 @@ class HorizontalScroller: UIView {
         } else {
           // A new view view needs to be created with new constraints
           let subview = delegate.horizontalScroller(self, viewAtIndexPath: index)
-          subview.setTranslatesAutoresizingMaskIntoConstraints(false)
+          subview.translatesAutoresizingMaskIntoConstraints = false
           scroller.addSubview(subview)
           scroller.addConstraint(NSLayoutConstraint(item: subview, attribute: .Top, relatedBy: .Equal, toItem: scroller, attribute: .Top, multiplier: 1.0, constant: 0))
           if index == 0 {
@@ -209,7 +209,7 @@ class HorizontalScroller: UIView {
       // Create no-data view if no other subviews
       if delegate.numberOfItemsInHorizontalScroller(self) == 0 {
         let subview = delegate.horizontalScrollerNoDataView(self)
-        subview.setTranslatesAutoresizingMaskIntoConstraints(false)
+        subview.translatesAutoresizingMaskIntoConstraints = false
         scroller.addSubview(subview)
         scroller.addConstraint(NSLayoutConstraint(item: subview, attribute: .Top, relatedBy: .Equal, toItem: scroller, attribute: .Top, multiplier: 1.0, constant: 0))
         scroller.addConstraint(NSLayoutConstraint(item: subview, attribute: .CenterX, relatedBy: .Equal, toItem: scroller, attribute: .CenterX, multiplier: 1.0, constant: 0))

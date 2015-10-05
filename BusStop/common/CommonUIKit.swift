@@ -25,7 +25,7 @@ import UIKit
 // MARK: - NSLayoutConstraint
 extension NSLayoutConstraint {
   class func constraintsWithVisualFormat(format: String, options opts: NSLayoutFormatOptions = nil, metrics: [String : AnyObject] = [:], views: [String : AnyObject] = [:], active: Bool) -> [NSLayoutConstraint] {
-    let constraints = NSLayoutConstraint.constraintsWithVisualFormat(format, options: opts, metrics: metrics, views: views) as! [NSLayoutConstraint]
+    let constraints = NSLayoutConstraint.constraintsWithVisualFormat(format, options: opts, metrics: metrics, views: views) 
     if active {
       NSLayoutConstraint.activateConstraints(constraints)
     }
@@ -37,7 +37,7 @@ extension NSLayoutConstraint {
 extension UIView {
   func constraintsWithIdentifier(identifier: String) -> [NSLayoutConstraint] {
     var matching = [NSLayoutConstraint]()
-    for c in constraints() {
+    for c in constraints {
       if let c = c as? NSLayoutConstraint {
         if c.identifier == identifier {
           matching.append(c)
@@ -50,7 +50,7 @@ extension UIView {
 
 // MARK: - UITableView
 extension UITableView {
-  func scrollToTop(#animated: Bool) {
+  func scrollToTop(animated animated: Bool) {
     // This is trigger didscroll messages
     self.setContentOffset(CGPoint(x: 0,y: 0), animated: true)
   }

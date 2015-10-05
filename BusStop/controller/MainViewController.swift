@@ -111,7 +111,7 @@ class MainViewController: UIViewController {
         return
       }
       
-      if selectedStopId != nil && find(closestVehicles, selectedVehicle!) == nil {
+      if selectedStopId != nil && closestVehicles.indexOf(selectedVehicle!) == nil {
         log.info("Unexpaning the lost selected stop \(self.selectedStopId)")
         Async.main {
           var title = NSLocalizedString("Lost your stop.", comment:"")
@@ -676,7 +676,7 @@ extension MainViewController {
   }
   
   func applicationWillTerminate(notification: NSNotification) {
-    println("MainViewController:applicationWillTerminate")
+    print("MainViewController:applicationWillTerminate")
   }
 }
 

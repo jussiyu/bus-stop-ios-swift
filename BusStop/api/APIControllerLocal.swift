@@ -56,7 +56,7 @@ class APIControllerLocal : APIControllerProtocol {
     doGetOnPath("\(journeysAPIbaseURL)vehicle-activity", delegate: vehicleStopsDelegate, cachingEnabled: false, next: next)
   }
   
-  func getVehicleActivityHeaders(#next: ApiControllerDelegateNextTask?) {
+  func getVehicleActivityHeaders(next next: ApiControllerDelegateNextTask?) {
     doGetOnPath("\(journeysAPIbaseURL)vehicle-activity", delegate: vehicleDelegate, cachingEnabled: false, next: next)
   }
   
@@ -81,7 +81,8 @@ class APIControllerLocal : APIControllerProtocol {
 
     if let path = NSBundle.mainBundle().pathForResource(filePath, ofType: journeysAPIDataFormat) {
       var error: NSError?
-      if let data = NSData(contentsOfFile: path, options: NSDataReadingOptions.DataReadingMappedIfSafe, error: &error) {
+      do {
+        let data = try NSData(contentsOfFile: path, options: NSDataReadingOptions.DataReadingMappedIfSafe)
         UIApplication.sharedApplication().networkActivityIndicatorVisible = false
         log.debug("Local data loaded completed successfully: \(filePath).\(self.journeysAPIDataFormat)")
         let json = JSON(data: data)
@@ -90,7 +91,8 @@ class APIControllerLocal : APIControllerProtocol {
         } else {
           delegate?.didReceiveAPIResults(json, next: next)
         }
-      } else {
+      } catch var error1 as NSError {
+        error = error1
         if let error = error {
           log.error("Local data loaded unsuccessfully: \(filePath).\(self.journeysAPIDataFormat)")
           log.error(error.localizedDescription)

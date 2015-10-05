@@ -61,7 +61,7 @@ class StopDBManager {
     realm.write {
       self.realm.deleteAll()
       
-      for (index: String, subJson: JSON) in result {
+      for (index, subJson): (String, JSON) in result {
         if let id = subJson["shortName"].string, name = subJson["name"].string where !id.isEmpty {
           
           let locString = subJson["location"].string

@@ -41,12 +41,12 @@ class VehicleHeaderView: UIView {
   class func initWithReusedView(view: VehicleHeaderView, lineRef: String, vehicleRef: String, distance: String) -> VehicleHeaderView {
     view.lineLabel.text = lineRef
     view.vehicleLabel.text = vehicleRef
-    view.vehicleDistanceLabel.text = distance.stringByReplacingOccurrencesOfString("\\n", withString: "\n", options: nil)
+    view.vehicleDistanceLabel.text = distance.stringByReplacingOccurrencesOfString("\\n", withString: "\n", options: [])
     return view
   }
 
   convenience init(lineRef: String, vehicleRef: String, distance: String) {
-    var frame = CGRectZero
+    let frame = CGRectZero
     self.init(frame: frame)
     self.setContentHuggingPriority(0, forAxis: .Horizontal)
 
@@ -66,7 +66,7 @@ class VehicleHeaderView: UIView {
 
     lineLabel.text = lineRef
     vehicleLabel.text = vehicleRef
-    vehicleDistanceLabel.text = distance.stringByReplacingOccurrencesOfString("\\n", withString: "\n", options: nil)
+    vehicleDistanceLabel.text = distance.stringByReplacingOccurrencesOfString("\\n", withString: "\n", options: [])
     
     // add child views
     addSubview(lineLabel)
@@ -74,13 +74,13 @@ class VehicleHeaderView: UIView {
     addSubview(vehicleDistanceLabel)
 
     // Constraints
-    lineLabel.setTranslatesAutoresizingMaskIntoConstraints(false)
-    vehicleLabel.setTranslatesAutoresizingMaskIntoConstraints(false)
-    vehicleDistanceLabel.setTranslatesAutoresizingMaskIntoConstraints(false)
-    NSLayoutConstraint.activateConstraints(NSLayoutConstraint.constraintsWithVisualFormat("V:|-[a]-[b]-[c]-|", options: nil, metrics: [:], views: ["a":lineLabel, "b":vehicleLabel, "c":vehicleDistanceLabel]))
-    NSLayoutConstraint.activateConstraints(NSLayoutConstraint.constraintsWithVisualFormat("H:|[v]|", options: nil, metrics: [:], views: ["v":lineLabel]))
-    NSLayoutConstraint.activateConstraints(NSLayoutConstraint.constraintsWithVisualFormat("H:|[v]|", options: nil, metrics: [:], views: ["v":vehicleLabel]))
-    NSLayoutConstraint.activateConstraints(NSLayoutConstraint.constraintsWithVisualFormat("H:|[v]|", options: nil, metrics: [:], views: ["v":vehicleDistanceLabel]))
+    lineLabel.translatesAutoresizingMaskIntoConstraints = false
+    vehicleLabel.translatesAutoresizingMaskIntoConstraints = false
+    vehicleDistanceLabel.translatesAutoresizingMaskIntoConstraints = false
+    NSLayoutConstraint.activateConstraints(NSLayoutConstraint.constraintsWithVisualFormat("V:|-[a]-[b]-[c]-|", options: [], metrics: [:], views: ["a":lineLabel, "b":vehicleLabel, "c":vehicleDistanceLabel]))
+    NSLayoutConstraint.activateConstraints(NSLayoutConstraint.constraintsWithVisualFormat("H:|[v]|", options: [], metrics: [:], views: ["v":lineLabel]))
+    NSLayoutConstraint.activateConstraints(NSLayoutConstraint.constraintsWithVisualFormat("H:|[v]|", options: [], metrics: [:], views: ["v":vehicleLabel]))
+    NSLayoutConstraint.activateConstraints(NSLayoutConstraint.constraintsWithVisualFormat("H:|[v]|", options: [], metrics: [:], views: ["v":vehicleDistanceLabel]))
     
     // Increase font sizes of the labels
     let lineLabelFont = UIFont(descriptor: UIFontDescriptor.preferredDescriptorWithStyle(UIFontTextStyleHeadline, oversizedBy: 16), size: 0)
@@ -98,7 +98,7 @@ class VehicleHeaderView: UIView {
     super.init(frame: frame)
   }
   
-  required init(coder aDecoder: NSCoder) {
+  required init?(coder aDecoder: NSCoder) {
       fatalError("init(coder:) has not been implemented")
   }
   
@@ -151,7 +151,7 @@ extension VehicleHeaderView: FadeableUIView {
 //
 // MARK: - Printable
 //
-extension VehicleHeaderView: Printable, DebugPrintable{
+extension VehicleHeaderView: CustomStringConvertible, CustomDebugStringConvertible{
   override var description: String {
     return "** VehicleHeaderView: \(lineLabel.text!), \(vehicleLabel.text!), \(vehicleDistanceLabel.text!)"
   }

@@ -97,7 +97,7 @@ class MapViewController: UIViewController {
 //
 extension MapViewController : MKMapViewDelegate {
   
-  func mapView(mapView: MKMapView!, viewForAnnotation annotation: MKAnnotation!) -> MKAnnotationView! {
+  func mapView(mapView: MKMapView, viewForAnnotation annotation: MKAnnotation) -> MKAnnotationView! {
     
     if annotation is MKUserLocation {
       return nil

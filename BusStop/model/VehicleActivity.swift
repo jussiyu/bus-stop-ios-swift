@@ -152,7 +152,7 @@ class VehicleActivity : Equatable {
     self.stops = []
     
     let stops = monVeh["onwardCalls"]
-    for (index: String, subJSON: JSON) in stops {
+    for (index, subJSON): (String, JSON) in stops {
       let stopRef = subJSON["stopPointRef"].string
       let ref = stopRef != nil ? NSURL(fileURLWithPath: stopRef!): nil
       

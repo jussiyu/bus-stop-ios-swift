@@ -28,7 +28,7 @@ import RealmSwift
 //
 // MARK: - Stop
 //
-public class Stop : Object, Printable {
+public class Stop : Object, CustomStringConvertible {
   public dynamic var id: String = ""
   public dynamic var name: String = ""
   public dynamic var latitude: CLLocationDegrees = 0.0
