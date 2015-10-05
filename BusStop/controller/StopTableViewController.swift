@@ -152,8 +152,8 @@ class StopTableViewController: UITableViewController {
   override func viewDidLoad() {
     super.viewDidLoad()
     
-    refreshControl = UIRefreshControl()
-    refreshControl?.addTarget(self, action: "handleRefresh:", forControlEvents: .ValueChanged)
+//    refreshControl = UIRefreshControl()
+//    refreshControl?.addTarget(self, action: "handleRefresh:", forControlEvents: .ValueChanged)
   }
   
   override func didReceiveMemoryWarning() {
