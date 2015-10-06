@@ -86,7 +86,6 @@
 		4A10E1ED1B2F03B900231417 /* CoreLocation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreLocation.framework; path = System/Library/Frameworks/CoreLocation.framework; sourceTree = SDKROOT; };
 		4A10E1F11B30214100231417 /* Common.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = Common.swift; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.swift; };
 		4A141B9F1B2B15890009DED9 /* Stop.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = Stop.swift; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.swift; };
-		4A1547711B7761EC0004688F /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; name = Info.plist; path = /Users/jussi/dev/iOS/BusStop/BusStopUnitTests/Info.plist; sourceTree = "<group>"; };
 		4A1547D71B7795580004688F /* BusStopUnitTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = BusStopUnitTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		4A1547DA1B7795580004688F /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		4A1547E81B7796E60004688F /* Pods_BusStopTests.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Pods_BusStopTests.framework; path = "Pods/../build/Debug-iphoneos/Pods_BusStopTests.framework"; sourceTree = "<group>"; };
@@ -203,7 +202,6 @@
 				4A0EA35A1B21C0B000F747D0 /* Products */,
 				48E646FB0E105059211C2A8C /* Pods */,
 				3D46AF4CBA289C7B981D62FC /* Frameworks */,
-				4A1547711B7761EC0004688F /* Info.plist */,
 			);
 			sourceTree = "<group>";
 		};
