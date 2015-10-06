@@ -58,7 +58,7 @@ class MainViewController: UIViewController {
   @IBOutlet weak var vehicleScrollViewTopConstraint: NSLayoutConstraint!
   @IBOutlet weak var vehicleScrollViewBottomConstraint: NSLayoutConstraint!
   @IBOutlet weak var refreshButtonItem: UIBarButtonItem!
-  @IBOutlet weak var progressLabel: UILabel!
+  @IBOutlet weak var progressLabel: UILabel?
   
   let progressViewManager = MediumProgressViewManager.sharedInstance
   let reachability = Reachability.reachabilityForInternetConnection()
@@ -67,6 +67,7 @@ class MainViewController: UIViewController {
   // MARK: - properties
   //
   
+  var progressTextCache: NSMutableAttributedString?
   var stopDelegate: StopDelegate?
   var systemSoundID: SystemSoundID = 0
   let stopSoundFileName = "StopSound", stopSoundFileExt = "aif"
@@ -279,6 +280,8 @@ class MainViewController: UIViewController {
     return q
   }
   
+  
+  
   //
   // MARK: - lifecycle
   //
@@ -288,6 +291,23 @@ class MainViewController: UIViewController {
     
     vehicleScrollView.delegate = self
     
+    // there might be text in progresslabel cache to be shown
+    updateProgressLabelFromCache()
+  }
+  
+  override init(nibName nibNameOrNil: String?, bundle nibBundleOrNil: NSBundle?) {
+    log.verbose("")
+    super.init(nibName: nibNameOrNil, bundle: nibBundleOrNil)
+    initialize()
+  }
+
+  required init?(coder aDecoder: NSCoder) {
+    log.verbose("")
+    super.init(coder: aDecoder)
+    initialize()
+  }
+  
+  private func initialize() {
 //    let refershControl = UIRefreshControl()
   
     NSNotificationCenter.defaultCenter().addObserver(self,
@@ -307,7 +327,6 @@ class MainViewController: UIViewController {
       selector: "applicationWillTerminate:",
       name: UIApplicationWillTerminateNotification,
       object: nil)
-    
   }
 
   override func viewWillAppear(animated: Bool) {
@@ -396,7 +415,7 @@ class MainViewController: UIViewController {
       default:
         log.info("RefreshAll starting fresh queue...")
         
-        // Recrated new queue
+        // Re-create a new queue
         self.initialRefreshTaskQueue = self.initInitialRefreshTaskQueue()
         self.initialRefreshTaskQueue!.run {
           Async.main {
@@ -504,23 +523,39 @@ class MainViewController: UIViewController {
     }
   }
   
+  /// Appends text to the progress label view
+  /// Will not assume that progressLabel already exists and therefore caches the text to be shown later
   func extendProgressLabelTextWith(text: String) {
-    if progressLabel.text == nil || progressLabel.text!.isEmpty {
-      progressLabel.attributedText = NSMutableAttributedString(string: text,
-        attributes: [NSForegroundColorAttributeName: UIColor.darkGrayColor()])
-    } else {
-      let newString = NSMutableAttributedString(string: progressLabel.text!,
-        attributes: [NSForegroundColorAttributeName: UIColor.lightGrayColor()])
+    
+    if let progressTextCache = progressTextCache {
+      // old lines already existing in progressTextCache are colored in light gray
+      progressTextCache.setAttributes([NSForegroundColorAttributeName: UIColor.lightGrayColor()], range: NSMakeRange(0, progressTextCache.length))
       let newText = NSAttributedString(string: "\n\(text)",
         attributes: [NSForegroundColorAttributeName: UIColor.darkGrayColor()])
-      newString.appendAttributedString(newText)
-      progressLabel.attributedText = newString
+      progressTextCache.appendAttributedString(newText)
+
+    } else {
+        // first line to be added
+        progressTextCache = NSMutableAttributedString(string: text,
+          attributes: [NSForegroundColorAttributeName: UIColor.darkGrayColor()])
+    }
+  
+    // try to update the progress label from cached text
+    updateProgressLabelFromCache()
+    
+  }
+  
+  /// Updates progress label if possible
+  func updateProgressLabelFromCache() {
+    if let progressLabel = progressLabel {
+      progressLabel.attributedText = progressTextCache
     }
   }
+  
 
   func hideProgressLabel() {
-    UIView.animateWithDuration( 0.3, animations: {self.progressLabel.alpha = 0},
-      completion: {(_) in self.progressLabel.hidden=true})
+    UIView.animateWithDuration( 0.3, animations: {self.progressLabel?.alpha = 0},
+      completion: {(_) in self.progressLabel?.hidden=true})
   }
 
   private func notifySelectedStopReached() {
@@ -594,6 +629,7 @@ extension MainViewController {
     }
   }
   
+  // Note that this may be called before view has been initialized!
   func applicationDidBecomeActive(notification: NSNotification) {
     log.verbose("")
     
@@ -717,6 +753,7 @@ extension MainViewController: UITextFieldDelegate {
 //
 extension MainViewController {
   
+  // Note that this may be called before view has been initialized
   @objc func locationUpdated(notification: NSNotification){
     log.verbose("locationUpdate \(notification.name)")
     if let locInfo = notification.userInfo as? [String:CLLocation], newLoc = locInfo[AppDelegate.newLocationResult] {
