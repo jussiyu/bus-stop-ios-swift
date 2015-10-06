@@ -14,7 +14,11 @@ currenly no plans to release it as a binary or via App Store.
 
 ##Compiling
 
-Application has been developed on Xcode 6.4, iOS 8.4 and Swift 1.2. 
+Application has been developed on Xcode 7.0.1 and Swift 2.0.  The deployment
+target is set to iOS8.0.  
+
+A Swift 1.2 compatible version of the application is available on `Swift1.2`
+brach.
 
 ### Dependencies
 
@@ -24,7 +28,7 @@ Application depends on the following CocoaPods:
 * [MediumProgressView](https://cocoapods.org/pods/MediumProgressView) (currently private fork)
 * [ReachabilitySwift](https://cocoapods.org/pods/ReachabilitySwift)
 * [XCGLogger](https://cocoapods.org/pods/XCGLogger)
-* [Async](https://github.com/duemunk/Async.git)
+* [Async](https://github.com/JohnCoates/Async.git)
 * [TaskQueue](https://cocoapods.org/pods/TaskQueue) (private fork)
 * [RealmSwift](https://cocoapods.org/pods/RealmSwift)
 
@@ -50,7 +54,7 @@ In Xcode select _BustStopUnitTests_ scheme to run unit test on simulator.
 Alternative run tests on command line with command something like this:
 
     xcodebuild -workspace BusStop.xcworkspace -scheme BusStopUnitTests -destination
-    'platform=iOS Simulator,name=iPhone 6,OS=8.4' test
+    'platform=iOS Simulator,name=iPhone 6s,OS=9.0' test
 
 (Please note that if there are multiple simulators with the same name, you need to [specify
 the simulator id
