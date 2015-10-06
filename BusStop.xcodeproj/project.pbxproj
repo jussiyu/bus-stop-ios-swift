@@ -31,6 +31,7 @@
 		4A4D12B91B2AC01900B6B757 /* VehicleActivity.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A4D12B81B2AC01900B6B757 /* VehicleActivity.swift */; };
 		4A532E1A1B68C5AB00A80544 /* APIControllerLocal.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A532E191B68C5AB00A80544 /* APIControllerLocal.swift */; };
 		4A532E281B68D7DE00A80544 /* testdata in CopyFiles */ = {isa = PBXBuildFile; fileRef = 4A532E251B68D6A700A80544 /* testdata */; };
+		4A67D0951BC2D0ED009E16BE /* APIDelegates.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A67D0941BC2D0ED009E16BE /* APIDelegates.swift */; settings = {ASSET_TAGS = (); }; };
 		4A6BC41F1B53B0DC0095FC71 /* VehicleHeaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A6BC41E1B53B0DC0095FC71 /* VehicleHeaderView.swift */; };
 		4A8178241B79EA540022EF20 /* MapViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A8178231B79EA540022EF20 /* MapViewController.swift */; };
 		4A8178261B79EF550022EF20 /* MapKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4A8178251B79EF550022EF20 /* MapKit.framework */; };
@@ -105,6 +106,7 @@
 		4A532E191B68C5AB00A80544 /* APIControllerLocal.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = APIControllerLocal.swift; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.swift; };
 		4A532E251B68D6A700A80544 /* testdata */ = {isa = PBXFileReference; lastKnownFileType = folder; name = testdata; path = BusStop/testdata; sourceTree = "<group>"; };
 		4A6712261B7654730098ED3D /* StopTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = StopTests.swift; path = ../BusStopTests/StopTests.swift; sourceTree = "<group>"; };
+		4A67D0941BC2D0ED009E16BE /* APIDelegates.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = APIDelegates.swift; sourceTree = "<group>"; };
 		4A6BC41E1B53B0DC0095FC71 /* VehicleHeaderView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = VehicleHeaderView.swift; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.swift; };
 		4A75298AA8FC50C4F94424EA /* Pods-BusStop.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-BusStop.release.xcconfig"; path = "Pods/Target Support Files/Pods-BusStop/Pods-BusStop.release.xcconfig"; sourceTree = "<group>"; };
 		4A8178231B79EA540022EF20 /* MapViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MapViewController.swift; sourceTree = "<group>"; };
@@ -324,6 +326,7 @@
 			isa = PBXGroup;
 			children = (
 				4A0EA37E1B23234100F747D0 /* MainViewController.swift */,
+				4A67D0941BC2D0ED009E16BE /* APIDelegates.swift */,
 				4A8178231B79EA540022EF20 /* MapViewController.swift */,
 				4A8B3F6B1B7DDFDB00781C57 /* StopTableViewController.swift */,
 			);
@@ -641,6 +644,7 @@
 				4A10E1F21B30214100231417 /* Common.swift in Sources */,
 				4A6BC41F1B53B0DC0095FC71 /* VehicleHeaderView.swift in Sources */,
 				4A4D12B91B2AC01900B6B757 /* VehicleActivity.swift in Sources */,
+				4A67D0951BC2D0ED009E16BE /* APIDelegates.swift in Sources */,
 				4ABEDB131B539FBF00C29E5C /* HorizontalScroller.swift in Sources */,
 				4A1B1EB51B7237FD001C61D9 /* StopDBManager.swift in Sources */,
 				4AA1089C1B82037D0044E041 /* CommonUIKit.swift in Sources */,
