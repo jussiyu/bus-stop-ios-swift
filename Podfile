@@ -4,7 +4,7 @@ use_frameworks!
 
 target 'BusStop' do
   pod 'SwiftyJSON', '~> 2.3'
-  pod 'MediumProgressView', :path => '/Users/jussi/dev/iOS/mediumprogressview/'
+  pod 'MediumProgressView', :git => 'git@bitbucket.org:jmy/mediumprogressview/'
   pod 'ReachabilitySwift', '~> 2.0'
   pod 'XCGLogger', '~> 3.0'
   pod 'Async', :git => 'https://github.com/JohnCoates/Async.git'

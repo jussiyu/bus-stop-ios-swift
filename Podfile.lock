@@ -15,7 +15,7 @@ PODS:
 
 DEPENDENCIES:
   - Async (from `https://github.com/JohnCoates/Async.git`)
-  - MediumProgressView (from `/Users/jussi/dev/iOS/mediumprogressview/`)
+  - MediumProgressView (from `git@bitbucket.org:jmy/mediumprogressview/`)
   - Nimble (~> 2.0.0)
   - Quick (~> 0.6.0)
   - ReachabilitySwift (~> 2.0)
@@ -28,7 +28,7 @@ EXTERNAL SOURCES:
   Async:
     :git: https://github.com/JohnCoates/Async.git
   MediumProgressView:
-    :path: "/Users/jussi/dev/iOS/mediumprogressview/"
+    :git: git@bitbucket.org:jmy/mediumprogressview/
   TaskQueue:
     :branch: accesscontrol
     :git: git@bitbucket.org:jmy/taskqueue
@@ -37,6 +37,9 @@ CHECKOUT OPTIONS:
   Async:
     :commit: 23d9de3675f8357e7ad7d4c8b8b7d7caf9b73570
     :git: https://github.com/JohnCoates/Async.git
+  MediumProgressView:
+    :commit: ec13991eec71487711a17f935c82d17d1831d111
+    :git: git@bitbucket.org:jmy/mediumprogressview/
   TaskQueue:
     :commit: f6cbdf3abe9fbc4c83b205d06394ce6c88ca153c
     :git: git@bitbucket.org:jmy/taskqueue
