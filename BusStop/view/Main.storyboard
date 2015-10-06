@@ -24,6 +24,11 @@
                                 <constraints>
                                     <constraint firstAttribute="height" relation="lessThanOrEqual" constant="139" id="Hgj-GZ-wes"/>
                                 </constraints>
+                                <variation key="default">
+                                    <mask key="constraints">
+                                        <exclude reference="Hgj-GZ-wes"/>
+                                    </mask>
+                                </variation>
                             </view>
                             <containerView hidden="YES" opaque="NO" contentMode="scaleToFill" verticalCompressionResistancePriority="749" translatesAutoresizingMaskIntoConstraints="NO" id="dJ0-gt-DTi" userLabel="Stop Table Container View">
                                 <rect key="frame" x="20" y="219" width="560" height="381"/>
