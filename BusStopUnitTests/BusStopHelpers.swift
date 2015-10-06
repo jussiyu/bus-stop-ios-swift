@@ -30,7 +30,7 @@ func setUpLog() {
   shortLogDateFormatter.locale = NSLocale.currentLocale()
   shortLogDateFormatter.dateFormat = "HH:mm:ss.SSS"
   log.dateFormatter = shortLogDateFormatter
-  log.xcodeColorsEnabled = true
+  log.xcodeColorsEnabled = false
   log.xcodeColors[XCGLogger.LogLevel.Info] = XCGLogger.XcodeColor(fg: (147, 147, 255))
 }
 
