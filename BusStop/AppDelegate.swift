@@ -61,7 +61,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
       log.xcodeColorsEnabled = true
       log.xcodeColors[XCGLogger.LogLevel.Info] = XCGLogger.XcodeColor(fg: (147, 147, 255))
     #else
-      log.setup(logLevel: .Severe, showLogLevel: true, showFileNames: true, showLineNumbers: true, writeToFile: nil, fileLogLevel: .None)
+      log.setup(.Severe, showLogLevel: true, showFileNames: true, showLineNumbers: true, writeToFile: nil, fileLogLevel: .None)
     #endif
 
     if let launchOptions = launchOptions {
