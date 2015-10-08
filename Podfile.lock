@@ -10,39 +10,39 @@ PODS:
   - RealmSwift (0.95.2):
     - Realm (= 0.95.2)
   - SwiftyJSON (2.3.0)
-  - TaskQueue (0.9.7)
+  - TaskQueue (0.9.8)
   - XCGLogger (3.0)
 
 DEPENDENCIES:
   - Async (from `https://github.com/JohnCoates/Async.git`)
-  - MediumProgressView (from `git@bitbucket.org:jmy/mediumprogressview/`)
+  - MediumProgressView (from `https://jmy@bitbucket.org/jmy/mediumprogressview.git`)
   - Nimble (~> 2.0.0)
   - Quick (~> 0.6.0)
   - ReachabilitySwift (~> 2.0)
   - RealmSwift (~> 0.95)
   - SwiftyJSON (~> 2.3)
-  - TaskQueue (from `git@bitbucket.org:jmy/taskqueue`, branch `accesscontrol`)
+  - TaskQueue (from `https://jmy@bitbucket.org/jmy/taskqueue.git`, branch `accesscontrol`)
   - XCGLogger (~> 3.0)
 
 EXTERNAL SOURCES:
   Async:
     :git: https://github.com/JohnCoates/Async.git
   MediumProgressView:
-    :git: git@bitbucket.org:jmy/mediumprogressview/
+    :git: https://jmy@bitbucket.org/jmy/mediumprogressview.git
   TaskQueue:
     :branch: accesscontrol
-    :git: git@bitbucket.org:jmy/taskqueue
+    :git: https://jmy@bitbucket.org/jmy/taskqueue.git
 
 CHECKOUT OPTIONS:
   Async:
     :commit: 23d9de3675f8357e7ad7d4c8b8b7d7caf9b73570
     :git: https://github.com/JohnCoates/Async.git
   MediumProgressView:
-    :commit: ec13991eec71487711a17f935c82d17d1831d111
-    :git: git@bitbucket.org:jmy/mediumprogressview/
+    :commit: 81905aa81b0685c3e00ce1b4b3bf87e40942080d
+    :git: https://jmy@bitbucket.org/jmy/mediumprogressview.git
   TaskQueue:
-    :commit: f6cbdf3abe9fbc4c83b205d06394ce6c88ca153c
-    :git: git@bitbucket.org:jmy/taskqueue
+    :commit: 7c2e06643650bceda264d04825c9cfa34eac18b5
+    :git: https://jmy@bitbucket.org/jmy/taskqueue.git
 
 SPEC CHECKSUMS:
   Async: 2aaa4263645846a8ea1c5829067fb2f8e694af36
@@ -53,7 +53,7 @@ SPEC CHECKSUMS:
   Realm: 4c026902041bb39c4bd083ebc5e88f4f17973d72
   RealmSwift: ac7822fe7ab8dca7fa979f4d576793b111d6dce1
   SwiftyJSON: 8d6b61a70277ef2a5d710d372e06e7e2d87fb9e4
-  TaskQueue: cc6c56e2868b8eeff36d012b5bb8c739651c4042
+  TaskQueue: e72e69b4fa054aee778e7513729442ab6487b5a8
   XCGLogger: 5802533aff8bafc8b3b9776ab8972576f31d0a4e
 
 COCOAPODS: 0.38.2
