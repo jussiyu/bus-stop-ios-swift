@@ -42,6 +42,7 @@
 		4AAFBABB1B236791008F488D /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 4AAFBABA1B236791008F488D /* Main.storyboard */; };
 		4ABEDB131B539FBF00C29E5C /* HorizontalScroller.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4ABEDB121B539FBF00C29E5C /* HorizontalScroller.swift */; };
 		4AC2E47A1B483DB600D8F20E /* Vehicles.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4AC2E4791B483DB600D8F20E /* Vehicles.swift */; };
+		4ADB68CE1BC5487A00D8D4FA /* .travis.yml in Resources */ = {isa = PBXBuildFile; fileRef = 4ADB68CD1BC5487A00D8D4FA /* .travis.yml */; settings = {ASSET_TAGS = (); }; };
 		4AE838E71B83690D00F733C3 /* CommonFoundation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4AA108991B8203260044E041 /* CommonFoundation.swift */; };
 		64A12E5854F293C1C1F594F3 /* Pods_BusStop.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = EAB3E59295EC798745861F0F /* Pods_BusStop.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
 		BC271C1312D7A8DE7BC4ED43 /* Pods_BusStopUnitTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 88DABB17A3ADAF8C5007BFEB /* Pods_BusStopUnitTests.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
@@ -119,6 +120,7 @@
 		4AAFBABA1B236791008F488D /* Main.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = Main.storyboard; sourceTree = "<group>"; };
 		4ABEDB121B539FBF00C29E5C /* HorizontalScroller.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HorizontalScroller.swift; sourceTree = "<group>"; };
 		4AC2E4791B483DB600D8F20E /* Vehicles.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = Vehicles.swift; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.swift; };
+		4ADB68CD1BC5487A00D8D4FA /* .travis.yml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = .travis.yml; sourceTree = "<group>"; };
 		68165916DDC3CE30254FD679 /* Pods_BusStopForSimulator.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_BusStopForSimulator.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		88DABB17A3ADAF8C5007BFEB /* Pods_BusStopUnitTests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_BusStopUnitTests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		943E961222DF8A313F9D305B /* Pods-BusStopTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-BusStopTests.release.xcconfig"; path = "Pods/Target Support Files/Pods-BusStopTests/Pods-BusStopTests.release.xcconfig"; sourceTree = "<group>"; };
@@ -191,6 +193,7 @@
 		4A0EA3501B21C0B000F747D0 = {
 			isa = PBXGroup;
 			children = (
+				4ADB68CD1BC5487A00D8D4FA /* .travis.yml */,
 				4AA1089E1B821E190044E041 /* LICENSE */,
 				4AA108A01B821E280044E041 /* README.md */,
 				4A235EE41B90AA38005F4DB1 /* img */,
@@ -472,6 +475,7 @@
 				4A0EA3691B21C0B000F747D0 /* LaunchScreen.xib in Resources */,
 				4A3DF9A91B4B0A9900CF1345 /* Localizable.stringsdict in Resources */,
 				4A4336F61B6FE205005E9C29 /* StopSound.aif in Resources */,
+				4ADB68CE1BC5487A00D8D4FA /* .travis.yml in Resources */,
 				4A0EA3661B21C0B000F747D0 /* Images.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

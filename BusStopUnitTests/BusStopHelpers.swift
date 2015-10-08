@@ -35,12 +35,34 @@ func setUpLog() {
 }
 
 func setUpDatabase() {
-  let documentPath = NSSearchPathForDirectoriesInDomains(.DocumentDirectory, .UserDomainMask, true).first
-  if let documentPath = documentPath {
-    let path = NSURL(fileURLWithPath: documentPath).URLByAppendingPathComponent("unittest.realm").path
+  let fileManager = NSFileManager.defaultManager()
+  do {
+    let documentPathURL = try fileManager.URLForDirectory(.DocumentDirectory, inDomain: .UserDomainMask, appropriateForURL: NSURL?(), create: true)
+    let path = documentPathURL.URLByAppendingPathComponent("unittest.realm").path
     Realm.Configuration.defaultConfiguration = Realm.Configuration(path: path)
-  } else {
-    log.error("Failed to set default path")
+    log.info("Realm default database path set to \(Realm.Configuration.defaultConfiguration.path)")
+  } catch let error as NSError {
+    log.info("Failed initialize Realm default database path: \(error)")
   }
-  log.info("Setting Realm default database path to \(Realm.Configuration.defaultConfiguration.path)")
 }
+
+func deleteAllDatabaseData() {
+  let databasePath = Realm.Configuration.defaultConfiguration.path
+  do {
+    let checkValidation = NSFileManager.defaultManager()
+    if let databasePath = databasePath where checkValidation.fileExistsAtPath(databasePath) {
+      try Realm().write {
+        do {
+          try Realm().deleteAll()
+        } catch let error as NSError {
+          log.error("failed to delete all DB data: \(error)")
+        }
+      }
+    } else {
+      log.info("database does not exist. ignoring.")
+    }
+  } catch let error as NSError {
+    log.info("failed perform database write: \(error)")
+  }
+}
+
