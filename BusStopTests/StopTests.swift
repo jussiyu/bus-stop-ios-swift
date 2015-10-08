@@ -115,13 +115,7 @@ class StopTests: QuickSpec {
     describe("A stop added to database") {
       beforeSuite {
         setUpDatabase()
-        do {
-          try Realm().write {
-            try! Realm().deleteAll()
-          }
-        } catch {
-          // ignore if DB not found
-        }
+        deleteAllDatabaseData()
       }
       
       var stop: Stop!
@@ -132,9 +126,7 @@ class StopTests: QuickSpec {
         }
       }
       afterEach {
-        try! Realm().write {
-          try! Realm().deleteAll()
-        }
+        deleteAllDatabaseData()
       }
       
       it("can be read back from database with same propery values") {
@@ -154,9 +146,7 @@ class StopTests: QuickSpec {
     describe("A stop in database") {
       beforeSuite {
         setUpDatabase()
-        try! Realm().write {
-          try! Realm().deleteAll()
-        }
+        deleteAllDatabaseData()
       }
       
       var stop: Stop!
@@ -166,10 +156,9 @@ class StopTests: QuickSpec {
           try! Realm().add(stop)
         }
       }
+      
       afterEach {
-        try! Realm().write {
-          try! Realm().deleteAll()
-        }
+        deleteAllDatabaseData()
       }
       
       it("can be set as favorite") {

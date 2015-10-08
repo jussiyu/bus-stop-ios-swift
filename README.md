@@ -1,4 +1,4 @@
-BusStop for iOS
+BusStop for iOS [![Build Status](https://travis-ci.org/jussiyu/bus-stop-ios-swift.svg)](https://travis-ci.org/jussiyu/bus-stop-ios-swift)
 ========================
 
 BusStop is an iOS application for tracking your target bus stop while travelling

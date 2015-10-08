@@ -4,11 +4,11 @@ use_frameworks!
 
 target 'BusStop' do
   pod 'SwiftyJSON', '~> 2.3'
-  pod 'MediumProgressView', :git => 'git@bitbucket.org:jmy/mediumprogressview/'
+  pod 'MediumProgressView', :git => 'https://jmy@bitbucket.org/jmy/mediumprogressview.git'
   pod 'ReachabilitySwift', '~> 2.0'
   pod 'XCGLogger', '~> 3.0'
   pod 'Async', :git => 'https://github.com/JohnCoates/Async.git'
-  pod 'TaskQueue', :git => 'git@bitbucket.org:jmy/taskqueue', :branch => 'accesscontrol'
+  pod 'TaskQueue', :git => 'https://jmy@bitbucket.org/jmy/taskqueue.git', :branch => 'accesscontrol'
   pod 'RealmSwift', '~> 0.95'
 end
 

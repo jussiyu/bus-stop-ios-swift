@@ -1,0 +1,13 @@
+language: objective-c
+osx_image: xcode7
+xcode_sdk: iphonesimulator9.0
+xcode_workspace: BusStop.xcworkspace
+xcode_scheme: BusStopUnitTests
+
+before_install:
+- gem install cocoapods --quiet
+- "xcrun instruments -w 'iPhone 6 (9.0)' || true"
+- sleep 20
+- sleep 20
+- sleep 20
+- brew uninstall xctool && brew install --HEAD xctool
