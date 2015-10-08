@@ -10,5 +10,4 @@ before_install:
 - sleep 20
 - sleep 20
 - sleep 20
-- perl allowAccess
 - brew uninstall xctool && brew install --HEAD xctool
