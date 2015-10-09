@@ -25,11 +25,11 @@ brach.
 Application depends on the following CocoaPods:
 
 * [SwiftyJSON](https://cocoapods.org/pods/SwiftyJSON)
-* [MediumProgressView](https://cocoapods.org/pods/MediumProgressView) (currently private fork)
+* [MediumProgressView](https://bitbucket.org/jmy/mediumprogressview)
 * [ReachabilitySwift](https://cocoapods.org/pods/ReachabilitySwift)
 * [XCGLogger](https://cocoapods.org/pods/XCGLogger)
 * [Async](https://github.com/JohnCoates/Async.git)
-* [TaskQueue](https://cocoapods.org/pods/TaskQueue) (private fork)
+* [TaskQueue](https://bitbucket.org/jmy/taskqueue)
 * [RealmSwift](https://cocoapods.org/pods/RealmSwift)
 
 See [Podfile](Podfile) for specific versions ranges and
