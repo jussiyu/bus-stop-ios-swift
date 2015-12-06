@@ -291,9 +291,9 @@ class HorizontalScroller: UIView {
     if let currentViewIndex = currentViewIndex {
       for index in 0 ..< scrollerSubviews.count {
         if index == currentViewIndex {
-          UIView.animateWithDuration(0.2) {scrollerSubviews[index]?.alpha = 1}
+          UIView.animateWithDuration(0.2) {self.scrollerSubviews[index]?.alpha = 1}
         } else {
-          UIView.animateWithDuration(0.2) {scrollerSubviews[index]?.alpha = self.noncurrentViewAlpha}
+          UIView.animateWithDuration(0.2) {self.scrollerSubviews[index]?.alpha = self.noncurrentViewAlpha}
         }
       }
     }
